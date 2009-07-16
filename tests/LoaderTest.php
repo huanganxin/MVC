@@ -45,7 +45,6 @@ require_once __DIR__ . '/../src/MVC.php';
  *
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
- * @covers     Loader
  */
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {
