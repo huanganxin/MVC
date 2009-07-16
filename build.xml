@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<project name="MVC" default="build" basedir=".">
+
+    <target name="clean" description="Clean up.">
+        <delete dir="_docs" />
+        <delete dir="_coverage" />
+    </target>
+
+    <target name="build" depends="lint, test, coverage, doc" description="Performs quality assurance." />
+
+    <target name="doc" description="Creates API documentation in _docs/html/.">
+        <delete dir="_docs" />
+        <exec command="doxygen" checkReturn="true"/>
+    </target>
+
+    <target name="lint" description="Run a lint check on all PHP files.">
+        <phplint haltonfailure="true">
+            <fileset dir="src">
+                <include name="*.php"/>
+                <include name="**/*.php"/>
+            </fileset>
+        </phplint>
+
+        <phplint haltonfailure="true">
+            <fileset dir="tests">
+                <include name="*.php"/>
+                <include name="**/*.php"/>
+            </fileset>
+        </phplint>
+    </target>
+
+    <target name="test" description="Runs all unit tests.">
+        <exec command="phpunit tests" passthru="true" checkReturn="true" />
+    </target>
+
+    <target name="coverage" description="Runs all unit tests and creates coverage information in _coverage.">
+        <delete dir="_coverage" />
+        <exec command="phpunit --coverage-html _coverage tests" />
+    </target>
+
+</project>
