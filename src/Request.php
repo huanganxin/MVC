@@ -108,6 +108,10 @@ class Request
             return isset($this->data[$variable][$parameters[0]]);
         }
 
+        if (!isset($this->data[$variable][$parameters[0]])) {
+            return '';
+        }
+
         return $this->data[$variable][$parameters[0]];
     }
 }
