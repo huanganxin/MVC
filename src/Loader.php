@@ -42,6 +42,16 @@ namespace spriebsch\MVC;
  * (class paths). Each directory must contain a file _ClassMap.php
  * that defines where to load classes from.
  *
+ * Use Loader::registerPath() to add a "classpath", a directory to load classes
+ * from. This directory must contain a file $_ClassMap.php
+ * (see Loader::registerPath()). Call Loader::init() to register the autoloader.
+ * Now you can go ahead and just use any class that is listed in a class map.
+ * It is of course possible to use multiple class paths, when the Loader 
+ * searches through them for a class, no filesystem access is involved, but
+ * only the map itself is being searched in memory.
+ *
+ * Class maps can be auto-generated from the available source code.
+ *
  * @author Stefan Priebsch <stefan@priebsch.de>
  * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */

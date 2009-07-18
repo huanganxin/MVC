@@ -41,6 +41,18 @@ namespace spriebsch\MVC;
  * A data object that wraps all input data.
  * The application itself should never access superglobals, only this object.
  *
+ * When instantiating Request (usually in the Front Controller or the
+ * application's startup file), pass the original superglobals as arguments.
+ * Then, throughout the application, do not work with superglobals, but
+ * use $request->get('parameter'), $request->post('parameter'),
+ * $request->cookie('name'), $request->files('name'),
+ * $request->server('key'), $request->env('name').
+ *
+ * Request returns an empty string when a given parameter does not exist.
+ *
+ * In addition, you can use hasGet('...'), hasPost('...') etc. to check whether
+ * a given request parameter, cookie, etc. exists.
+ *
  * @author Stefan Priebsch <stefan@priebsch.de>
  * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
