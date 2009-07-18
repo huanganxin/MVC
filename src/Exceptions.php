@@ -44,4 +44,6 @@ class LoaderException extends Exception {}
 class CannotInstantiateLoaderException extends Exception {}
 class ClassMapNotFoundException extends Exception {}
 class InvalidClassMapException extends Exception {}
+
+class UnknownVariableException extends Exception {}
 ?>

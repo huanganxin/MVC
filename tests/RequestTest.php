@@ -38,7 +38,8 @@
 namespace spriebsch\MVC;
 
 require_once 'PHPUnit/Framework.php';
-require_once __DIR__ . '/../src/MVC.php';
+require_once __DIR__ . '/../src/Exceptions.php';
+require_once __DIR__ . '/../src/Loader.php';
 
 /**
  * Unit Tests for Request class.

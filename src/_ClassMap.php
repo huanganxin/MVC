@@ -41,5 +41,6 @@ namespace spriebsch\MVC;
  * @var array
  */
 $_classMap = array(
+    'spriebsch\MVC\Request' => 'Request.php',
 );
 ?>
