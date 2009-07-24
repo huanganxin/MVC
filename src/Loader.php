@@ -29,28 +29,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package    MVC
+ * @package    PHPca
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  * @license    BSD License
  */
 
-namespace spriebsch\MVC;
+namespace spriebsch\PHPca;
 
 /**
- * A class loader (autoloader) that can handle multiple directories 
- * (class paths). Each directory must contain a file _ClassMap.php
- * that defines where to load classes from.
- *
- * Use Loader::registerPath() to add a "classpath", a directory to load classes
- * from. This directory must contain a file $_ClassMap.php
- * (see Loader::registerPath()). Call Loader::init() to register the autoloader.
- * Now you can go ahead and just use any class that is listed in a class map.
- * It is of course possible to use multiple class paths, when the Loader 
- * searches through them for a class, no filesystem access is involved, but
- * only the map itself is being searched in memory.
- *
- * Class maps can be auto-generated from the available source code.
+ * Autoloader.
  *
  * @author Stefan Priebsch <stefan@priebsch.de>
  * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
@@ -87,7 +75,7 @@ final class Loader
      */
     static public function init()
     {
-        spl_autoload_register(array('spriebsch\MVC\Loader', 'autoload'));
+        spl_autoload_register(array('spriebsch\PHPca\Loader', 'autoload'));
     }
 
     /**
