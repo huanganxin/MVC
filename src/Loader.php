@@ -29,13 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package    PHPca
+ * @package    MVC
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  * @license    BSD License
  */
 
-namespace spriebsch\PHPca;
+namespace spriebsch\MVC;
 
 /**
  * Autoloader.
@@ -75,7 +75,7 @@ final class Loader
      */
     static public function init()
     {
-        spl_autoload_register(array('spriebsch\PHPca\Loader', 'autoload'));
+        spl_autoload_register(array('spriebsch\MVC\Loader', 'autoload'));
     }
 
     /**
