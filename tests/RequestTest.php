@@ -90,7 +90,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     public function testGetReturnsEmptyStringForNonExistingValue()
     {
         $request = new Request();
-        $this->assertEquals('', $request->hasGet('key'));
+        $this->assertEquals('', $request->get('key'));
     }
 
     public function testPostReturnsExistingValue()
