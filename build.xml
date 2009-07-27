@@ -7,7 +7,7 @@
         <delete dir="_coverage" />
     </target>
 
-    <target name="build" depends="lint, test, coverage, doc" description="Performs quality assurance." />
+    <target name="build" depends="lint, test, doc" description="Performs quality assurance." />
 
     <target name="doc" description="Creates API documentation in _docs/html/.">
         <delete dir="_docs" />
@@ -31,12 +31,7 @@
     </target>
 
     <target name="test" description="Runs all unit tests.">
-        <exec command="phpunit tests" passthru="true" checkReturn="true" />
-    </target>
-
-    <target name="coverage" description="Runs all unit tests and creates coverage information in _coverage.">
-        <delete dir="_coverage" />
-        <exec command="phpunit --coverage-html _coverage tests" />
+        <exec command="phpunit --configuration phpunit.xml" passthru="true" checkReturn="true" />
     </target>
 
 </project>
