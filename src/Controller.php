@@ -37,15 +37,50 @@
 
 namespace spriebsch\MVC;
 
-class Exception extends \RuntimeException {}
+/**
+ * Controller class.
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+abstract class Controller
+{
+    /**
+     * @var Request
+     */
+    protected $request;
 
-class LoaderException extends Exception {}
+    /**
+     * @var Response
+     */
+    protected $response;
 
-class CannotInstantiateLoaderException extends Exception {}
-class ClassMapNotFoundException extends Exception {}
-class InvalidClassMapException extends Exception {}
+    /**
+      * Default action.
+      */
+    abstract protected function doDefaultAction();
 
-class UnknownVariableException extends Exception {}
+    /**
+     * Executes the requested action method.
+     *
+     * @param Request  $request  Request object
+     * @param Response $response Response object
+     * @param string      $action   Name of the action to perform
+     * @return mixed
+     * @throws spriebsch\MVC\ControllerException when requested action does not exist
+     */
+    public function execute(Request $request, Response $response, $action = 'default')
+    {
+        $this->request  = $request;
+        $this->response = $response;
 
-class ControllerException extends Exception {}
+        $method = 'do' . ucfirst($action) . 'Action';
+
+        if (!method_exists($this, $method)) {
+            throw new ControllerException(get_class($this) . ': Action method ' . $method . ' does not exist');
+        }
+
+        return $this->$method();
+    }
+}
 ?>

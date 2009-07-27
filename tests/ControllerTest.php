@@ -37,15 +37,59 @@
 
 namespace spriebsch\MVC;
 
-class Exception extends \RuntimeException {}
+require_once 'PHPUnit/Framework.php';
+require_once __DIR__ . '/../src/Exceptions.php';
+require_once __DIR__ . '/../src/Loader.php';
 
-class LoaderException extends Exception {}
+/**
+ * Unit Tests for Controller class.
+ * Since Controller is abstract, we test through concrete subclasses.
+ *
+ * @author     Stefan Priebsch <stefan@priebsch.de>
+ * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class ControllerTest extends \PHPUnit_Framework_TestCase
+{
+    protected function setUp()
+    {
+        Loader::init();
+        Loader::registerPath(__DIR__ . '/../src');
+        Loader::registerPath(__DIR__ . '/_testdata/Controller');
 
-class CannotInstantiateLoaderException extends Exception {}
-class ClassMapNotFoundException extends Exception {}
-class InvalidClassMapException extends Exception {}
+        $this->request  = $this->getMock('spriebsch\MVC\Request');
+        $this->response = $this->getMock('spriebsch\MVC\Response');
+    }
 
-class UnknownVariableException extends Exception {}
+    protected function tearDown()
+    {
+        Loader::reset();
+    }
 
-class ControllerException extends Exception {}
+    /**
+     * @expectedException spriebsch\MVC\ControllerException
+     */
+    public function testExecuteThrowsExceptionWhenActionMethodDoesNotExist()
+    {
+        $controller = new Test\DefaultActionController();
+        $controller->execute($this->request, $this->response, 'nonsense');
+    }
+
+    /**
+     * @expectedException spriebsch\MVC\Test\DefaultActionExecutedException
+     */
+    public function testExecuteCallsDefaultActionWhenNoActionGiven()
+    {
+        $controller = new Test\DefaultActionController();
+        $controller->execute($this->request, $this->response);
+    }
+
+    /**
+     * @expectedException spriebsch\MVC\Test\SomeActionExecutedException
+     */
+    public function testExecuteCallsGivenAction()
+    {
+        $controller = new Test\TwoActionsController();
+        $controller->execute($this->request, $this->response, 'some');
+    }
+}
 ?>

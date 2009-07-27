@@ -37,15 +37,11 @@
 
 namespace spriebsch\MVC;
 
-class Exception extends \RuntimeException {}
-
-class LoaderException extends Exception {}
-
-class CannotInstantiateLoaderException extends Exception {}
-class ClassMapNotFoundException extends Exception {}
-class InvalidClassMapException extends Exception {}
-
-class UnknownVariableException extends Exception {}
-
-class ControllerException extends Exception {}
+/**
+ * @var array
+ */
+$_classMap = array(
+    'spriebsch\MVC\Test\DefaultActionController' => 'DefaultActionController.php',
+    'spriebsch\MVC\Test\TwoActionsController'    => 'TwoActionsController.php',
+);
 ?>

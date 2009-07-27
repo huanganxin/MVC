@@ -41,7 +41,8 @@ namespace spriebsch\MVC;
  * @var array
  */
 $_classMap = array(
-    'spriebsch\MVC\Request'  => 'Request.php',
-    'spriebsch\MVC\Response' => 'Response.php',
+    'spriebsch\MVC\Request'    => 'Request.php',
+    'spriebsch\MVC\Response'   => 'Response.php',
+    'spriebsch\MVC\Controller' => 'Controller.php',
 );
 ?>
