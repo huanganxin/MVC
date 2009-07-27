@@ -41,9 +41,11 @@ namespace spriebsch\MVC;
  * Bootstrap the MVC framework by registering the autoloader.
  */
 
+// @codeCoverageIgnoreStart
 require_once __DIR__ . '/Exceptions.php';
 require_once __DIR__ . '/Loader.php';
 
 Loader::init();
 Loader::registerPath(__DIR__);
+// @codeCoverageIgnoreEnd
 ?>
