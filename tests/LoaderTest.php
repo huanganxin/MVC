@@ -110,7 +110,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     {
         Loader::registerPath(__DIR__ . '/_testdata/Loader/ClassD');
         Loader::registerPath(__DIR__ . '/_testdata/Loader/ClassesBAndC');
-        $this->assertTrue(class_exists('spriebsch\MVC\Tests\A'));
+        $this->assertTrue(class_exists('spriebsch\MVC\Tests\D'));
         $this->assertTrue(class_exists('spriebsch\MVC\Tests\B'));
     }
 }
