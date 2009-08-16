@@ -48,4 +48,6 @@ class InvalidClassMapException extends Exception {}
 class UnknownVariableException extends Exception {}
 
 class ControllerException extends Exception {}
+
+class SessionException extends Exception {}
 ?>

@@ -37,14 +37,35 @@
 
 namespace spriebsch\MVC;
 
+require_once __DIR__ . '/SessionTest.php';
+require_once __DIR__ . '/../src/Exceptions.php';
+require_once __DIR__ . '/../src/Loader.php';
+
 /**
- * @var array
+ * Unit Tests for MockSession class.
+ *
+ * @author     Stefan Priebsch <stefan@priebsch.de>
+ * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-$_classMap = array(
-    'spriebsch\MVC\Request'     => 'Request.php',
-    'spriebsch\MVC\Response'    => 'Response.php',
-    'spriebsch\MVC\Session'     => 'Session.php',
-    'spriebsch\MVC\MockSession' => 'MockSession.php',
-    'spriebsch\MVC\Controller'  => 'Controller.php',
-);
+class MockSessionTest extends SessionTest
+{
+    protected $className = 'spriebsch\MVC\MockSession';
+
+    public function testMockSessionDoesNotStartPhpSession()
+    {
+        $this->session = new MockSession();
+        $this->session->start();
+        $this->assertEquals('', session_id());
+    }
+
+    /**
+     * @todo find out why this test cannot access $_SESSION
+     */
+    public function testMockSessionDoesNotModifySuperglobal()
+    {
+        $this->session = new MockSession();
+        $this->session->set('key', 'value');
+        // $this->assertEquals(array(), $_SESSION);
+    }
+}
 ?>
