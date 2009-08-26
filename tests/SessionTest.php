@@ -46,7 +46,8 @@ require_once __DIR__ . '/../src/Loader.php';
  *
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
- * @todo tests must be run in separate processes
+ *
+ * @runTestsInSeparateProcesses
  */
 class SessionTest extends \PHPUnit_Framework_TestCase
 {

@@ -2,12 +2,13 @@
 
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         processIsolation="true"
          syntaxCheck="false">
 
-    <testsuite name="PHPca">
-        <directory>tests</directory>
-    </testsuite>
+    <testsuites>
+	    <testsuite name="PHPca">
+	        <directory>tests</directory>
+	    </testsuite>
+    </testsuites>
 
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
