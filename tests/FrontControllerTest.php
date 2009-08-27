@@ -41,8 +41,6 @@ use spriebsch\MVC\Test\FrontController\FrontController as TestFrontController;
 use spriebsch\MVC\Test\FrontController\Router as TestRouter;
 
 require_once 'PHPUnit/Framework.php';
-require_once __DIR__ . '/../src/Exceptions.php';
-require_once __DIR__ . '/../src/Loader.php';
 
 /**
  * Unit Tests for FrontController class.
@@ -52,18 +50,6 @@ require_once __DIR__ . '/../src/Loader.php';
  */
 class FrontControllerTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        Loader::init();
-        Loader::registerPath(__DIR__ . '/../src');
-        Loader::registerPath(__DIR__ . '/_testdata/FrontController');
-    }
-
-    protected function tearDown()
-    {
-        Loader::reset();
-    }
-
     /**
      * @expectedException spriebsch\MVC\FrontControllerException
      */

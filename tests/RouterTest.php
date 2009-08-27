@@ -38,8 +38,6 @@
 namespace spriebsch\MVC;
 
 require_once 'PHPUnit/Framework.php';
-require_once __DIR__ . '/../src/Exceptions.php';
-require_once __DIR__ . '/../src/Loader.php';
 
 /**
  * Unit Tests for Router class.
@@ -49,18 +47,6 @@ require_once __DIR__ . '/../src/Loader.php';
  */
 class RouterTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        Loader::init();
-        Loader::registerPath(__DIR__ . '/../src');
-        Loader::registerPath(__DIR__ . '/_testdata/Controller');
-    }
-
-    protected function tearDown()
-    {
-        Loader::reset();
-    }
-
     public function testRoutesToDefaultController()
     {
         $request = new Request();

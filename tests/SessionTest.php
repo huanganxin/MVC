@@ -38,8 +38,6 @@
 namespace spriebsch\MVC;
 
 require_once 'PHPUnit/Framework.php';
-require_once __DIR__ . '/../src/Exceptions.php';
-require_once __DIR__ . '/../src/Loader.php';
 
 /**
  * Unit Tests for Session class.
@@ -53,9 +51,6 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        Loader::init();
-        Loader::registerPath(__DIR__ . '/../src');
-
         $this->session = new Session();
     }
 

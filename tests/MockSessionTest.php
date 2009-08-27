@@ -38,8 +38,6 @@
 namespace spriebsch\MVC;
 
 require_once 'PHPUnit/Framework.php';
-require_once __DIR__ . '/../src/Exceptions.php';
-require_once __DIR__ . '/../src/Loader.php';
 
 /**
  * Unit Tests for MockSession class.
@@ -51,15 +49,7 @@ class MockSessionTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        Loader::init();
-        Loader::registerPath(__DIR__ . '/../src');
-
         $this->session = new MockSession();
-    }
-
-    protected function tearDown()
-    {
-        Loader::reset();
     }
 
     /**
@@ -164,13 +154,7 @@ class MockSessionTest extends \PHPUnit_Framework_TestCase
         $this->session = new MockSession();
         $this->session->start();
         $this->assertEquals('', session_id());
-    }
-
-    public function testMockSessionDoesNotModifySuperglobal()
-    {
-        $this->session = new MockSession();
-        $this->session->set('key', 'value');
-        // $this->assertEquals(array(), $_SESSION);
+        $this->assertFalse(isset($_SESSION));
     }
 }
 ?>

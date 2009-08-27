@@ -38,8 +38,6 @@
 namespace spriebsch\MVC;
 
 require_once 'PHPUnit/Framework.php';
-require_once __DIR__ . '/../src/Exceptions.php';
-require_once __DIR__ . '/../src/Loader.php';
 
 /**
  * Unit Tests for Controller class.
@@ -57,19 +55,10 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        Loader::init();
-        Loader::registerPath(__DIR__ . '/../src');
-        Loader::registerPath(__DIR__ . '/_testdata/Controller');
-
         $this->request       = $this->getMock('spriebsch\MVC\Request');
         $this->response      = $this->getMock('spriebsch\MVC\Response');
         $this->session       = $this->getMock('spriebsch\MVC\Session');
         $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
-    }
-
-    protected function tearDown()
-    {
-        Loader::reset();
     }
 
     /**
