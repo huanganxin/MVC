@@ -60,7 +60,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Loader::__construct
      * @expectedException spriebsch\MVC\CannotInstantiateLoaderException
      */
     public function testConstructorThrowsException()
@@ -69,7 +68,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Loader::init
+     * @covers spriebsch\MVC\Loader::init
      */
     public function testInitRegistersSplAutoloadFunction()
     {
@@ -77,7 +76,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Loader::registerPath
+     * @covers spriebsch\MVC\Loader::registerPath
      * @expectedException spriebsch\MVC\ClassMapNotFoundException
      */
     public function testRegisterPathThrowsExceptionWhenClassMapDoesNotExist()
@@ -86,7 +85,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Loader::registerPath
+     * @covers spriebsch\MVC\Loader::registerPath
      * @expectedException spriebsch\MVC\InvalidClassMapException
      */
     public function testRegisterPathThrowsExceptionWhenClassMapIsNoArray()
@@ -95,7 +94,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Loader::autoload
+     * @covers spriebsch\MVC\Loader::autoload
      */
     public function testLoadLoadsExistingClass()
     {
@@ -104,7 +103,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Loader::autoload
+     * @covers spriebsch\MVC\Loader::autoload
      */
     public function testLoadWorksForMultipleClassPaths()
     {
