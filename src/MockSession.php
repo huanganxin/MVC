@@ -37,13 +37,13 @@
 
 namespace spriebsch\MVC;
 
-// Workaround for PHPUnit Code Coverage + whitelisting problem
-require_once __DIR__ . '/Session.php';
-
 /**
  * Mock session acts like session, but does not interact with the global
  * environment by accessing $_SESSION or sending headers.
  * No real session is involved here, so there will be no persistence.
+ *
+ * Mock session calculates its own session id, since no built-in session
+ * is involved.
  *
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
@@ -60,7 +60,7 @@ class MockSession extends Session
      */
     protected function calculateSessionId()
     {
-        return md5(uniqid());
+        return substr(md5(uniqid()), 0, 26);
     }
 
     /**
@@ -79,7 +79,7 @@ class MockSession extends Session
      * Returns a session variable.
      *
      * @param mixed $key   Session variable name
-     * @return mixed Session variable value
+     * @return mixed
      */
     public function get($key)
     {

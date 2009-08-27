@@ -38,101 +38,60 @@
 namespace spriebsch\MVC;
 
 /**
- * Controller class.
+ * Dummy authenticator that always returns true for now.
  *
  * @author Stefan Priebsch <stefan@priebsch.de>
  * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ * @todo add pluggable authentication adapter that does the actual work
+ * @todo add authentication by session?
  */
-abstract class Controller
+class Authenticator
 {
     /**
-     * @var Request
+     * @var string
      */
-    protected $request;
+    protected $username;
 
     /**
-     * @var Response
+     * @var string
      */
-    protected $response;
+    protected $password;
 
     /**
-     * @var Session
+     * @var bool
      */
-    protected $session;
+    protected $isAuthenticated = false;
 
     /**
-     * @var Authenticator
+     * Asks the authentication adapter to do the work.
+     * For now, always assume that authentication is successful.
      */
-    protected $authenticator;
-
-    /**
-     * Initializes the controller
-     *
-     * @return void
-     */
-    protected function init()
+    protected function doAuthenticate()
     {
+        $this->isAuthenticated = true;
     }
 
     /**
-     * Checks whether the action method is allowed.
-     * Usually, this means
-     * Always returns true, subclass can override this method
-     * and implement authentication checks.
      *
-     * @param string $action Action name (not action method name)
+     * @param string $username
+     * @param string $password
+     */
+    public function authenticate($username, $password)
+    {
+        $this->username = $username;
+        $this->password = $password;
+
+        $this->doAuthenticate();
+    }
+
+    /**
+     * Is user authenticated?
+     *
      * @return bool
      */
-    protected function isAllowed($action)
+    public function isAuthenticated()
     {
-        return true;
-    }
-
-    /**
-     * Returns the action method name do<Action>Action,
-     * where first letter of <Action> is capitalized.
-     *
-     * @param string $action
-     * @return string
-     */
-    protected function getActionMethodName($action)
-    {
-        return 'do' . ucfirst($action) . 'Action';
-    }
-
-    /**
-     * Default action.
-     */
-    abstract protected function doDefaultAction();
-
-    /**
-     * Executes the requested action method.
-     *
-     * @param Request  $request  Request object
-     * @param Response $response Response object
-     * @param Session  $session  Session object
-     * @param string   $action   Name of the action to perform
-     * @return mixed
-     * @throws spriebsch\MVC\ControllerException when requested action does not exist
-     */
-    public function execute(Request $request, Response $response, Session $session, Authenticator $authenticator, $action = 'default')
-    {
-        $this->request       = $request;
-        $this->response      = $response;
-        $this->session       = $session;
-        $this->authenticator = $authenticator;
-
-        $this->init();
-
-        $method = $this->getActionMethodName($action);
-
-        if (!method_exists($this, $method)) {
-            throw new ControllerException(get_class($this) . ': Action method ' . $method . ' does not exist');
-        }
-
-        if ($this->isAllowed($action)) {
-            return $this->$method();
-        }
+        return $this->isAuthenticated;
     }
 }
 ?>

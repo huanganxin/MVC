@@ -37,19 +37,13 @@
 
 namespace spriebsch\MVC;
 
-class Exception extends \RuntimeException {}
-
-class LoaderException extends Exception {}
-
-class CannotInstantiateLoaderException extends Exception {}
-class ClassMapNotFoundException extends Exception {}
-class InvalidClassMapException extends Exception {}
-
-class UnknownVariableException extends Exception {}
-
-class ControllerException extends Exception {}
-
-class FrontControllerException extends Exception {}
-
-class SessionException extends Exception {}
+/**
+ * @var array
+ */
+$_classMap = array(
+    'spriebsch\MVC\Test\FrontController\Router'           => 'Router.php',
+    'spriebsch\MVC\Test\FrontController\Action'           => 'Action.php',
+    'spriebsch\MVC\Test\FrontController\Authentication'   => 'Authentication.php',
+    'spriebsch\MVC\Test\FrontController\FrontController'  => 'FrontController.php',
+);
 ?>

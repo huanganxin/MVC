@@ -51,15 +51,12 @@ require_once __DIR__ . '/../src/Loader.php';
  */
 class SessionTest extends \PHPUnit_Framework_TestCase
 {
-    protected $className = 'spriebsch\MVC\Session';
-
     protected function setUp()
     {
         Loader::init();
         Loader::registerPath(__DIR__ . '/../src');
 
-        $className = $this->className;
-        $this->session = new $className;
+        $this->session = new Session();
     }
 
     protected function tearDown()
@@ -115,6 +112,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers spriebsch\MVC\Session::isStarted
+     * @covers spriebsch\MVC\Session::checkIfStarted
      */
     public function testIsStartedReturnsFalseWhenSessionWasNotStarted()
     {
@@ -122,29 +120,32 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers spriebsch\MVC\Session::start
      * @covers spriebsch\MVC\Session::isStarted
+     * @covers spriebsch\MVC\Session::checkIfStarted
      */
     public function testIsStartedReturnsTrueWhenSessionWasStarted()
     {
         $this->session->start();
+
         $this->assertTrue($this->session->isStarted());
     }
 
     /**
+     * @covers spriebsch\MVC\Session::start
      * @covers spriebsch\MVC\Session::getId
+     * @covers spriebsch\MVC\Session::checkIfStarted
      */
     public function testGetIdReturnsSessionId()
     {
         $this->session->start();
 
-        // Ugly hack to avoid this assertion for the MockSession test.
-        if ($this->className == 'spriebsch\MVC\Session') {
-            $this->assertEquals(session_id(), $this->session->getId());
-        }
+        $this->assertEquals(session_id(), $this->session->getId());
     }
 
     /**
      * @expectedException spriebsch\MVC\SessionException
+     * @covers spriebsch\MVC\Session::checkIfStarted
      * @covers spriebsch\MVC\Session::getId
      */
     public function testGetIdThrowsExceptionWhenSessionNotStarted()

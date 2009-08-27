@@ -37,19 +37,48 @@
 
 namespace spriebsch\MVC;
 
-class Exception extends \RuntimeException {}
+require_once 'PHPUnit/Framework.php';
+require_once __DIR__ . '/../src/Exceptions.php';
+require_once __DIR__ . '/../src/Loader.php';
 
-class LoaderException extends Exception {}
+/**
+ * Unit Tests for Authenticator class.
+ *
+ * @author     Stefan Priebsch <stefan@priebsch.de>
+ * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class AuthenticatorTest extends \PHPUnit_Framework_TestCase
+{
+    protected function setUp()
+    {
+        Loader::init();
+        Loader::registerPath(__DIR__ . '/../src');
+    }
 
-class CannotInstantiateLoaderException extends Exception {}
-class ClassMapNotFoundException extends Exception {}
-class InvalidClassMapException extends Exception {}
+    protected function tearDown()
+    {
+        Loader::reset();
+    }
 
-class UnknownVariableException extends Exception {}
+    /**
+     * @covers spriebsch\MVC\Authenticator::isAuthenticated
+     */
+    public function testIsInitiallyNotAuthenticated()
+    {
+        $authenticator = new Authenticator();
+        $this->assertFalse($authenticator->isAuthenticated());
+    }
 
-class ControllerException extends Exception {}
-
-class FrontControllerException extends Exception {}
-
-class SessionException extends Exception {}
+    /**
+     * @covers spriebsch\MVC\Authenticator::authenticate
+     * @covers spriebsch\MVC\Authenticator::doAuthenticate
+     * @covers spriebsch\MVC\Authenticator::isAuthenticated
+     */
+    public function testIsAuthenticatedReturnsTrueWhenAuthenticated()
+    {
+        $authenticator = new Authenticator();
+        $authenticator->authenticate('username', 'password');
+        $this->assertTrue($authenticator->isAuthenticated());
+    }
+}
 ?>

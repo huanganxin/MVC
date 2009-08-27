@@ -41,10 +41,14 @@ namespace spriebsch\MVC;
  * @var array
  */
 $_classMap = array(
-    'spriebsch\MVC\Request'     => 'Request.php',
-    'spriebsch\MVC\Response'    => 'Response.php',
-    'spriebsch\MVC\Session'     => 'Session.php',
-    'spriebsch\MVC\MockSession' => 'MockSession.php',
-    'spriebsch\MVC\Controller'  => 'Controller.php',
+    'spriebsch\MVC\FrontController'      => 'FrontController.php',
+    'spriebsch\MVC\Router'               => 'Router.php',
+    'spriebsch\MVC\Request'              => 'Request.php',
+    'spriebsch\MVC\Response'             => 'Response.php',
+    'spriebsch\MVC\Session'              => 'Session.php',
+    'spriebsch\MVC\MockSession'          => 'MockSession.php',
+    'spriebsch\MVC\Controller'           => 'Controller.php',
+    'spriebsch\MVC\View'                 => 'View.php',
+    'spriebsch\MVC\Authenticator'        => 'Authenticator.php',
 );
 ?>

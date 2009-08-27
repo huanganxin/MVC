@@ -37,7 +37,7 @@
 
 namespace spriebsch\MVC;
 
-require_once __DIR__ . '/SessionTest.php';
+require_once 'PHPUnit/Framework.php';
 require_once __DIR__ . '/../src/Exceptions.php';
 require_once __DIR__ . '/../src/Loader.php';
 
@@ -47,9 +47,117 @@ require_once __DIR__ . '/../src/Loader.php';
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-class MockSessionTest extends SessionTest
+class MockSessionTest extends \PHPUnit_Framework_TestCase
 {
-    protected $className = 'spriebsch\MVC\MockSession';
+    protected function setUp()
+    {
+        Loader::init();
+        Loader::registerPath(__DIR__ . '/../src');
+
+        $this->session = new MockSession();
+    }
+
+    protected function tearDown()
+    {
+        Loader::reset();
+    }
+
+    /**
+     * @expectedException spriebsch\MVC\SessionException
+     * @covers spriebsch\MVC\MockSession::get
+     */
+    public function testGetThrowsExceptionForUnknownVariable()
+    {
+        $this->session->get('nonsense');
+    }
+
+    /**
+     * @covers spriebsch\MVC\MockSession::get
+     * @covers spriebsch\MVC\MockSession::set
+     */
+    public function testSetAndGet()
+    {
+        $this->session->set('key', 'value');
+        $this->assertEquals('value', $this->session->get('key'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\MockSession::has
+     */
+    public function testHasReturnsFalseWhenKeyDoesNotExist()
+    {
+        $this->assertFalse($this->session->has('key'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\MockSession::has
+     */
+    public function testHasReturnsTrueWhenKeyExists()
+    {
+        $this->session->set('key', 'value');
+        $this->assertTrue($this->session->has('key'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\MockSession::setName
+     * @covers spriebsch\MVC\MockSession::getName
+     */
+    public function testSetAndGetName()
+    {
+        $this->session->setName('something');
+        $this->assertEquals('something', $this->session->getName());
+    }
+
+    /**
+     * @covers spriebsch\MVC\MockSession::isStarted
+     */
+    public function testIsStartedReturnsFalseWhenSessionWasNotStarted()
+    {
+        $this->assertFalse($this->session->isStarted());
+    }
+
+    /**
+     * @covers spriebsch\MVC\MockSession::isStarted
+     */
+    public function testIsStartedReturnsTrueWhenSessionWasStarted()
+    {
+        $this->session->start();
+        $this->assertTrue($this->session->isStarted());
+    }
+
+    /**
+     * @expectedException spriebsch\MVC\SessionException
+     * @covers spriebsch\MVC\MockSession::getId
+     */
+    public function testGetIdThrowsExceptionWhenSessionNotStarted()
+    {
+        $this->session->getId();
+    }
+
+    /**
+     * Since we can't really check the session ID,
+     * we just make sure it is 26 characters long.
+     *
+     * @covers spriebsch\MVC\MockSession::getId
+     */
+    public function testGetIdReturnsSessionId()
+    {
+        $this->session->start();
+        $id = $this->session->getId();
+
+        $this->assertEquals(26, strlen($id));
+    }
+
+    /**
+     * @covers spriebsch\MVC\MockSession::regenerateId
+     */
+    public function testRegenerateIdChangesSessionId()
+    {
+        $this->session->start();
+        $id = $this->session->getId();
+        $this->session->regenerateId();
+        $this->assertNotEquals($id, $this->session->getId());
+    }
 
     public function testMockSessionDoesNotStartPhpSession()
     {
@@ -58,9 +166,6 @@ class MockSessionTest extends SessionTest
         $this->assertEquals('', session_id());
     }
 
-    /**
-     * @todo find out why this test cannot access $_SESSION
-     */
     public function testMockSessionDoesNotModifySuperglobal()
     {
         $this->session = new MockSession();

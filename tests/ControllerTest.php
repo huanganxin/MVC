@@ -50,14 +50,21 @@ require_once __DIR__ . '/../src/Loader.php';
  */
 class ControllerTest extends \PHPUnit_Framework_TestCase
 {
+    protected $request;
+    protected $response;
+    protected $session;
+    protected $authenticator;
+
     protected function setUp()
     {
         Loader::init();
         Loader::registerPath(__DIR__ . '/../src');
         Loader::registerPath(__DIR__ . '/_testdata/Controller');
 
-        $this->request  = $this->getMock('spriebsch\MVC\Request');
-        $this->response = $this->getMock('spriebsch\MVC\Response');
+        $this->request       = $this->getMock('spriebsch\MVC\Request');
+        $this->response      = $this->getMock('spriebsch\MVC\Response');
+        $this->session       = $this->getMock('spriebsch\MVC\Session');
+        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
     }
 
     protected function tearDown()
@@ -71,7 +78,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testExecuteThrowsExceptionWhenActionMethodDoesNotExist()
     {
         $controller = new Test\DefaultActionController();
-        $controller->execute($this->request, $this->response, 'nonsense');
+        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'nonsense');
     }
 
     /**
@@ -80,7 +87,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testExecuteCallsDefaultActionWhenNoActionGiven()
     {
         $controller = new Test\DefaultActionController();
-        $controller->execute($this->request, $this->response);
+        $controller->execute($this->request, $this->response, $this->session, $this->authenticator);
     }
 
     /**
@@ -89,7 +96,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testExecuteCallsGivenAction()
     {
         $controller = new Test\TwoActionsController();
-        $controller->execute($this->request, $this->response, 'some');
+        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'some');
     }
 }
 ?>
