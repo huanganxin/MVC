@@ -29,22 +29,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package    MVC
+ * @package    Loader
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  * @license    BSD License
  */
 
-namespace spriebsch\MVC;
+namespace spriebsch\Loader;
+
+if (!defined('__SPRIEBSCH_LOADER_AUTOLOAD')) {
+
+define('__SPRIEBSCH_LOADER_AUTOLOAD', true);
 
 /**
  * A class loader (autoloader) that can handle multiple directories 
  * (class paths). Each directory must contain a file _ClassMap.php
  * that defines where to load classes from.
  *
- * Use Loader::registerPath() to add a "classpath", a directory to load classes
+ * Use Autoloader::registerPath() to add a "classpath", a directory to load classes
  * from. This directory must contain a file $_ClassMap.php
- * (see Loader::registerPath()). Call Loader::init() to register the autoloader.
+ * (see Autoloader::registerPath()). Call Autoloader::init() to register the autoloader.
  * Now you can go ahead and just use any class that is listed in a class map.
  * It is of course possible to use multiple class paths, when the Loader 
  * searches through them for a class, no filesystem access is involved, but
@@ -55,7 +59,7 @@ namespace spriebsch\MVC;
  * @author Stefan Priebsch <stefan@priebsch.de>
  * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-final class Loader
+final class Autoloader
 {
     /**
      * @var array
@@ -71,7 +75,7 @@ final class Loader
      * Throws an exception on object construction.
      * The class must be used statically.
      *
-     * @throws CannotInstantiateLoaderException
+     * @throws spriebsch\Loader\CannotInstantiateLoaderException
      *
      * @return null
      */
@@ -87,8 +91,10 @@ final class Loader
      */
     static public function init()
     {
-        spl_autoload_register(array('spriebsch\MVC\Loader', 'autoload'));
+        spl_autoload_register(array('spriebsch\Loader\Autoloader', 'autoload'));
     }
+
+	// @codeCoverageIgnoreStart
 
     /**
      * Reset the autoloader.
@@ -102,14 +108,16 @@ final class Loader
         self::$classMaps = array();
     }
 
+	// @codeCoverageIgnoreEnd
+
     /**
      * Register a path to autoload classes from.
      * In the given directory, a file _ClassMap.php must be present
      * that contains an array $_classMap holding key/value pairs with
      * classname as the key and relative path to the classfile as value.
      *
-     * @throws ClassMapNotFoundException
-     * @throws InvalidClassMapException
+     * @throws spriebsch\Loader\ClassMapNotFoundException
+     * @throws spriebsch\Loader\InvalidClassMapException
      *
      * @param string $classPath Path to load classes from
      * @return null
@@ -126,18 +134,19 @@ final class Loader
             throw new ClassMapNotFoundException($classMap . ' not found');
         }
 
-        self::$classPaths[] = $classPath;
         include $classMap;
 
         if (!isset($_classMap) || !is_array($_classMap)) {
             throw new InvalidClassMapException('$_classMap in ' . $classMap . ' is not an array');
         }
-    
+
+        self::$classPaths[] = $classPath;
         self::$classMaps[] = $_classMap;
     }
 
     /**
      * Autoloads classes from given classpaths.
+     * Searches through all class maps for the class to load.
      *
      * @param string $class Class name to load
      * @return null
@@ -156,5 +165,23 @@ final class Loader
             }
         }
     }
+}
+
+class Exception extends \Exception
+{
+}
+
+class CannotInstantiateLoaderException extends Exception
+{
+}
+
+class ClassMapNotFoundException extends Exception
+{
+}
+
+class InvalidClassMapException extends Exception
+{
+}
+
 }
 ?>

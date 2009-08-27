@@ -54,11 +54,6 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $this->session = new Session();
     }
 
-    protected function tearDown()
-    {
-        Loader::reset();
-    }
-
     /**
      * @expectedException spriebsch\MVC\SessionException
      * @covers spriebsch\MVC\Session::get

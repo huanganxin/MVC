@@ -15,6 +15,9 @@
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
         </whitelist>
+        <blacklist>
+            <directory suffix=".php">src/lib</directory>
+        </blacklist>
     </filter>
 
     <logging>

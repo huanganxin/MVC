@@ -37,6 +37,8 @@
 
 namespace spriebsch\MVC;
 
+// @codeCoverageIgnoreStart
+
 /**
  * @var array
  */
@@ -51,4 +53,5 @@ $_classMap = array(
     'spriebsch\MVC\View'                 => 'View.php',
     'spriebsch\MVC\Authenticator'        => 'Authenticator.php',
 );
+// @codeCoverageIgnoreEnd
 ?>
