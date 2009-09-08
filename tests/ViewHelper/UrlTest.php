@@ -40,35 +40,27 @@ namespace spriebsch\MVC;
 require_once 'PHPUnit/Framework.php';
 
 /**
- * Unit Tests for ul view helper class.
+ * Unit Tests for URL view helper class.
  *
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-class UlTest extends \PHPUnit_Framework_TestCase
+class UrlTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $request = $this->getMock('\\spriebsch\\MVC\\Request');
+        $request  = $this->getMock('\\spriebsch\\MVC\\Request');
         $response = $this->getMock('\\spriebsch\\MVC\\Response');
 
-        $this->ul = new \spriebsch\MVC\ViewHelper\Ul($request, $response);
+        $this->url = new \spriebsch\MVC\ViewHelper\Url($request, $response);
     }
 
     /**
-     * @covers spriebsch\MVC\ViewHelper\Ul
+     * @covers spriebsch\MVC\ViewHelper\Url
      */
-    public function testCreatesUlFromArray()
+    public function testExecute()
     {
-        $this->assertEquals('<ul><li>one</li></ul>', $this->ul->execute(array(array('one'))));
-    }
-
-    /**
-     * @covers spriebsch\MVC\ViewHelper\Ul
-     */
-    public function testConvertsScalarValueToArray()
-    {
-        $this->assertEquals('<ul><li>one</li></ul>', $this->ul->execute(array('one')));
+        $this->assertEquals('index.php?mvc_controller=controller', $this->url->execute(array('controller')));
     }
 }
 ?>

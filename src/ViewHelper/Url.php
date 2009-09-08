@@ -38,25 +38,15 @@
 namespace spriebsch\MVC\ViewHelper;
 
 /**
- * View Helper that renders the URL to a given controller and action.
+ * View Helper that renders the URL of a given controller.
  */
 class Url extends \spriebsch\MVC\ViewHelper
 {
+    protected $baseUrl = 'index.php';
+
     protected function doExecute($parameters)
     {
-        $controller = 'standard';
-
-        if (isset($parameters[0])) {
-            $controller = $parameters[0];
-        }
-
-        $action = 'default';
-
-        if (isset($parameters[1])) {
-            $action = $parameters[1];
-        }
-
-        return 'index.php?mvc_controller=' . $controller . '&mvc_action=' . $action;
+        return $this->baseUrl . '?mvc_controller=' . $parameters[0];
     }
 }
 ?>
