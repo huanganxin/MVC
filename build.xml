@@ -7,7 +7,7 @@
         <delete dir="_coverage" />
     </target>
 
-    <target name="build" depends="lint, test, doc, phar" description="Performs quality assurance." />
+    <target name="build" depends="lint, test, phar" description="Performs quality assurance." />
 
     <target name="phar" description="Creates executable Phar archive in _phar/.">
         <delete dir="_phar" />

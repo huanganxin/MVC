@@ -46,6 +46,7 @@ namespace spriebsch\MVC;
 require_once __DIR__ . '/lib/Autoloader.php';
 require_once __DIR__ . '/Exceptions.php';
 
+\spriebsch\Loader\Autoloader::init();
 \spriebsch\Loader\Autoloader::registerPath(__DIR__);
 // @codeCoverageIgnoreEnd
 ?>

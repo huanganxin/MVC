@@ -35,35 +35,22 @@
  * @license    BSD License
  */
 
-namespace spriebsch\MVC;
-
-// @codeCoverageIgnoreStart
+namespace spriebsch\MVC\ViewHelper;
 
 /**
- * @var array
+ * View Helper that renders form errors of given form as div.
  */
-$_classMap = array(
-    'spriebsch\MVC\FrontController'         => 'FrontController.php',
-    'spriebsch\MVC\Router'                  => 'Router.php',
-    'spriebsch\MVC\Request'                 => 'Request.php',
-    'spriebsch\MVC\Response'                => 'Response.php',
-    'spriebsch\MVC\Session'                 => 'Session.php',
-    'spriebsch\MVC\MockSession'             => 'MockSession.php',
-    'spriebsch\MVC\Controller'              => 'Controller.php',
-    'spriebsch\MVC\Authenticator'           => 'Authenticator.php',
-    'spriebsch\MVC\PasswdFileAuthenticator' => 'PasswdFileAuthenticator.php',
-    'spriebsch\MVC\Renderer'                => 'Renderer.php',
-    'spriebsch\MVC\Message'                 => 'Message.php',
-    'spriebsch\MVC\Message\Error'           => 'Message/Error.php',
-    'spriebsch\MVC\Message\FormError'       => 'Message/FormError.php',
-    'spriebsch\MVC\Message\FieldError'      => 'Message/FieldError.php',
-    'spriebsch\MVC\View'                    => 'View.php',
-    'spriebsch\MVC\ViewHelper'              => 'ViewHelper.php',
-    'spriebsch\MVC\ViewHelper\Ul'           => 'ViewHelper/Ul.php',
-    'spriebsch\MVC\ViewHelper\Menu'         => 'ViewHelper/Menu.php',
-    'spriebsch\MVC\ViewHelper\Url'          => 'ViewHelper/Url.php',
-    'spriebsch\MVC\ViewHelper\FormErrors'   => 'ViewHelper/FormErrors.php',
-    'spriebsch\MVC\Acl'                     => 'Acl.php',
-);
-// @codeCoverageIgnoreEnd
+class FormErrors extends \spriebsch\MVC\ViewHelper
+{
+    protected function doExecute($parameters)
+    {
+        $result = array();
+
+        foreach ($this->response->getFormErrors($parameters[0]) as $error) {
+            $result[] = $error->getMessage();
+        }
+
+        return '<div class="formerrors">' . implode('<br>', $result) . '</div>';
+    }
+}
 ?>

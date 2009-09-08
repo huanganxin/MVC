@@ -21,7 +21,7 @@
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER ORCONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * BE LIABLE FOR ANY DIRECT INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
  * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
@@ -67,16 +67,43 @@ class FrontController
     protected $session;
 
     /**
+     * @var Authenticator
+     */
+    protected $authenticator;
+
+    /**
+     * @var Acl
+     */
+    protected $acl;
+
+    /**
+     * @var View
+     */
+    protected $view;
+
+    protected $userRole = 'anonymous';
+
+    /**
      * Construct the FrontController.
      *
-     * @param Router  $router  Router object
-     * @param Session $session Session object
+     * @param Request       $request       Request object
+     * @param Response      $response      Response object
+     * @param Session       $session       Session object
+     * @param View          $view          View
+     * @param Router        $router        Router object
+     * @param Authenticator $authenticator Authenticator object
+     * @param Acl           $acl           Access Control List
      * @return void
     */
-    public function __construct(Router $router, Session $session)
+    public function __construct(Request $request, Response $response, Session $session, View $view, Router $router, Authenticator $authenticator, Acl $acl)
     {
-        $this->router  = $router;
-        $this->session = $session;
+        $this->request       = $request;
+        $this->response      = $response;
+        $this->session       = $session;
+        $this->view          = $view;
+        $this->router        = $router;
+        $this->authenticator = $authenticator;
+        $this->acl           = $acl;
     }
 
     /**
@@ -87,6 +114,18 @@ class FrontController
      */
     protected function initApplication()
     {
+        $this->session->start();
+ 
+        if ($this->session->has('_MVC_USER_ID')) {
+            $this->session->set('_MVC_TIMESTAMP', $this->request->server('REQUEST_TIME'));
+        }
+
+        if ($this->session->has('_MVC_USER_ROLE')) {
+            $this->userRole = $this->session->get('_MVC_USER_ROLE');
+        }
+
+// @todo check session expiration.
+
     }
 
     /**
@@ -101,7 +140,7 @@ class FrontController
      */
     protected function isAllowed()
     {
-        return true;
+        return $this->acl->isAllowed($this->userRole, $this->controllerClass, $this->action);
     }
 
     /**
@@ -110,24 +149,21 @@ class FrontController
      * runs the controller, and renders the view.
      * Passes back a response object with HTTP code, MIME-Header,
      * and page content.
+     * Note: authentication controller will be called regardless of ACL.
      *
-     * @param Request  $request  Request object
-     * @param Response $response Response object
-     * @param Authenticator $authenticator Authenticator object
      * @return void
      */
-    public function execute(Request $request, Response $response, Authenticator $authenticator)
+    public function execute()
     {
-        $this->request = $request;
-        $this->response = $response;
-        $this->authenticator = $authenticator;
-
         $this->initApplication();
 
         $this->controllerClass = $this->router->getControllerClass();
         $this->action = $this->router->getAction();
 
         if (!$this->isAllowed()) {
+
+// @todo remember selected controller & action to back-direct later
+// @todo either redirect to auth controller (for anonymous)
             $this->controllerClass = $this->router->getAuthenticationControllerClass();
             $this->action = $this->router->getAuthenticationAction();
         }
@@ -140,6 +176,8 @@ class FrontController
         $controller = new $class();
 
         $controller->execute($this->request, $this->response, $this->session, $this->authenticator, $this->action);
+
+        $this->view->render($this->request, $this->response);
     }
 }
 ?>

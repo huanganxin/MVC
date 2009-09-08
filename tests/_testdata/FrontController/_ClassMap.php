@@ -44,6 +44,5 @@ $_classMap = array(
     'spriebsch\MVC\Test\FrontController\Router'           => 'Router.php',
     'spriebsch\MVC\Test\FrontController\Action'           => 'Action.php',
     'spriebsch\MVC\Test\FrontController\Authentication'   => 'Authentication.php',
-    'spriebsch\MVC\Test\FrontController\FrontController'  => 'FrontController.php',
 );
 ?>

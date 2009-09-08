@@ -50,12 +50,12 @@ class Router
     /**
      * @var string
      */
-    protected $controllerNamespace = '\spriebsch\MVC';
+    protected $controllerNamespace = '\\spriebsch\\MVC\\Controller';
 
     /**
      * @var string
      */
-    protected $defaultControllerName = 'default';
+    protected $defaultControllerName = 'standard';
 
     /**
      * @var string
@@ -87,9 +87,47 @@ class Router
         $this->request = $request;
     }
 
+    /**
+     * Returns the class name for given controller.
+     *
+     * @param string $controller
+     * @return string
+     */
     protected function getClassname($controller)
     {
         return $this->controllerNamespace . '\\' . ucfirst($controller);
+    }
+
+    /**
+     * Set Controller Namespace.
+     * All controller classes must be in this namespace.
+     *
+     * @param string $namespace
+     * @return void
+     */
+    public function setControllerNamespace($namespace)
+    {
+        $this->controllerNamespace = $namespace;
+    }
+
+    public function setDefaultControllerName($controller)
+    {
+        $this->defaultControllerName = $controller;
+    }
+
+    public function setDefaultAction($action)
+    {
+        $this->defaultAction = $action;
+    }
+
+    public function setAuthenticationControllerName($controller)
+    {
+        $this->authenticationControllerName = $controller;
+    }
+
+    public function setAuthenticationAction($action)
+    {
+        $this->authenticationAction = $action;
     }
 
     /**

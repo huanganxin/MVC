@@ -66,29 +66,6 @@ abstract class Controller
     protected $authenticator;
 
     /**
-     * Initializes the controller
-     *
-     * @return void
-     */
-    protected function init()
-    {
-    }
-
-    /**
-     * Checks whether the action method is allowed.
-     * Usually, this means
-     * Always returns true, subclass can override this method
-     * and implement authentication checks.
-     *
-     * @param string $action Action name (not action method name)
-     * @return bool
-     */
-    protected function isAllowed($action)
-    {
-        return true;
-    }
-
-    /**
      * Returns the action method name do<Action>Action,
      * where first letter of <Action> is capitalized.
      *
@@ -101,7 +78,48 @@ abstract class Controller
     }
 
     /**
+     * Convenience delegate method.
+     *
+     * @param string $name
+     * @return void
+     */
+    protected function setViewName($name)
+    {
+        $this->response->setViewName($name);
+    }
+
+    /**
+     * Initializes the controller
+     *
+     * @return void
+     */
+    protected function init()
+    {
+    }
+
+    /**
+     * Checks whether the action method is allowed.
+     * ACL are already being checked in front controller.
+     * Always returns true, subclass can override this method
+     * and implement authentication checks.
+     *
+     * @param string $action Action name (not action method name)
+     * @return bool
+     */
+    protected function isAllowed($action)
+    {
+        return true;
+    }
+
+    protected function redirect($controller = 'standard', $action = 'default')
+    {
+        $this->response->setRedirect($controller, $action);
+    }
+
+    /**
      * Default action.
+     *
+     * @return mixed
      */
     abstract protected function doDefaultAction();
 

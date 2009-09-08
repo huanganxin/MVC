@@ -105,6 +105,12 @@ class Request
         }
 
         if (substr($method, 0, 3) == 'has') {
+
+            // GET and POST variables are always present, but empty, so we return false on empty value.
+            if (isset($this->data[$variable][$parameters[0]]) && $this->data[$variable][$parameters[0]] == '') {
+                return false;
+            }
+
             return isset($this->data[$variable][$parameters[0]]);
         }
 

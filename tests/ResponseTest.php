@@ -47,13 +47,25 @@ require_once 'PHPUnit/Framework.php';
  */
 class ResponseTest extends \PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        $this->response = new Response();
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::isRedirect
+     */
+    public function testIsRedirectInitiallyReturnsFalse()
+    {
+        $this->assertFalse($this->response->isRedirect());
+    }
+
     /**
      * @covers spriebsch\MVC\Response::getStatus
      */
     public function testHttpStatusIs200()
     {
-        $response = new Response();
-        $this->assertEquals(200, $response->getStatus());
+        $this->assertEquals(200, $this->response->getStatus());
     }
 
     /**
@@ -62,9 +74,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testHttpStatusAccessors()
     {
-        $response = new Response();
-        $response->setStatus(404);
-        $this->assertEquals(404, $response->getStatus());
+        $this->response->setStatus(404);
+        $this->assertEquals(404, $this->response->getStatus());
     }
 
     /**
@@ -72,8 +83,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testCharacterSetIsUTF8()
     {
-        $response = new Response();
-        $this->assertEquals('UTF-8', $response->getCharacterSet());
+        $this->assertEquals('UTF-8', $this->response->getCharacterSet());
     }
 
     /**
@@ -82,9 +92,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testCharacterSetAccessors()
     {
-        $response = new Response();
-        $response->setCharacterSet('iso8859-15');
-        $this->assertEquals('iso8859-15', $response->getCharacterSet());
+        $this->response->setCharacterSet('iso8859-15');
+        $this->assertEquals('iso8859-15', $this->response->getCharacterSet());
     }
 
     /**
@@ -92,8 +101,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testContentTypeIsTextHtml()
     {
-        $response = new Response();
-        $this->assertEquals('text/html', $response->getContentType());
+        $this->assertEquals('text/html', $this->response->getContentType());
     }
 
     /**
@@ -102,9 +110,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testContentTypeAccessors()
     {
-        $response = new Response();
-        $response->setContentType('text/json');
-        $this->assertEquals('text/json', $response->getContentType());
+        $this->response->setContentType('text/json');
+        $this->assertEquals('text/json', $this->response->getContentType());
     }
 
     /**
@@ -112,8 +119,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasDataReturnsFalseForNonExistingKey()
     {
-        $response = new Response();
-        $this->assertFalse($response->hasData('nonexisting'));
+        $this->assertFalse($this->response->hasData('nonexisting'));
     }
 
     /**
@@ -121,9 +127,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasDataReturnsTrueForExistingKey()
     {
-        $response = new Response();
-        $response->setData('key', 'value');
-        $this->assertTrue($response->hasData('key'));
+        $this->response->setData('key', 'value');
+        $this->assertTrue($this->response->hasData('key'));
     }
 
     /**
@@ -131,8 +136,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetDataReturnsEmptyStringForNonExistingKey()
     {
-        $response = new Response();
-        $this->assertEquals('', $response->getData('nonexisting'));
+        $this->assertEquals('', $this->response->getData('nonexisting'));
     }
 
     /**
@@ -141,9 +145,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetDataAccessors()
     {
-        $response = new Response();
-        $response->setData('key', 'value');
-        $this->assertEquals('value', $response->getData('key'));
+        $this->response->setData('key', 'value');
+        $this->assertEquals('value', $this->response->getData('key'));
     }
 
     /**
@@ -152,9 +155,149 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testViewNameAccessors()
     {
-        $response = new Response();
-        $response->setViewName('viewname');
-        $this->assertEquals('viewname', $response->getViewName());
+        $this->response->setViewName('viewname');
+        $this->assertEquals('viewname', $this->response->getViewName());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::setRedirect
+     * @covers spriebsch\MVC\Response::getRedirectController
+     * @covers spriebsch\MVC\Response::getRedirectAction
+     */
+    public function testRedirectAccessors()
+    {
+        $this->response->setRedirect('controller', 'action');
+
+        $this->assertEquals('controller', $this->response->getRedirectController());
+        $this->assertEquals('action', $this->response->getRedirectAction());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::hasErrors
+     */
+    public function testHasErrorsInitiallyReturnsFalse()
+    {
+        $this->assertFalse($this->response->hasErrors());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::getErrors
+     */
+    public function testGetErrorsInitiallyReturnsEmptyArray()
+    {
+        $this->assertEquals(array(), $this->response->getErrors());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::hasFormErrors
+     */
+    public function testHasFormErrorsInitiallyReturnsFalse()
+    {
+        $this->assertFalse($this->response->hasFormErrors('form'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::getFormErrors
+     */
+    public function testGetFormErrorsInitiallyReturnsEmptyArray()
+    {
+        $this->assertEquals(array(), $this->response->getFormErrors('form'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::hasFieldErrors
+     */
+    public function testHasFieldErrorsInitiallyReturnsFalse()
+    {
+        $this->assertFalse($this->response->hasFieldErrors('form', 'field'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::getFieldErrors
+     */
+    public function testGetFieldErrorsInitiallyReturnsEmptyArray()
+    {
+        $this->assertEquals(array(), $this->response->getFieldErrors('form', 'field'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::addError
+     * @covers spriebsch\MVC\Response::getErrors
+     */
+    public function testErrorsAccessors()
+    {
+        $error = new \spriebsch\MVC\Message\Error('message');
+
+        $this->response->addError($error);
+        $this->assertEquals(array($error), $this->response->getErrors());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::addFormError
+     * @covers spriebsch\MVC\Response::getFormErrors
+     */
+    public function testFormErrorsAccessors()
+    {
+        $error = new \spriebsch\MVC\Message\FormError('message', 'form');
+
+        $this->response->addFormError($error);
+        $this->assertEquals(array($error), $this->response->getFormErrors('form'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::addFieldError
+     * @covers spriebsch\MVC\Response::getFieldErrors
+     */
+    public function testFieldErrorsAccessors()
+    {
+        $error = new \spriebsch\MVC\Message\FieldError('message', 'form', 'field');
+
+        $this->response->addFieldError($error);
+        $this->assertEquals(array($error), $this->response->getFieldErrors('form', 'field'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::getCookies
+     */
+    public function testGetCookiesInitiallyReturnsEmptyArray()
+    {
+        $this->assertEquals(array(), $this->response->getCookies());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::setCookie
+     * @covers spriebsch\MVC\Response::getCookies
+     */
+    public function testCookieAccessors()
+    {
+        $this->response->setCookie('name', 'value', 23, '/some/path', 'domain', true, true);
+        $this->assertEquals(array(array('name', 'value', 23, '/some/path', 'domain', true, true)), $this->response->getCookies());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::hasFormValue
+     */
+    public function testHasFormValueIntiallyReturnsFalse()
+    {
+        $this->assertFalse($this->response->hasFormValue('form', 'field'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::getFormValue
+     */
+    public function testGetFormValueReturnsEmptyStringForNonexistingValue()
+    {
+        $this->assertEquals('', $this->response->getFormValue('form', 'field'));
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::setFormValue
+     * @covers spriebsch\MVC\Response::getFormValue
+     */
+    public function testFormValueAccessors()
+    {
+        $this->response->setFormValue('form', 'field', 'value');
+        $this->assertEquals('value', $this->response->getFormvalue('form', 'field'));
     }
 }
 ?>

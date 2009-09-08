@@ -37,33 +37,45 @@
 
 namespace spriebsch\MVC;
 
-// @codeCoverageIgnoreStart
-
 /**
- * @var array
+ * Authenticator that authenticated against a password file.
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ * @todo add pluggable authentication adapter that does the actual work
+ * @todo add authentication by session?
  */
-$_classMap = array(
-    'spriebsch\MVC\FrontController'         => 'FrontController.php',
-    'spriebsch\MVC\Router'                  => 'Router.php',
-    'spriebsch\MVC\Request'                 => 'Request.php',
-    'spriebsch\MVC\Response'                => 'Response.php',
-    'spriebsch\MVC\Session'                 => 'Session.php',
-    'spriebsch\MVC\MockSession'             => 'MockSession.php',
-    'spriebsch\MVC\Controller'              => 'Controller.php',
-    'spriebsch\MVC\Authenticator'           => 'Authenticator.php',
-    'spriebsch\MVC\PasswdFileAuthenticator' => 'PasswdFileAuthenticator.php',
-    'spriebsch\MVC\Renderer'                => 'Renderer.php',
-    'spriebsch\MVC\Message'                 => 'Message.php',
-    'spriebsch\MVC\Message\Error'           => 'Message/Error.php',
-    'spriebsch\MVC\Message\FormError'       => 'Message/FormError.php',
-    'spriebsch\MVC\Message\FieldError'      => 'Message/FieldError.php',
-    'spriebsch\MVC\View'                    => 'View.php',
-    'spriebsch\MVC\ViewHelper'              => 'ViewHelper.php',
-    'spriebsch\MVC\ViewHelper\Ul'           => 'ViewHelper/Ul.php',
-    'spriebsch\MVC\ViewHelper\Menu'         => 'ViewHelper/Menu.php',
-    'spriebsch\MVC\ViewHelper\Url'          => 'ViewHelper/Url.php',
-    'spriebsch\MVC\ViewHelper\FormErrors'   => 'ViewHelper/FormErrors.php',
-    'spriebsch\MVC\Acl'                     => 'Acl.php',
-);
-// @codeCoverageIgnoreEnd
+class PasswdFileAuthenticator extends Authenticator
+{
+    protected $salt = 'sadfoisfroq42hrewfawiuep423rweaifdsjawüeoiare';
+    protected $passwords = array();
+
+    public function __construct($passwordFile)
+    {
+        if (!file_exists($passwordFile)) {
+            throw new Exception('Password file ' . $passwordFile . ' not found');
+        }
+
+        $this->passwords = unserialize(file_get_contents($passwordFile));
+
+        if ($this->passwords === false) {
+            throw new Exception('Illegal Password file ' . $passwordFile);
+        }
+    }
+
+    protected function hashPassword($password)
+    {
+        return sha1($this->salt . $password);
+    }
+    
+    protected function doAuthenticate()
+    {
+        if (!isset($this->passwords[$this->username])) {
+            $this->authenticated = false;
+            return;
+        }
+
+        $this->authenticated = ($this->passwords[$this->username] == $this->hashPassword($this->password));
+    }
+}
 ?>

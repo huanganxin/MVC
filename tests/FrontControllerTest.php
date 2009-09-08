@@ -37,7 +37,6 @@
 
 namespace spriebsch\MVC;
 
-use spriebsch\MVC\Test\FrontController\FrontController as TestFrontController;
 use spriebsch\MVC\Test\FrontController\Router as TestRouter;
 
 require_once 'PHPUnit/Framework.php';
@@ -57,31 +56,38 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
     {
         $this->request       = new Request(array('mvc_controller' => 'nonexisting'));
         $this->router        = new Router($this->request);
+        $this->acl           = new Acl();
 
-        $this->response      = $this->getMock('spriebsch\MVC\Response', array(), array(), '', false, false);
-        $this->session       = $this->getMock('spriebsch\MVC\Session', array(), array(), '', false, false);
+        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
+        $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
         $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
+        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
 
-        $fc = new FrontController($this->router, $this->session);
-        $fc->execute($this->request, $this->response, $this->authenticator);
+        $fc = new FrontController($this->request, $this->response, $this->session, $this->view, $this->router, $this->authenticator, $this->acl);
+        $fc->execute();
     }
 
     /**
-     * Dispatch to an existing controller using a front controller subclass
-     * that always denies all controllers. Thus the request must be dispatched
+     * Configure ACL to deny everything, thus the request must be dispatched
      * to the authentication controller.
+     *
+     * @todo this test has no assertion
      */
     public function testSelectsAuthenticationControllerWhenNotAllowed()
     {
         $this->request       = new Request(array('mvc_controller' => 'action'));
         $this->router        = new TestRouter($this->request);
 
-        $this->response      = $this->getMock('spriebsch\MVC\Response', array(), array(), '', false, false);
-        $this->session       = $this->getMock('spriebsch\MVC\Session', array(), array(), '', false, false);
-        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
+        $this->acl = new Acl();
+        $this->acl->setPolicy(Acl::DENY);
 
-        $fc = new TestFrontController($this->router, $this->session);
-        $fc->execute($this->request, $this->response, $this->authenticator);
+        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
+        $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
+        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
+        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
+
+        $fc = new FrontController($this->request, $this->response, $this->session, $this->view, $this->router, $this->authenticator, $this->acl);
+        $fc->execute();
     }
 
     /**
@@ -98,13 +104,15 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
     {
         $this->request       = new Request(array('mvc_controller' => 'action'));
         $this->router        = new TestRouter($this->request);
+        $this->acl           = new Acl();
 
-        $this->response      = $this->getMock('spriebsch\MVC\Response', array(), array(), '', false, false);
-        $this->session       = $this->getMock('spriebsch\MVC\Session', array(), array(), '', false, false);
+        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
+        $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
         $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
+        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
 
-        $fc = new FrontController($this->router, $this->session);
-        $fc->execute($this->request, $this->response, $this->authenticator);
+        $fc = new FrontController($this->request, $this->response, $this->session, $this->view, $this->router, $this->authenticator, $this->acl);
+        $fc->execute();
     }
 }
 ?>

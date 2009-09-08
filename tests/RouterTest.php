@@ -51,28 +51,28 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     {
         $request = new Request();
         $router = new Router($request);
-        $this->assertEquals('\spriebsch\MVC\Default', $router->getControllerClass());
+        $this->assertEquals('\spriebsch\MVC\Controller\Standard', $router->getControllerClass());
     }
 
     public function testRouterSelectsControllerFromGetRequest()
     {
         $request = new Request(array('mvc_controller' => 'something'));
         $router = new Router($request);
-        $this->assertEquals('\spriebsch\MVC\Something', $router->getControllerClass());
+        $this->assertEquals('\spriebsch\MVC\Controller\Something', $router->getControllerClass());
     }
 
     public function testRouterSelectsControllerFromPostRequest()
     {
         $request = new Request(array(), array('mvc_controller' => 'something'));
         $router = new Router($request);
-        $this->assertEquals('\spriebsch\MVC\Something', $router->getControllerClass());
+        $this->assertEquals('\spriebsch\MVC\Controller\Something', $router->getControllerClass());
     }
 
     public function testControllerSelectedByPostOverridesGet()
     {
         $request = new Request(array('mvc_controller' => 'wrong'), array('mvc_controller' => 'something'));
         $router = new Router($request);
-        $this->assertEquals('\spriebsch\MVC\Something', $router->getControllerClass());
+        $this->assertEquals('\spriebsch\MVC\Controller\Something', $router->getControllerClass());
     }
 
     public function testRoutesToDefaultAction()
@@ -106,7 +106,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     public function testGetAuthenticationControllerClass()
     {
         $router = new Router(new Request());
-        $this->assertEquals('\spriebsch\MVC\Authentication', $router->getAuthenticationControllerClass());
+        $this->assertEquals('\spriebsch\MVC\Controller\Authentication', $router->getAuthenticationControllerClass());
     }
 
     public function testGetAuthenticationActionClass()

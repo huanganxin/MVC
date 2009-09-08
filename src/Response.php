@@ -64,13 +64,40 @@ class Response
     /**
      * @var string
      */
-    protected $viewName;
+    protected $viewName = 'default';
 
     /**
      * @var array
      */
     protected $data = array();
 
+    /**
+     * @var array
+     */
+    protected $errors = array();
+
+    /**
+     * @var array
+     */
+    protected $formErrors = array();
+
+    /**
+     * @var array
+     */
+    protected $fieldErrors = array();
+
+    protected $redirectController;
+    protected $redirectAction;
+
+    /**
+     * @var array
+     */
+    protected $formValues = array();
+
+    /**
+     * @var array
+     */
+    protected $cookies = array();
 
     /**
      * Sets the HTTP status.
@@ -192,6 +219,106 @@ class Response
         }
 
         return $this->data[$key];
+    }
+
+    public function setRedirect($controller, $action)
+    {
+        $this->redirectController = $controller;
+        $this->redirectAction = $action;
+    }
+
+    public function isRedirect()
+    {
+        return !is_null($this->redirectController) || !is_null($this->redirectAction);
+    }
+
+    public function getRedirectController()
+    {
+        return $this->redirectController;
+    }
+
+    public function getRedirectAction()
+    {
+        return $this->redirectAction;
+    }
+
+    public function addError(\spriebsch\MVC\Message\Error $error)
+    {
+        $this->errors[] = $error;
+    }
+
+    public function hasErrors()
+    {
+        return sizeof($this->errors) > 0;
+    }
+
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    public function addFormError(\spriebsch\MVC\Message\FormError $error)
+    {
+        $this->formErrors[$error->getFormName()][] = $error;
+    }
+
+    public function hasFormErrors($formName)
+    {
+        return isset($this->formErrors[$formName]) && (sizeof($this->formErrors[$formName]) > 0);
+    }
+
+    public function getFormErrors($formName)
+    {
+        if (!isset($this->formErrors[$formName])) {
+            return array();
+        }
+
+        return $this->formErrors[$formName];
+    }
+
+    public function addFieldError(\spriebsch\MVC\Message\FieldError $error)
+    {
+        $this->fieldErrors[$error->getFormName()][$error->getFieldName()][] = $error;
+    }
+
+    public function hasFieldErrors($formName, $fieldName)
+    {
+        return isset($this->fieldErrors[$formName]) && isset($this->fieldErrors[$formName][$fieldName]) && (sizeof($this->fieldErrors[$formName][$fieldName]) > 0);
+    }
+
+    public function getFieldErrors($formName, $fieldName)
+    {
+        if (!isset($this->fieldErrors[$formName]) || !isset($this->fieldErrors[$formName][$fieldName])) {
+            return array();
+        }
+
+        return $this->fieldErrors[$formName][$fieldName];
+    }
+
+    public function setFormValue($formName, $fieldName, $value) {
+        $this->formValues[$formName][$fieldName] = $value;
+    }
+
+    public function hasFormValue($formName, $fieldName) {
+        return isset($this->formValues[$formName]) && isset($this->formValues[$formName][$fieldName]);
+    }
+
+    public function getFormValue($formName, $fieldName) {
+        if (!isset($this->formValues[$formName]) || !isset($this->formValues[$formName][$fieldName])) {
+            return '';
+        }
+
+        return $this->formValues[$formName][$fieldName];
+    }
+
+    public function setCookie($name, $value = '', $expire = 0, $path = '/', $domain = '', $secure = false, $httpOnly = false)
+    {
+        $this->cookies[] = array($name, $value, $expire, $path, $domain, $secure, $httpOnly);
+    }
+
+    public function getCookies()
+    {
+        return $this->cookies;
     }
 }
 ?>

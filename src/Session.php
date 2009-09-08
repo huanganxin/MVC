@@ -49,7 +49,7 @@ class Session
     /**
      * @var string
      */
-    protected $name = 'spriebsch\MVC\Session';
+    protected $name = 'MVC';
 
     /**
      * @var bool
@@ -127,6 +127,10 @@ class Session
      */
     public function start()
     {
+        if ($this->started) {
+            throw new Exception('Session has already been started');
+        }
+
         $this->started = true;
 
         session_name($this->name);
@@ -176,6 +180,13 @@ class Session
         $this->checkIfStarted();
 
         session_regenerate_id(true);
+    }
+
+    public function destroy()
+    {
+        $this->checkIfStarted();
+
+        session_destroy();
     }
 }
 ?>

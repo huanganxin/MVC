@@ -60,7 +60,7 @@ class Authenticator
     /**
      * @var bool
      */
-    protected $isAuthenticated = false;
+    protected $authenticated = false;
 
     /**
      * Asks the authentication adapter to do the work.
@@ -68,7 +68,7 @@ class Authenticator
      */
     protected function doAuthenticate()
     {
-        $this->isAuthenticated = true;
+        $this->authenticated = true;
     }
 
     /**
@@ -91,7 +91,7 @@ class Authenticator
      */
     public function isAuthenticated()
     {
-        return $this->isAuthenticated;
+        return $this->authenticated;
     }
 }
 ?>

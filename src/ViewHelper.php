@@ -37,33 +37,58 @@
 
 namespace spriebsch\MVC;
 
-// @codeCoverageIgnoreStart
+abstract class ViewHelper
+{
+    /**
+     * @var Request
+     */
+    protected $request;
 
-/**
- * @var array
- */
-$_classMap = array(
-    'spriebsch\MVC\FrontController'         => 'FrontController.php',
-    'spriebsch\MVC\Router'                  => 'Router.php',
-    'spriebsch\MVC\Request'                 => 'Request.php',
-    'spriebsch\MVC\Response'                => 'Response.php',
-    'spriebsch\MVC\Session'                 => 'Session.php',
-    'spriebsch\MVC\MockSession'             => 'MockSession.php',
-    'spriebsch\MVC\Controller'              => 'Controller.php',
-    'spriebsch\MVC\Authenticator'           => 'Authenticator.php',
-    'spriebsch\MVC\PasswdFileAuthenticator' => 'PasswdFileAuthenticator.php',
-    'spriebsch\MVC\Renderer'                => 'Renderer.php',
-    'spriebsch\MVC\Message'                 => 'Message.php',
-    'spriebsch\MVC\Message\Error'           => 'Message/Error.php',
-    'spriebsch\MVC\Message\FormError'       => 'Message/FormError.php',
-    'spriebsch\MVC\Message\FieldError'      => 'Message/FieldError.php',
-    'spriebsch\MVC\View'                    => 'View.php',
-    'spriebsch\MVC\ViewHelper'              => 'ViewHelper.php',
-    'spriebsch\MVC\ViewHelper\Ul'           => 'ViewHelper/Ul.php',
-    'spriebsch\MVC\ViewHelper\Menu'         => 'ViewHelper/Menu.php',
-    'spriebsch\MVC\ViewHelper\Url'          => 'ViewHelper/Url.php',
-    'spriebsch\MVC\ViewHelper\FormErrors'   => 'ViewHelper/FormErrors.php',
-    'spriebsch\MVC\Acl'                     => 'Acl.php',
-);
-// @codeCoverageIgnoreEnd
+    /**
+     * @var Response
+     */
+    protected $response;
+
+    /**
+     * @var array
+     */
+    protected $parameters;
+
+    /**
+     * @var int
+     */
+    protected $numberOfRequiredParameters = 1;
+
+    public function __construct(Request $request, Response $response)
+    {
+        $this->request = $request;
+        $this->response = $response;
+    }
+
+    /**
+     * Transforms $data, usually to an HTML string.
+     *
+     * @param mixed $data
+     */
+    abstract protected function doExecute($parameters);
+
+    /**
+     * Execute the view helper.
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param array $parameters
+     * @return string
+     */
+    public function execute(array $parameters)
+    {
+        $this->parameters = $parameters;
+
+        if (sizeof($this->parameters) < $this->numberOfRequiredParameters) {
+            throw new \spriebsch\MVC\Exception('View helper requires ' . $this->numberOfRequiredParameters . ' parameters, ' . sizeof($this->parameters) . ' given');
+        }
+
+        return $this->doExecute($parameters);
+    }
+}
 ?>
