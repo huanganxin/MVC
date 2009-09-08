@@ -4,11 +4,11 @@ namespace spriebsch\MVC\Test;
 
 class TwoActionsController extends \spriebsch\MVC\Controller
 {
-    protected function doDefaultAction()
+    protected function first()
     {
     }
 
-    protected function doSomeAction()
+    protected function second()
     {
         throw new SomeActionExecutedException();
     }

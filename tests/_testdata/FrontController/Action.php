@@ -4,7 +4,7 @@ namespace spriebsch\MVC\Test\FrontController;
 
 class Action extends \spriebsch\MVC\Controller
 {
-    protected function doDefaultAction()
+    protected function method()
     {
         throw new DefaultActionExecutedException();
     }

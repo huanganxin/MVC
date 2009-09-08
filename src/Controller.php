@@ -66,18 +66,6 @@ abstract class Controller
     protected $authenticator;
 
     /**
-     * Returns the action method name do<Action>Action,
-     * where first letter of <Action> is capitalized.
-     *
-     * @param string $action
-     * @return string
-     */
-    protected function getActionMethodName($action)
-    {
-        return 'do' . ucfirst($action) . 'Action';
-    }
-
-    /**
      * Convenience delegate method.
      *
      * @param string $name
@@ -106,7 +94,7 @@ abstract class Controller
      * @param string $action Action name (not action method name)
      * @return bool
      */
-    protected function isAllowed($action)
+    protected function isAllowed($method)
     {
         return true;
     }
@@ -115,13 +103,6 @@ abstract class Controller
     {
         $this->response->setRedirect($controller, $action);
     }
-
-    /**
-     * Default action.
-     *
-     * @return mixed
-     */
-    abstract protected function doDefaultAction();
 
     /**
      * Executes the requested action method.
@@ -133,7 +114,7 @@ abstract class Controller
      * @return mixed
      * @throws spriebsch\MVC\ControllerException when requested action does not exist
      */
-    public function execute(Request $request, Response $response, Session $session, Authenticator $authenticator, $action = 'default')
+    public function execute(Request $request, Response $response, Session $session, Authenticator $authenticator, $method)
     {
         $this->request       = $request;
         $this->response      = $response;
@@ -142,13 +123,11 @@ abstract class Controller
 
         $this->init();
 
-        $method = $this->getActionMethodName($action);
-
         if (!method_exists($this, $method)) {
             throw new ControllerException(get_class($this) . ': Action method ' . $method . ' does not exist');
         }
 
-        if ($this->isAllowed($action)) {
+        if ($this->isAllowed($method)) {
             return $this->$method();
         }
     }

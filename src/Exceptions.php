@@ -47,6 +47,8 @@ class InvalidClassMapException extends Exception {}
 
 class UnknownVariableException extends Exception {}
 
+class RouterException extends Exception {}
+
 class ControllerException extends Exception {}
 
 class FrontControllerException extends Exception {}

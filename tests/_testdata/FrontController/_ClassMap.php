@@ -41,7 +41,6 @@ namespace spriebsch\MVC;
  * @var array
  */
 $_classMap = array(
-    'spriebsch\MVC\Test\FrontController\Router'           => 'Router.php',
     'spriebsch\MVC\Test\FrontController\Action'           => 'Action.php',
     'spriebsch\MVC\Test\FrontController\Authentication'   => 'Authentication.php',
 );

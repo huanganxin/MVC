@@ -73,7 +73,7 @@ class Request
     * @param array $server $_SERVER array
     * @param array $env    $_ENV array
     */
-    public function __construct($get = array(), $post = array(), $cookie = array(), $files = array(), $server = array(), $env = array())
+    public function __construct(array $get = array(), array $post = array(), array $cookie = array(), array $files = array(), array $server = array(), array $env = array())
     {
         $this->data['get']    = $get;
         $this->data['post']   = $post;

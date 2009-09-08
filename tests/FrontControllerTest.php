@@ -37,8 +37,6 @@
 
 namespace spriebsch\MVC;
 
-use spriebsch\MVC\Test\FrontController\Router as TestRouter;
-
 require_once 'PHPUnit/Framework.php';
 
 /**
@@ -50,12 +48,12 @@ require_once 'PHPUnit/Framework.php';
 class FrontControllerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException spriebsch\MVC\FrontControllerException
+     * @expectedException spriebsch\MVC\Exception
      */
     public function testThrowsExceptionWhenSelectedControllerDoesNotExist()
     {
         $this->request       = new Request(array('mvc_controller' => 'nonexisting'));
-        $this->router        = new Router($this->request);
+        $this->router        = new Router();
         $this->acl           = new Acl();
 
         $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
@@ -71,12 +69,15 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
      * Configure ACL to deny everything, thus the request must be dispatched
      * to the authentication controller.
      *
-     * @todo this test has no assertion
+     * @expectedException spriebsch\MVC\Test\FrontController\AuthenticationExecutedException
      */
     public function testSelectsAuthenticationControllerWhenNotAllowed()
     {
-        $this->request       = new Request(array('mvc_controller' => 'action'));
-        $this->router        = new TestRouter($this->request);
+        $this->router        = new Router();
+        $this->router->registerController('main.index', 'spriebsch\\MVC\\Test\\FrontController\\Action', 'method');
+        $this->router->registerController('authentication.login', 'spriebsch\\MVC\\Test\\FrontController\\Authentication', 'method');
+
+        $this->request       = new Request(array('mvc_controller' => 'main.index'));
 
         $this->acl = new Acl();
         $this->acl->setPolicy(Acl::DENY);
@@ -102,8 +103,11 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCallsExecuteMethodInController()
     {
-        $this->request       = new Request(array('mvc_controller' => 'action'));
-        $this->router        = new TestRouter($this->request);
+        $this->router        = new Router();
+        $this->router->registerController('main.index', 'spriebsch\\MVC\\Test\\FrontController\\Action', 'method');
+        $this->router->registerController('authentication.login', 'spriebsch\\MVC\\Test\\FrontController\\Authentication', 'method');
+
+        $this->request       = new Request(array('mvc_controller' => 'main.index'));
         $this->acl           = new Acl();
 
         $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);

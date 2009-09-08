@@ -49,12 +49,17 @@ class FrontController
     /**
      * @var string
      */
+    protected $controller;
+
+    /**
+     * @var string
+     */
     protected $controllerClass;
 
     /**
      * @var string
      */
-    protected $action;
+    protected $controllerMethod;
 
     /**
      * @var Router
@@ -81,6 +86,9 @@ class FrontController
      */
     protected $view;
 
+    /**
+     * @var string
+     */
     protected $userRole = 'anonymous';
 
     /**
@@ -137,10 +145,11 @@ class FrontController
      * @param string $controller
      * @param string $action
      * @return bool
+     * @todo fix ACL to not include separate action
      */
     protected function isAllowed()
     {
-        return $this->acl->isAllowed($this->userRole, $this->controllerClass, $this->action);
+        return $this->acl->isAllowed($this->userRole, $this->controller);
     }
 
     /**
@@ -157,16 +166,18 @@ class FrontController
     {
         $this->initApplication();
 
-        $this->controllerClass = $this->router->getControllerClass();
-        $this->action = $this->router->getAction();
+        $this->router->route($this->request);
+        $this->controller = $this->router->getController();
 
         if (!$this->isAllowed()) {
 
 // @todo remember selected controller & action to back-direct later
-// @todo either redirect to auth controller (for anonymous)
-            $this->controllerClass = $this->router->getAuthenticationControllerClass();
-            $this->action = $this->router->getAuthenticationAction();
+// @todo either redirect to auth controller (for anonymous) OR FAIL?
+            $this->controller = $this->router->getAuthenticationController();
         }
+
+        $this->controllerClass  = $this->router->getClassName($this->controller);
+        $this->controllerMethod = $this->router->getMethodName($this->controller);
 
         if (!class_exists($this->controllerClass)) {
             throw new FrontControllerException('Controller class ' . $this->controllerClass . ' does not exist');
@@ -175,7 +186,7 @@ class FrontController
         $class = $this->controllerClass;
         $controller = new $class();
 
-        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, $this->action);
+        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, $this->controllerMethod);
 
         $this->view->render($this->request, $this->response);
     }

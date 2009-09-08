@@ -71,21 +71,14 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException spriebsch\MVC\Test\DefaultActionExecutedException
-     */
-    public function testExecuteCallsDefaultActionWhenNoActionGiven()
-    {
-        $controller = new Test\DefaultActionController();
-        $controller->execute($this->request, $this->response, $this->session, $this->authenticator);
-    }
-
-    /**
+     * Make sure that the requested controller method is called.
+     *
      * @expectedException spriebsch\MVC\Test\SomeActionExecutedException
      */
     public function testExecuteCallsGivenAction()
     {
         $controller = new Test\TwoActionsController();
-        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'some');
+        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'second');
     }
 }
 ?>

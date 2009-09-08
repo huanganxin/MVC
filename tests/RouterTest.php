@@ -47,72 +47,110 @@ require_once 'PHPUnit/Framework.php';
  */
 class RouterTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers spriebsch\MVC\Router::getController
+     * @expectedException spriebsch\MVC\Exception
+     */
+    public function testThrowsExceptionWhenGettingControllerBeforeRouting()
+    {
+        $router  = new Router();
+        $request = new Request();
+
+        $this->assertEquals('main.index', $router->getController());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Router::route
+     * @covers spriebsch\MVC\Router::getController
+     */
     public function testRoutesToDefaultController()
     {
+        $router  = new Router();
         $request = new Request();
-        $router = new Router($request);
-        $this->assertEquals('\spriebsch\MVC\Controller\Standard', $router->getControllerClass());
+
+        $router->route($request);
+
+        $this->assertEquals('main.index', $router->getController());
     }
 
-    public function testRouterSelectsControllerFromGetRequest()
+    /**
+     * @covers spriebsch\MVC\Router::registerController
+     * @covers spriebsch\MVC\Router::getClassName
+     * @covers spriebsch\MVC\Router::getMethodName
+     */
+    public function testTranslatesControllerToClassAndMethodName()
     {
-        $request = new Request(array('mvc_controller' => 'something'));
-        $router = new Router($request);
-        $this->assertEquals('\spriebsch\MVC\Controller\Something', $router->getControllerClass());
+        $router  = new Router();
+        $router->registerController('main.index', 'controller', 'method');
+
+        $this->assertEquals('controller', $router->getClassName('main.index'));
+        $this->assertEquals('method', $router->getMethodName('main.index'));
     }
 
-    public function testRouterSelectsControllerFromPostRequest()
+    /**
+     * @covers spriebsch\MVC\Router::setDefaultController
+     * @covers spriebsch\MVC\Router::getDefaultController
+     */
+    public function testControllerAccessors()
     {
-        $request = new Request(array(), array('mvc_controller' => 'something'));
-        $router = new Router($request);
-        $this->assertEquals('\spriebsch\MVC\Controller\Something', $router->getControllerClass());
+        $router  = new Router();
+        $router->setDefaultController('default');
+
+        $this->assertEquals('default', $router->getDefaultController());
     }
 
-    public function testControllerSelectedByPostOverridesGet()
+    /**
+     * @covers spriebsch\MVC\Router::setAuthenticationController
+     * @covers spriebsch\MVC\Router::getAuthenticationController
+     */
+    public function testAuthenticationControllerAccessors()
     {
-        $request = new Request(array('mvc_controller' => 'wrong'), array('mvc_controller' => 'something'));
-        $router = new Router($request);
-        $this->assertEquals('\spriebsch\MVC\Controller\Something', $router->getControllerClass());
+        $router  = new Router();
+        $router->setAuthenticationController('default');
+
+        $this->assertEquals('default', $router->getAuthenticationController());
     }
 
-    public function testRoutesToDefaultAction()
+    /**
+     * @covers spriebsch\MVC\Router::route
+     * @covers spriebsch\MVC\Router::getController
+     */
+    public function testSelectsControllerFromGetVariables()
     {
-        $request = new Request();
-        $router = new Router($request);
-        $this->assertEquals('default', $router->getAction());
+        $router  = new Router();
+        $request = new Request(array('mvc_controller' => 'controller'));
+
+        $router->route($request);
+
+        $this->assertEquals('controller', $router->getController());
     }
 
-    public function testRouterSelectsActionFromGetRequest()
+    /**
+     * @covers spriebsch\MVC\Router::route
+     * @covers spriebsch\MVC\Router::getController
+     */
+    public function testSelectsControllerFromPostVariables()
     {
-        $request = new Request(array('mvc_action' => 'something'));
-        $router = new Router($request);
-        $this->assertEquals('something', $router->getAction());
+        $router  = new Router();
+        $request = new Request(array(), array('mvc_controller' => 'controller'));
+
+        $router->route($request);
+
+        $this->assertEquals('controller', $router->getController());
     }
 
-    public function testRouterSelectsActionFromPostRequest()
+    /**
+     * @covers spriebsch\MVC\Router::route
+     * @covers spriebsch\MVC\Router::getController
+     */
+    public function testPostOverridesGet()
     {
-        $request = new Request(array(), array('mvc_action' => 'something'));
-        $router = new Router($request);
-        $this->assertEquals('something', $router->getAction());
-    }
+        $router  = new Router();
+        $request = new Request(array('mvc_controller' => 'nonsense'), array('mvc_controller' => 'controller'));
 
-    public function testActionSelectedByPostOverridesGet()
-    {
-        $request = new Request(array('mvc_action' => 'wrong'), array('mvc_action' => 'something'));
-        $router = new Router($request);
-        $this->assertEquals('something', $router->getAction());
-    }
+        $router->route($request);
 
-    public function testGetAuthenticationControllerClass()
-    {
-        $router = new Router(new Request());
-        $this->assertEquals('\spriebsch\MVC\Controller\Authentication', $router->getAuthenticationControllerClass());
-    }
-
-    public function testGetAuthenticationActionClass()
-    {
-        $router = new Router(new Request());
-        $this->assertEquals('default', $router->getAuthenticationAction());
+        $this->assertEquals('controller', $router->getController());
     }
 }
 ?>

@@ -50,147 +50,168 @@ class Router
     /**
      * @var string
      */
-    protected $controllerNamespace = '\\spriebsch\\MVC\\Controller';
+    protected $defaultController = 'main.index';
 
     /**
      * @var string
      */
-    protected $defaultControllerName = 'standard';
+    protected $authenticationController = 'authentication.login';
 
     /**
      * @var string
      */
-    protected $defaultAction = 'default';
+    protected $controller;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $authenticationControllerName = 'authentication';
-
-    /**
-     * @var string
-     */
-    protected $authenticationAction = 'default';
-
-    /**
-     * @var Request
-     */
-    protected $request;
+    protected $map = array();
 
     /**
      * Construct the Router.
      *
-     * @param Request $request Request object
+     * @param array $map Controller/Action map
      */
-    public function __construct(Request $request)
+    public function __construct(array $map = array())
     {
-        $this->request = $request;
+        $this->map = $map;
     }
 
     /**
-     * Returns the class name for given controller.
+     * Helper method for getClass() and getMethod() that
+     * either returns the class or the method name.
      *
      * @param string $controller
+     * @param bool $classFlag
      * @return string
      */
-    protected function getClassname($controller)
+    protected function doGet($controller, $classFlag)
     {
-        return $this->controllerNamespace . '\\' . ucfirst($controller);
+        if (!isset($this->map[$controller])) {
+            throw new Exception('Controller ' . $controller . ' is not registered');
+        }
+
+        list($class, $method) = $this->map[$controller];
+
+        if ($classFlag) {
+            return $class;
+        } else {
+            return $method;
+        }
     }
 
     /**
-     * Set Controller Namespace.
-     * All controller classes must be in this namespace.
+     * Sets the default controller.
+     * The default controller is called when no controller is selected.
      *
-     * @param string $namespace
+     * @param string $controller
      * @return void
      */
-    public function setControllerNamespace($namespace)
+    public function setDefaultController($controller)
     {
-        $this->controllerNamespace = $namespace;
-    }
-
-    public function setDefaultControllerName($controller)
-    {
-        $this->defaultControllerName = $controller;
-    }
-
-    public function setDefaultAction($action)
-    {
-        $this->defaultAction = $action;
-    }
-
-    public function setAuthenticationControllerName($controller)
-    {
-        $this->authenticationControllerName = $controller;
-    }
-
-    public function setAuthenticationAction($action)
-    {
-        $this->authenticationAction = $action;
+        $this->defaultController = $controller;
     }
 
     /**
-     * Returns the name of the authentication controller.
+     * Returns the default controller.
      *
-     * @return string
+     * @return string Default controller name
      */
-    public function getAuthenticationControllerClass()
+    public function getDefaultController()
     {
-        return $this->getClassname($this->authenticationControllerName);
+        return $this->defaultController;
     }
 
     /**
-     * Returns the action name of the authentication controller action.
+     * Sets the authentication controller that is called
+     * when the selected controller is not allowed.
      *
-     * @return string
+     * @param string $controller
+     * @return void
      */
-    public function getAuthenticationAction()
+    public function setAuthenticationController($controller)
     {
-        return $this->authenticationAction;
+        $this->authenticationController = $controller;
     }
 
     /**
-     * Get controller class.
-     * The default router uses the mvc_controller URL parameter
-     * and falls back to 'Default' if it not present.
+     * Returns the authentication controller.
      *
-     * @return string
+     * @return string Authentication controller name
      */
-    public function getControllerClass()
+    public function getAuthenticationController()
     {
-        $controller = $this->defaultControllerName;
-
-        if ($this->request->hasGet('mvc_controller')) {
-            $controller = $this->request->get('mvc_controller');
-        }
-
-        if ($this->request->hasPost('mvc_controller')) {
-            $controller = $this->request->post('mvc_controller');
-        }
-
-        return $this->getClassname($controller);
+        return $this->authenticationController;
     }
 
     /**
-     * Get action. The default router uses the eno_action URL parameter
-     * and falls back to 'Default' if it not present.
+     * Add a mapping of a controller name to the class/method to call.
      *
+     * @param string $controller Controller name
+     * @param string $class      Controller class
+     * @param string $method     Controller method
+     * @return void
+     */
+    public function registerController($controller, $class, $method)
+    {
+        $this->map[$controller] = array($class, $method);
+    }
+
+    /**
      * @return string
      */
-    public function getAction()
+    public function getController()
     {
-        $action = $this->defaultAction;
-
-        if ($this->request->hasGet('mvc_action')) {
-            $action = $this->request->get('mvc_action');
+        if (is_null($this->controller)) {
+            throw new Exception('Route has not been calculated yet. Call route() first.');
         }
 
-        if ($this->request->hasPost('mvc_action')) {
-            $action = $this->request->post('mvc_action');
+        return $this->controller;
+    }
+
+    /**
+     * Returns the class name for given controller name.
+     * Must not be called before route() has been called.
+     *
+     * @param string $controller Controller name
+     * @return string
+     */
+    public function getClassName($controller)
+    {
+        return $this->doGet($controller, true);
+    }
+
+    /**
+     * Returns the class name for given controller name.
+     * Must not be called before route() has been called.
+     *
+     * @param string $controller Controller name
+     * @return string
+     */
+    public function getMethodName($controller)
+    {
+        return $this->doGet($controller, false);
+    }
+
+    /**
+     * Returns controller name read from mvc_controller URL parameter
+     * (POST has precedence over GET). If mvc_controller is not given,
+     * falls back to default controller.
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function route($request)
+    {
+        $this->controller = $this->getDefaultController();
+
+        if ($request->hasGet('mvc_controller')) {
+            $this->controller = $request->get('mvc_controller');
         }
 
-        return $action;
+        if ($request->hasPost('mvc_controller')) {
+            $this->controller = $request->post('mvc_controller');
+        }
     }
 }
 ?>
