@@ -77,6 +77,16 @@ abstract class Controller
     }
 
     /**
+     * Convenience delegating method.
+     *
+     * @param string $controller
+     */
+    protected function redirect($controller = 'standard')
+    {
+        $this->response->setRedirect($controller);
+    }
+
+    /**
      * Initializes the controller
      *
      * @return void
@@ -99,11 +109,6 @@ abstract class Controller
         return true;
     }
 
-    protected function redirect($controller = 'standard', $action = 'default')
-    {
-        $this->response->setRedirect($controller, $action);
-    }
-
     /**
      * Executes the requested action method.
      *
@@ -124,7 +129,7 @@ abstract class Controller
         $this->init();
 
         if (!method_exists($this, $method)) {
-            throw new ControllerException(get_class($this) . ': Action method ' . $method . ' does not exist');
+            throw new ControllerException(get_class($this) . ': Method ' . $method . ' does not exist');
         }
 
         if ($this->isAllowed($method)) {
