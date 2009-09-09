@@ -316,6 +316,11 @@ class Response
         $this->cookies[] = array($name, $value, $expire, $path, $domain, $secure, $httpOnly);
     }
 
+    public function hasCookies()
+    {
+        return sizeof($this->cookies) > 0;
+    }
+
     public function getCookies()
     {
         return $this->cookies;
