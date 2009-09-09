@@ -60,6 +60,10 @@ class View
 
     protected function setCookies()
     {
+        if (!$this->response->hasCookies()) {
+            return;
+        }
+
         foreach ($this->response->getCookies() as $cookie) {
             list($name, $value, $expire, $path, $domain, $secure, $httpOnly) = $cookie;
             setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
@@ -71,11 +75,6 @@ class View
         header('Status: ' . $this->response->getStatus());
         // header('Content-Type: ' . $this->response->getContentType());
 // @todo set content type and encoding header
-    }
-
-    protected function getName()
-    {
-        return $this->viewName;
     }
 
     /**
@@ -98,9 +97,28 @@ class View
      */
     protected function getFilename()
     {
-        return $this->directory . '/' . ucfirst($this->viewName) . '.php';
+        return $this->directory . '/' . $this->viewName . '.php';
     }
 
+    /**
+     * Calculates the head filename for a view script.
+     *
+     * @return string
+     */
+    protected function getHeadFilename()
+    {
+        return $this->directory . '/' . $this->head;
+    }
+
+    /**
+     * Calculates the foot filename for a view script.
+     *
+     * @return string
+     */
+    protected function getFootFilename()
+    {
+        return $this->directory . '/' . $this->foot;
+    }
 
     /**
      * Apply view helpers to replace __viewhelper.name.parameters__ tags.
@@ -168,26 +186,28 @@ class View
     /**
      * Render the view by including the view script.
      *
+     * @param string $viewName
      * @param Request $request
      * @param Response $response
      * @return string
      */
-    public function render(Request $request, Response $response)
+    public function render($viewName, Request $request, Response $response)
     {
+        $this->viewName = $viewName;
+
         $this->request  = $request;
         $this->response = $response;
-        $this->viewName = $response->getviewName();
 
         if ($this->response->isRedirect()) {
 // @todo: use view helper to generate url
-            header('Location: index.php?mvc_controller=' . $this->response->getRedirectController() . '&mvc_action=' . $this->response->getRedirectAction());
+            header('Location: index.php?mvc_controller=' . $this->response->getRedirectController());
             return;
 // @todo when no controller, but only action set, what happens?
         }
 
-        $head = $this->directory . '/' . $this->head;
+        $head = $this->getHeadFilename();
         $body = $this->getFilename();
-        $foot = $this->directory . '/' . $this->foot;
+        $foot = $this->getFootFilename();
 
         if (!file_exists($head)) {
             throw new Exception('View head in file ' . $head . ' not found');
@@ -210,7 +230,7 @@ class View
         require $foot;
         $body = ob_get_clean();
 
-        print $this->postProcess($body);
+        return $this->postProcess($body);
     }
 }
 ?>
