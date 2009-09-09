@@ -51,6 +51,14 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
+        if (headers_sent()) {
+            $this->markTestSkipped('Headers already sent');
+        }
+
+        if (isset($_SESSION)) {
+            $this->markTestSkipped('Session already started');
+        }
+
         $this->session = new Session();
     }
 
