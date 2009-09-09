@@ -44,6 +44,10 @@ class FormErrors extends \spriebsch\MVC\ViewHelper
 {
     protected function doExecute($parameters)
     {
+        if (!$this->response->hasFormErrors($parameters[0])) {
+            return '';
+        }
+
         $result = array();
 
         foreach ($this->response->getFormErrors($parameters[0]) as $error) {
