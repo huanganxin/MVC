@@ -35,28 +35,12 @@
  * @license    BSD License
  */
 
-namespace spriebsch\MVC\ViewHelper;
+namespace spriebsch\MVC;
 
 /**
- * View Helper that renders a menu as un unordered list
- * @todo only show menu items that are allowed.
+ * @var array
  */
-class Menu extends \spriebsch\MVC\ViewHelper
-{
-    protected function doExecute(array $parameters)
-    {
-        $menu = $this->response->getData($parameters[0]);
-
-        $result = '<ul class="menu">';
-
-        foreach ($menu as $item) {
-            list($controller, $text) = $item;
-            $result .= '<li><a href="__url.' . $controller . '__">' . htmlentities($text) . '</a></li>';
-        }
-
-        $result .= '</ul>';
-
-        return $result;
-    }
-}
+$_classMap = array(
+    'spriebsch\MVC\Test\TestViewHelper' => 'TestViewHelper.php',
+);
 ?>

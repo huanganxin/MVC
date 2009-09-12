@@ -44,7 +44,7 @@ class Url extends \spriebsch\MVC\ViewHelper
 {
     protected $baseUrl = 'index.php';
 
-    protected function doExecute($parameters)
+    protected function doExecute(array $parameters)
     {
         return $this->baseUrl . '?mvc_controller=' . $parameters[0];
     }

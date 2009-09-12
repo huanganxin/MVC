@@ -263,6 +263,23 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers spriebsch\MVC\Response::hasCookies
+     */
+    public function testHasCookiesInitiallyReturnsFalse()
+    {
+        $this->assertFalse($this->response->hasCookies());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Response::hasCookies
+     */
+    public function testHasCookiesReturnsTrueWhenCookiesAreSet()
+    {
+        $this->response->setCookie('name', 'value', 23, '/some/path', 'domain', true, true);
+        $this->assertTrue($this->response->hasCookies());
+    }
+
+    /**
      * @covers spriebsch\MVC\Response::setCookie
      * @covers spriebsch\MVC\Response::getCookies
      */

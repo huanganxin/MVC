@@ -54,4 +54,6 @@ class ControllerException extends Exception {}
 class FrontControllerException extends Exception {}
 
 class SessionException extends Exception {}
+
+class ViewException extends Exception {}
 ?>

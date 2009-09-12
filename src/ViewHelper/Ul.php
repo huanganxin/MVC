@@ -42,7 +42,7 @@ namespace spriebsch\MVC\ViewHelper;
  */
 class Ul extends \spriebsch\MVC\ViewHelper
 {
-    protected function doExecute($parameters)
+    protected function doExecute(array $parameters)
     {
         $data = $parameters[0];
 

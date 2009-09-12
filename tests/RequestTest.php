@@ -49,6 +49,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @expectedException spriebsch\MVC\UnknownVariableException
+     * @covers spriebsch\MVC\Request
      */
     public function testThrowsExceptionForNonexistingVariable()
     {
@@ -56,66 +57,99 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $request->nonsense('key');
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testHasGetReturnsTrueForExistingValue()
     {
         $request = new Request(array('key' => 'value'));
         $this->assertTrue($request->hasGet('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testHasGetReturnsFalseForExistingValue()
     {
         $request = new Request();
         $this->assertFalse($request->hasGet('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testHasGetReturnsFalseForEmptyGetValue()
     {
         $request = new Request(array('key' => ''));
         $this->assertFalse($request->hasGet('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testHasPostReturnsFalseForEmptyGetValue()
     {
         $request = new Request(array(), array('key' => ''));
         $this->assertFalse($request->hasPost('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testGetReturnsExistingValue()
     {
         $request = new Request(array('key' => 'value'));
         $this->assertEquals('value', $request->get('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testGetReturnsEmptyStringForNonExistingValue()
     {
         $request = new Request();
         $this->assertEquals('', $request->get('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testPostReturnsExistingValue()
     {
         $request = new Request(array(), array('key' => 'value'));
         $this->assertEquals('value', $request->post('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testCookieReturnsExistingValue()
     {
         $request = new Request(array(), array(), array('key' => 'value'));
         $this->assertEquals('value', $request->cookie('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testFilesReturnsExistingValue()
     {
         $request = new Request(array(), array(), array(), array('key' => 'value'));
         $this->assertEquals('value', $request->files('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testServerReturnsExistingValue()
     {
         $request = new Request(array(), array(), array(), array(), array('key' => 'value'));
         $this->assertEquals('value', $request->server('key'));
     }
 
+    /**
+     * @covers spriebsch\MVC\Request
+     */
     public function testEnvReturnsExistingValue()
     {
         $request = new Request(array(), array(), array(), array(), array(), array('key' => 'value'));

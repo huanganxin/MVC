@@ -70,13 +70,11 @@ abstract class ViewHelper
      *
      * @param mixed $data
      */
-    abstract protected function doExecute($parameters);
+    abstract protected function doExecute(array $parameters);
 
     /**
      * Execute the view helper.
      *
-     * @param Request $request
-     * @param Response $response
      * @param array $parameters
      * @return string
      */
@@ -85,7 +83,7 @@ abstract class ViewHelper
         $this->parameters = $parameters;
 
         if (sizeof($this->parameters) < $this->numberOfRequiredParameters) {
-            throw new \spriebsch\MVC\Exception('View helper requires ' . $this->numberOfRequiredParameters . ' parameters, ' . sizeof($this->parameters) . ' given');
+            throw new \spriebsch\MVC\ViewException('View helper requires ' . $this->numberOfRequiredParameters . ' parameters, ' . sizeof($this->parameters) . ' given');
         }
 
         return $this->doExecute($parameters);

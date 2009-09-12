@@ -39,25 +39,57 @@ namespace spriebsch\MVC;
 
 class View
 {
+    /**
+     * @var string
+     */
     protected $viewName;
 
+    /**
+     * @var string
+     */
     protected $directory;
 
+    /**
+     * @var string
+     */
     protected $head = 'head.php';
+
+    /**
+     * @var string
+     */
     protected $foot = 'foot.php';
 
+    /**
+     * @var array
+     */
     protected $viewHelpers = array('ViewHelper');
 
+    /**
+     * Constructs the View object.
+     *
+     * @param string $directory
+     */
     public function __construct($directory)
     {
         $this->directory = $directory;
     }
 
+    /**
+     * Returns the fully qualified class name for a view helper.
+     *
+     * @param string $viewHelper
+     * @return null
+     */
     protected function getViewHelperName($viewHelper)
     {
         return '\\spriebsch\\MVC\\ViewHelper\\' . ucfirst($viewHelper);
     }
 
+    /**
+     * Sets the cookies
+     *
+     * @return null
+     */
     protected function setCookies()
     {
         if (!$this->response->hasCookies()) {
@@ -70,6 +102,11 @@ class View
         }
     }
 
+    /**
+     * Sends the headers
+     *
+     * @return null
+     */
     protected function sendHeaders()
     {
         header('Status: ' . $this->response->getStatus());
@@ -78,6 +115,8 @@ class View
     }
 
     /**
+     * Escapes data for HTML output.
+     *
      * @todo make sure charset is okay for escaping (get from response?)
      */
     protected function escapeData($data)
@@ -85,6 +124,12 @@ class View
         return htmlentities($this->rawData($data));
     }
 
+    /**
+     * Returns raw data from the Response object.
+     *
+     * @param string $key
+     * @return mixed
+     */
     protected function rawData($key)
     {
         return $this->response->getData($key);
@@ -145,11 +190,22 @@ class View
         return $body;
     }
 
+    /**
+     * Set the head template.
+     *
+     * @param string $file The (relative) file name
+     * @return null
+     */
     public function setHead($file)
     {
         $this->head = $file;
     }
 
+    /**
+     *
+     * @param string $file The (relative) file name
+     * @return null
+     */
     public function setFoot($file)
     {
         $this->foot = $file;

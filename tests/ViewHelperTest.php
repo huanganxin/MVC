@@ -35,28 +35,32 @@
  * @license    BSD License
  */
 
-namespace spriebsch\MVC\ViewHelper;
+namespace spriebsch\MVC;
+
+require_once 'PHPUnit/Framework.php';
 
 /**
- * View Helper that renders a menu as un unordered list
- * @todo only show menu items that are allowed.
+ * Unit Tests for View Helper class.
+ *
+ * @author     Stefan Priebsch <stefan@priebsch.de>
+ * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-class Menu extends \spriebsch\MVC\ViewHelper
+class ViewHelperTest extends \PHPUnit_Framework_TestCase
 {
-    protected function doExecute(array $parameters)
+    public function setUp()
     {
-        $menu = $this->response->getData($parameters[0]);
+        $this->request = $this->getMock('spriebsch\MVC\Request', array(), array(), '', false, false);
+        $this->response = $this->getMock('spriebsch\MVC\Response', array(), array(), '', false, false);
+    }
 
-        $result = '<ul class="menu">';
-
-        foreach ($menu as $item) {
-            list($controller, $text) = $item;
-            $result .= '<li><a href="__url.' . $controller . '__">' . htmlentities($text) . '</a></li>';
-        }
-
-        $result .= '</ul>';
-
-        return $result;
+    /**
+     * @expectedException spriebsch\MVC\ViewException
+     * @covers spriebsch\MVC\ViewHelper
+     */
+    public function testThrowsExceptionWhenNoParametersArePassed()
+    {
+        $viewHelper = new \spriebsch\MVC\Test\TestViewHelper($this->request, $this->response);
+        $viewHelper->execute(array());
     }
 }
 ?>
