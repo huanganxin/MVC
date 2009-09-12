@@ -81,7 +81,7 @@ abstract class Controller
      *
      * @param string $controller
      */
-    protected function redirect($controller = 'standard')
+    protected function redirect($controller)
     {
         $this->response->setRedirect($controller);
     }

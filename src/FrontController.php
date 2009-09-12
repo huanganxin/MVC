@@ -38,8 +38,7 @@
 namespace spriebsch\MVC;
 
 /**
- * Executes the requested action by calling do<Action>Action().
- * A default action method is always present.
+ * Front Controller. Routes requests to controllers and renders the view.
  *
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
@@ -188,7 +187,7 @@ class FrontController
 
         $controller->execute($this->request, $this->response, $this->session, $this->authenticator, $this->controllerMethod);
 
-        $this->view->render($this->request, $this->response);
+        return $this->view->render($this->response->getViewName(), $this->request, $this->response);
     }
 }
 ?>

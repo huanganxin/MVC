@@ -86,8 +86,10 @@ class Response
      */
     protected $fieldErrors = array();
 
+    /**
+     * @var string
+     */
     protected $redirectController;
-    protected $redirectAction;
 
     /**
      * @var array
@@ -221,15 +223,14 @@ class Response
         return $this->data[$key];
     }
 
-    public function setRedirect($controller, $action)
+    public function setRedirect($controller)
     {
         $this->redirectController = $controller;
-        $this->redirectAction = $action;
     }
 
     public function isRedirect()
     {
-        return !is_null($this->redirectController) || !is_null($this->redirectAction);
+        return $this->redirectController !== null;
     }
 
     public function getRedirectController()
@@ -237,11 +238,9 @@ class Response
         return $this->redirectController;
     }
 
-    public function getRedirectAction()
-    {
-        return $this->redirectAction;
-    }
-
+    /**
+     * Add an error message.
+     */
     public function addError(\spriebsch\MVC\Message\Error $error)
     {
         $this->errors[] = $error;

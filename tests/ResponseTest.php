@@ -162,14 +162,12 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers spriebsch\MVC\Response::setRedirect
      * @covers spriebsch\MVC\Response::getRedirectController
-     * @covers spriebsch\MVC\Response::getRedirectAction
      */
     public function testRedirectAccessors()
     {
-        $this->response->setRedirect('controller', 'action');
+        $this->response->setRedirect('controller');
 
         $this->assertEquals('controller', $this->response->getRedirectController());
-        $this->assertEquals('action', $this->response->getRedirectAction());
     }
 
     /**

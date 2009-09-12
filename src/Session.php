@@ -56,6 +56,11 @@ class Session
      */
     protected $started = false;
 
+    /**
+     * Helper function to check if the session was already started
+     *
+     * @throws spriebsch\MVC\SessionException Session not started
+     */
     protected function checkIfStarted()
     {
         if (!$this->started) {
@@ -66,7 +71,7 @@ class Session
     /**
      * Constructs the session object.
      *
-     * @return void
+     * @return null
      */
     public function __construct()
     {
@@ -77,7 +82,7 @@ class Session
      *
      * @param mixed $key   Session variable name
      * @param mixed $value Session variable value
-     * @return void
+     * @return null
      */
     public function set($key, $value)
     {
@@ -89,6 +94,7 @@ class Session
      *
      * @param mixed $key   Session variable name
      * @return mixed Session variable value
+     * @throws spriebsch\MVC\SessionException Unknown session variable $key
      */
     public function get($key)
     {
@@ -123,12 +129,13 @@ class Session
     /**
      * Starts the sesssion.
      *
-     * @return void
+     * @return null
+     * @throws spriebsch\MVC\SessionException Session has already been started
      */
     public function start()
     {
         if ($this->started) {
-            throw new Exception('Session has already been started');
+            throw new SessionException('Session has already been started');
         }
 
         $this->started = true;
@@ -141,7 +148,7 @@ class Session
      * Sets the session name.
      *
      * @param string $name Session name
-     * @return void
+     * @return null
      */
     public function setName($name)
     {
@@ -173,7 +180,7 @@ class Session
     /**
      * Regenerate session id to make session fixation harder.
      *
-     * @return void
+     * @return null
      */
     public function regenerateId()
     {
@@ -182,11 +189,18 @@ class Session
         session_regenerate_id(true);
     }
 
+    /**
+     * Destroy the session.
+     *
+     * @return null
+     */
     public function destroy()
     {
         $this->checkIfStarted();
 
         session_destroy();
+
+        unset($_SESSION);
     }
 }
 ?>

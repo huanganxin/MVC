@@ -68,6 +68,18 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($request->hasGet('key'));
     }
 
+    public function testHasGetReturnsFalseForEmptyGetValue()
+    {
+        $request = new Request(array('key' => ''));
+        $this->assertFalse($request->hasGet('key'));
+    }
+
+    public function testHasPostReturnsFalseForEmptyGetValue()
+    {
+        $request = new Request(array(), array('key' => ''));
+        $this->assertFalse($request->hasPost('key'));
+    }
+
     public function testGetReturnsExistingValue()
     {
         $request = new Request(array('key' => 'value'));

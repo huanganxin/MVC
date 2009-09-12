@@ -43,5 +43,7 @@ namespace spriebsch\MVC;
 $_classMap = array(
     'spriebsch\MVC\Test\DefaultActionController' => 'DefaultActionController.php',
     'spriebsch\MVC\Test\TwoActionsController'    => 'TwoActionsController.php',
+    'spriebsch\MVC\Test\SetViewNameController'   => 'SetViewNameController.php',
+    'spriebsch\MVC\Test\RedirectController'      => 'RedirectController.php',
 );
 ?>

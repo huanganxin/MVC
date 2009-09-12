@@ -135,9 +135,9 @@ class View
             $parts = explode('.', $match);
 
             $helper = $parts[0];
-            $parameters = array_slice($parts, 1);
+            $parameters = substr($match, strlen($helper) + 1);
 
-            $replacement = call_user_func_array(array($this, $helper), $parameters);
+            $replacement = call_user_func_array(array($this, $helper), array($parameters));
 
             $body = str_replace('__' . $match . '__', $replacement, $body);
         }

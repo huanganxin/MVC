@@ -131,6 +131,16 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers spriebsch\MVC\Session::start
+     * @expectedException spriebsch\MVC\SessionException
+     */
+    public function testStartThrowsExceptionWhenSessionAlreadyStarted()
+    {
+        $this->session->start();
+        $this->session->start();
+    }
+
+    /**
+     * @covers spriebsch\MVC\Session::start
      * @covers spriebsch\MVC\Session::getId
      * @covers spriebsch\MVC\Session::checkIfStarted
      */
@@ -160,6 +170,30 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $id = $this->session->getId();
         $this->session->regenerateId();
         $this->assertNotEquals($id, $this->session->getId());
+    }
+
+    /**
+     * @covers spriebsch\MVC\Session::destroy
+     * @covers spriebsch\MVC\Session::checkIfStarted
+     * @expectedException spriebsch\MVC\SessionException
+     */
+    public function testDestroyThrowsExceptionWhenSessionNotStarted()
+    {
+        $this->session->destroy();
+    }
+
+    /**
+     * @covers spriebsch\MVC\Session::destroy
+     * @covers spriebsch\MVC\Session::checkIfStarted
+     * @todo missing assertion
+     */
+    public function testDestroy()
+    {
+        $this->assertFalse(isset($_SESSION));
+        $this->session->start();
+        $this->assertTrue(isset($_SESSION));
+        $this->session->destroy();
+        $this->assertFalse(isset($_SESSION));
     }
 }
 ?>

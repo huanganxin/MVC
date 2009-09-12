@@ -80,5 +80,27 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $controller = new Test\TwoActionsController();
         $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'second');
     }
+
+    /**
+     * Have a controller call setViewName()
+     * @covers spriebsch\MVC\Controller::setViewName
+     * @todo set expectation in Response mock (setViewName once with parameter 'view')
+     */
+    public function testSetViewNameIsDelegatedToResponse()
+    {
+        $controller = new Test\SetViewNameController();
+        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'method');
+    }
+
+    /**
+     * Have a controller call redirect()
+     * @covers spriebsch\MVC\Controller::redirect
+     * @todo set expectation in Response mock ( call redirect with 'controller')
+     */
+    public function testRedirectIsDelegatedToResponse()
+    {
+        $controller = new Test\RedirectController();
+        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'method');
+    }
 }
 ?>
