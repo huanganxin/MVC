@@ -79,8 +79,11 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->request       = new Request(array('mvc_controller' => 'main.index'));
 
-        $this->acl = new Acl();
-        $this->acl->setPolicy(Acl::DENY);
+        $this->acl           = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
+
+        $this->acl->expects($this->any())
+                  ->method('isAllowed')
+                  ->will($this->returnValue(false));
 
         $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
         $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
@@ -97,21 +100,73 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
      * exception in execute(). This is to work around a problem in PHPUnit 3.4
      * that prevents us from mocking the controller and assigning a namespaced
      * name to it (which we need, since we cannot inject the mocked controller
-     * otherwise).
+     * otherwise because of the new $class statement in execute()).
      *
-     * @expectedException spriebsch\MVC\Test\FrontController\DefaultActionExecutedException
+     * @expectedException spriebsch\MVC\Test\FrontController\ActionExecutedException
      */
-    public function testCallsExecuteMethodInController()
+    public function testCallsControllerExecuteMethod()
     {
-        $this->router        = new Router();
-        $this->router->registerController('main.index', 'spriebsch\\MVC\\Test\\FrontController\\Action', 'method');
-        $this->router->registerController('authentication.login', 'spriebsch\\MVC\\Test\\FrontController\\Authentication', 'method');
+        $this->router = $this->getMock('spriebsch\MVC\Router', array(), array(), '', false, false);
 
-        $this->request       = new Request(array('mvc_controller' => 'main.index'));
-        $this->acl           = new Acl();
+        $this->router->expects($this->any())
+                     ->method('getClassName')
+                     ->will($this->returnValue('spriebsch\\MVC\\Test\\FrontController\\Action'));
 
+        $this->router->expects($this->any())
+                     ->method('getMethodName')
+                     ->will($this->returnValue('action'));
+
+        $this->request       = $this->getMock('spriebsch\MVC\Request',       array(), array(), '', false, false);
         $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
         $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
+        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
+        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
+        $this->acl           = $this->getMock('spriebsch\MVC\Acl',           array(), array(), '', false, false);
+
+        $fc = new FrontController($this->request, $this->response, $this->session, $this->view, $this->router, $this->authenticator, $this->acl);
+        $fc->execute();
+    }
+
+    /**
+     * Make sure that execute() throws an exception when the request was
+     * routed to a non-existing controller.
+     *
+     * @expectedException spriebsch\MVC\FrontControllerException
+     */
+    public function testCallsExecuteThrowsExceptionWhenControllerDoesNotExist()
+    {
+        $this->router = $this->getMock('spriebsch\MVC\Router', array(), array(), '', false, false);
+
+        $this->router->expects($this->any())
+                     ->method('getController')
+                     ->will($this->returnValue('spriebsch\\MVC\\Test\\DoesNotExist'));
+
+        $this->request       = $this->getMock('spriebsch\MVC\Request',       array(), array(), '', false, false);
+        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
+        $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
+        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
+        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
+        $this->acl           = $this->getMock('spriebsch\MVC\Acl',           array(), array(), '', false, false);
+
+        $fc = new FrontController($this->request, $this->response, $this->session, $this->view, $this->router, $this->authenticator, $this->acl);
+        $fc->execute();
+    }
+
+    /**
+     * @covers spriebsch\MVC\FrontController::initApplication
+     */
+    public function testInitApplicationSetsTimeStampInSession()
+    {
+        $this->router = new Router();
+        $this->router->registerController('main.index', 'spriebsch\\MVC\\Test\\FrontController\\Controller', 'method');
+
+        $this->request = new Request();
+        $this->acl = new Acl();
+
+        $this->session = new MockSession();
+        $this->session->set('_MVC_USER_ID', 'user');
+
+        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
         $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
         $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
 
@@ -122,7 +177,7 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers spriebsch\MVC\FrontController::initApplication
      */
-    public function testInitApplicationSetsTimeStampInSession()
+    public function testInitApplicationSetsUserRole()
     {
         $this->router = new Router();
         $this->router->registerController('main.index', 'spriebsch\\MVC\\Test\\FrontController\\Controller', 'method');

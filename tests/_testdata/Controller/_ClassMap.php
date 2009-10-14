@@ -45,5 +45,6 @@ $_classMap = array(
     'spriebsch\MVC\Test\TwoActionsController'    => 'TwoActionsController.php',
     'spriebsch\MVC\Test\SetViewNameController'   => 'SetViewNameController.php',
     'spriebsch\MVC\Test\RedirectController'      => 'RedirectController.php',
+    'spriebsch\MVC\Test\NotAllowedController'    => 'NotAllowedController.php',
 );
 ?>

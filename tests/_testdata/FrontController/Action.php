@@ -4,13 +4,13 @@ namespace spriebsch\MVC\Test\FrontController;
 
 class Action extends \spriebsch\MVC\Controller
 {
-    protected function method()
+    public function execute(\spriebsch\MVC\Request $request, \spriebsch\MVC\Response $response, \spriebsch\MVC\Session $session, \spriebsch\MVC\Authenticator $authenticator, $method)
     {
-        throw new DefaultActionExecutedException();
+        throw new ActionExecutedException();
     }
 }
 
-class DefaultActionExecutedException extends \spriebsch\MVC\Exception
+class ActionExecutedException extends \spriebsch\MVC\Exception
 {
 }
 ?>

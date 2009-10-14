@@ -102,5 +102,17 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $controller = new Test\RedirectController();
         $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'method');
     }
+
+    /**
+     * Test through a subclass of Controller with a isAllowed() method that
+     * always returns false.
+     *
+     * @covers spriebsch\MVC\Controller::execute
+     */
+    public function testNotAllowedController()
+    {
+        $controller = new Test\NotAllowedController();
+        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'actionMethod');
+    }
 }
 ?>
