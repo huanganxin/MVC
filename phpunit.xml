@@ -16,7 +16,7 @@
             <directory suffix=".php">src</directory>
         </whitelist>
         <blacklist>
-            <directory suffix=".php">src/lib</directory>
+            <file>src/Autoloader.php</file>
         </blacklist>
     </filter>
 

@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../src/Exceptions.php';
-require_once __DIR__ . '/../src/lib/Loader.phar';
+require_once __DIR__ . '/../src/Autoloader.php';
 
 spriebsch\Loader\Autoloader::init();
 spriebsch\Loader\Autoloader::registerPath(__DIR__ . '/../src');
