@@ -118,5 +118,27 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
         $fc = new FrontController($this->request, $this->response, $this->session, $this->view, $this->router, $this->authenticator, $this->acl);
         $fc->execute();
     }
+
+    /**
+     * @covers spriebsch\MVC\FrontController::initApplication
+     */
+    public function testInitApplicationSetsTimeStampInSession()
+    {
+        $this->router = new Router();
+        $this->router->registerController('main.index', 'spriebsch\\MVC\\Test\\FrontController\\Controller', 'method');
+
+        $this->request = new Request();
+        $this->acl = new Acl();
+
+        $this->session = new MockSession();
+        $this->session->set('_MVC_USER_ID', 'user');
+
+        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
+        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
+        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
+
+        $fc = new FrontController($this->request, $this->response, $this->session, $this->view, $this->router, $this->authenticator, $this->acl);
+        $fc->execute();
+    }
 }
 ?>

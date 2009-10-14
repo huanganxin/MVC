@@ -123,11 +123,8 @@ class FrontController
     {
         $this->session->start();
  
-        if ($this->session->has('_MVC_USER_ID')) {
+        if ($this->session->has('_MVC_USER_ID') && $this->session->has('_MVC_USER_ROLE')) {
             $this->session->set('_MVC_TIMESTAMP', $this->request->server('REQUEST_TIME'));
-        }
-
-        if ($this->session->has('_MVC_USER_ROLE')) {
             $this->userRole = $this->session->get('_MVC_USER_ROLE');
         }
 

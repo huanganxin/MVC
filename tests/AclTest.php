@@ -69,14 +69,12 @@ class AclTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role'), 'role is allowed');
         $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'controller'), 'controller is allowed');
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'controller', 'action'), 'action is allowed');
     }
 
     public function testAllowEverything()
     {
         $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role'), 'role is not allowed');
         $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'controller'), 'controller is not allowed');
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'controller', 'action'), 'action is not allowed');
     }
 
     public function testDenyController()
@@ -85,16 +83,6 @@ class AclTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role'), 'role is not allowed');
         $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'controller'), 'controller is allowed');
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'controller', 'action'), 'action is allowed');
-    }
-
-    public function testDenyAction()
-    {
-        $this->acl->deny('role', 'controller', 'action');
-
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role'), 'role is not allowed');
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'controller'), 'controller is not allowed');
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'controller', 'action'), 'action is allowed');
     }
 
     public function testDenyRoleAllowController()
@@ -104,27 +92,6 @@ class AclTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role'), 'role is allowed');
         $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'controller'), 'controller is not allowed');
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'controller', 'action'), 'action is not allowed');
-    }
-
-    public function testDenyRoleAllowAction()
-    {
-        $this->acl->deny('role');
-        $this->acl->allow('role', 'controller', 'action');
-
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role'), 'role is allowed');
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'controller'), 'controller is allowed');
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'controller', 'action'), 'action is not allowed');
-    }
-
-    public function testDenyControllerAllowAction()
-    {
-        $this->acl->deny('role', 'controller');
-        $this->acl->allow('role', 'controller', 'action');
-
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role'), 'role is not allowed');
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'controller'), 'controller is allowed');
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'controller', 'action'), 'action is not allowed');
     }
 }
 ?>

@@ -52,28 +52,19 @@ class Acl
     protected $policy = Acl::ALLOW;
     protected $rules = array();
 
-    protected function addRule($flag, $role, $controller, $action)
+    protected function addRule($flag, $role, $controller)
     {
-        $this->rules[$role][$controller][$action] = $flag;
+        $this->rules[$role][$controller] = $flag;
     }
 
-    protected function hasRule($role, $controller, $action)
+    protected function hasRule($role, $controller)
     {
-        return isset($this->rules[$role][$controller][$action]);
+        return isset($this->rules[$role][$controller]);
     }
 
-    protected function getRule($role, $controller, $action)
+    protected function getRule($role, $controller)
     {
-        return $this->rules[$role][$controller][$action];
-    }
-
-    protected function isActionAllowed($role, $controller, $action)
-    {
-        if ($this->hasRule($role, $controller, $action)) {
-            return $this->getRule($role, $controller, $action);
-        }
-
-        return $this->isControllerAllowed($role, $controller);
+        return $this->rules[$role][$controller];
     }
 
     protected function isControllerAllowed($role, $controller)
@@ -87,9 +78,6 @@ class Acl
 
     protected function isRoleAllowed($role)
     {
-//        if (is_null($role)) {
-//        }
-
         if ($this->hasRule($role, '*', '*')) {
             return $this->getRule($role, '*', '*');
         }
@@ -107,22 +95,18 @@ class Acl
         return $this->policy;
     }
 
-    public function allow($role, $controller = '*', $action = '*')
+    public function allow($role, $controller = '*')
     {
-        $this->addRule(Acl::ALLOW, $role, $controller, $action);
+        $this->addRule(Acl::ALLOW, $role, $controller);
     }
 
-    public function deny($role, $controller = '*', $action = '*')
+    public function deny($role, $controller = '*')
     {
-        $this->addRule(Acl::DENY, $role, $controller, $action);
+        $this->addRule(Acl::DENY, $role, $controller);
     }
 
-    public function isAllowed($role, $controller = null, $action = null)
+    public function isAllowed($role, $controller = null)
     {
-        if (!is_null($action)) {
-            return $this->isActionAllowed($role, $controller, $action);
-        }
-
         if (!is_null($controller)) {
             return $this->isControllerAllowed($role, $controller);
         }
