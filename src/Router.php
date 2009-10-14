@@ -88,7 +88,7 @@ class Router
     protected function doGet($controller, $classFlag)
     {
         if (!isset($this->map[$controller])) {
-            throw new Exception('Controller ' . $controller . ' is not registered');
+            throw new RouterException('Controller ' . $controller . ' is not registered');
         }
 
         list($class, $method) = $this->map[$controller];
@@ -163,7 +163,7 @@ class Router
     public function getController()
     {
         if (is_null($this->controller)) {
-            throw new Exception('Route has not been calculated yet. Call route() first.');
+            throw new RouterException('Route has not been calculated yet. Call route() first.');
         }
 
         return $this->controller;

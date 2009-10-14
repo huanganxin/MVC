@@ -49,7 +49,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @expectedException spriebsch\MVC\UnknownVariableException
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testThrowsExceptionForNonexistingVariable()
     {
@@ -58,7 +59,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testHasGetReturnsTrueForExistingValue()
     {
@@ -67,7 +69,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testHasGetReturnsFalseForExistingValue()
     {
@@ -76,7 +79,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testHasGetReturnsFalseForEmptyGetValue()
     {
@@ -85,7 +89,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testHasPostReturnsFalseForEmptyGetValue()
     {
@@ -94,7 +99,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testGetReturnsExistingValue()
     {
@@ -103,7 +109,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testGetReturnsEmptyStringForNonExistingValue()
     {
@@ -112,7 +119,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testPostReturnsExistingValue()
     {
@@ -121,7 +129,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testCookieReturnsExistingValue()
     {
@@ -130,7 +139,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testFilesReturnsExistingValue()
     {
@@ -139,7 +149,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testServerReturnsExistingValue()
     {
@@ -148,7 +159,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Request
+     * @covers spriebsch\MVC\Request::__construct
+     * @covers spriebsch\MVC\Request::__call
      */
     public function testEnvReturnsExistingValue()
     {

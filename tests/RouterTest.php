@@ -48,15 +48,23 @@ require_once 'PHPUnit/Framework.php';
 class RouterTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @covers spriebsch\MVC\Router::doGet
+     * @expectedException spriebsch\MVC\RouterException
+     */
+    public function testThrowsExceptionWhenControllerNotRegistered()
+    {
+        $router = new Router();
+        $router->getClassName('notRegistered');
+    }
+
+    /**
      * @covers spriebsch\MVC\Router::getController
-     * @expectedException spriebsch\MVC\Exception
+     * @expectedException spriebsch\MVC\RouterException
      */
     public function testThrowsExceptionWhenGettingControllerBeforeRouting()
     {
-        $router  = new Router();
-        $request = new Request();
-
-        $this->assertEquals('main.index', $router->getController());
+        $router = new Router();
+        $router->getController();
     }
 
     /**
@@ -65,10 +73,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testRoutesToDefaultController()
     {
-        $router  = new Router();
-        $request = new Request();
-
-        $router->route($request);
+        $router = new Router();
+        $router->route(new Request());
 
         $this->assertEquals('main.index', $router->getController());
     }
@@ -80,7 +86,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testTranslatesControllerToClassAndMethodName()
     {
-        $router  = new Router();
+        $router = new Router();
         $router->registerController('main.index', 'controller', 'method');
 
         $this->assertEquals('controller', $router->getClassName('main.index'));
@@ -91,9 +97,9 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      * @covers spriebsch\MVC\Router::setDefaultController
      * @covers spriebsch\MVC\Router::getDefaultController
      */
-    public function testControllerAccessors()
+    public function testDefaultControllerAccessors()
     {
-        $router  = new Router();
+        $router = new Router();
         $router->setDefaultController('default');
 
         $this->assertEquals('default', $router->getDefaultController());
@@ -105,10 +111,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testAuthenticationControllerAccessors()
     {
-        $router  = new Router();
-        $router->setAuthenticationController('default');
+        $router = new Router();
+        $router->setAuthenticationController('auth');
 
-        $this->assertEquals('default', $router->getAuthenticationController());
+        $this->assertEquals('auth', $router->getAuthenticationController());
     }
 
     /**
