@@ -48,24 +48,6 @@ require_once 'PHPUnit/Framework.php';
 class FrontControllerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException spriebsch\MVC\Exception
-     */
-    public function testThrowsExceptionWhenSelectedControllerDoesNotExist()
-    {
-        $this->request       = new Request(array('mvc_controller' => 'nonexisting'));
-        $this->router        = new Router();
-        $this->acl           = new Acl();
-
-        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
-        $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
-        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
-        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
-
-        $fc = new FrontController($this->request, $this->response, $this->session, $this->view, $this->router, $this->authenticator, $this->acl);
-        $fc->execute();
-    }
-
-    /**
      * Configure ACL to deny everything, thus the request must be dispatched
      * to the authentication controller.
      *
