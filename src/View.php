@@ -90,7 +90,7 @@ class View
      *
      * @return null
      */
-    protected function setCookies()
+    protected function sendCookies()
     {
         if (!$this->response->hasCookies()) {
             return;
@@ -277,7 +277,7 @@ class View
             throw new Exception('View foot in file ' . $foot . ' not found');
         }
 
-        $this->setCookies();
+        $this->sendCookies();
         $this->sendHeaders();
 
         ob_start();
