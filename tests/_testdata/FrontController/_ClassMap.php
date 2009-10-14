@@ -35,12 +35,7 @@
  * @license    BSD License
  */
 
-namespace spriebsch\MVC;
-
-/**
- * @var array
- */
-$_classMap = array(
+return array(
     'spriebsch\MVC\Test\FrontController\Action'           => 'Action.php',
     'spriebsch\MVC\Test\FrontController\Controller'       => 'Controller.php',
     'spriebsch\MVC\Test\FrontController\Authentication'   => 'Authentication.php',

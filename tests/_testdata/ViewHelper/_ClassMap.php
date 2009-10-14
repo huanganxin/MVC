@@ -35,12 +35,7 @@
  * @license    BSD License
  */
 
-namespace spriebsch\MVC;
-
-/**
- * @var array
- */
-$_classMap = array(
+return array(
     'spriebsch\MVC\Test\TestViewHelper' => 'TestViewHelper.php',
 );
 ?>

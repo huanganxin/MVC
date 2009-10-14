@@ -37,22 +37,18 @@
 
 namespace spriebsch\Loader;
 
-if (!defined('__SPRIEBSCH_LOADER_AUTOLOAD')) {
-
-define('__SPRIEBSCH_LOADER_AUTOLOAD', true);
-
 /**
- * A class loader (autoloader) that can handle multiple directories 
- * (class paths). Each directory must contain a file _ClassMap.php
- * that defines where to load classes from.
+ * The Autoloader can handle multiple directories ("class paths").
+ * Each directory must contain a file _ClassMap.php that defines where to load
+ * classes from.
  *
- * Use Autoloader::registerPath() to add a "classpath", a directory to load classes
- * from. This directory must contain a file $_ClassMap.php
- * (see Autoloader::registerPath()). Call Autoloader::init() to register the autoloader.
- * Now you can go ahead and just use any class that is listed in a class map.
- * It is of course possible to use multiple class paths, when the Loader 
- * searches through them for a class, no filesystem access is involved, but
- * only the map itself is being searched in memory.
+ * Use Autoloader::registerPath() to add a "classpath", a directory to load
+ * classes from. This directory must contain a file _ClassMap.php
+ * (see Autoloader::registerPath()). Call Autoloader::init() to register the
+ * autoloader. Now you can go ahead and just use any class that is listed in a
+ * class map. It is of course possible to use multiple class paths, when the
+ * Autoloader searches through them for a class, no filesystem access is
+ * involved, but only the map itself is being searched in memory.
  *
  * Class maps can be auto-generated from the available source code.
  *
@@ -62,11 +58,15 @@ define('__SPRIEBSCH_LOADER_AUTOLOAD', true);
 final class Autoloader
 {
     /**
+     * Array of "class paths", paths to load classes from.
+     *
      * @var array
      */
     static private $classPaths = array();
 
     /**
+     * The class maps defining where to load a class from.
+     *
      * @var array
      */
     static private $classMaps = array();
@@ -91,10 +91,15 @@ final class Autoloader
      */
     static public function init()
     {
-        spl_autoload_register(array('spriebsch\Loader\Autoloader', 'autoload'));
+        $autoloadStack = spl_autoload_functions();
+        
+        if ($autoloadStack !== false && in_array(array('spriebsch\\Loader\\Autoloader', 'autoload'), $autoloadStack)) {
+            throw new AlreadyInitializedException('The Autoloader has already been initialized');
+        }
+    
+        spl_autoload_register(array('spriebsch\\Loader\\Autoloader', 'autoload'));
     }
 
-	// @codeCoverageIgnoreStart
 
     /**
      * Reset the autoloader.
@@ -106,15 +111,19 @@ final class Autoloader
     {
         self::$classPaths = array();
         self::$classMaps = array();
-    }
 
-	// @codeCoverageIgnoreEnd
+        $autoloadStack = spl_autoload_functions();
+        
+        if ($autoloadStack !== false && in_array(array('spriebsch\\Loader\\Autoloader', 'autoload'), $autoloadStack)) {
+            spl_autoload_unregister(array('spriebsch\\Loader\\Autoloader', 'autoload'));
+        }
+    }
 
     /**
      * Register a path to autoload classes from.
      * In the given directory, a file _ClassMap.php must be present
-     * that contains an array $_classMap holding key/value pairs with
-     * classname as the key and relative path to the classfile as value.
+     * that returns an array holding key/value pairs with classname as the key
+     * and relative path to the classfile as value.
      *
      * @throws spriebsch\Loader\ClassMapNotFoundException
      * @throws spriebsch\Loader\InvalidClassMapException
@@ -128,20 +137,20 @@ final class Autoloader
             $classPath .= '/';
         }
 
-        $classMap = $classPath . '_ClassMap.php';
+        $classMapFile = $classPath . '_ClassMap.php';
 
-        if (!file_exists($classMap)) {
-            throw new ClassMapNotFoundException($classMap . ' not found');
+        if (!file_exists($classMapFile)) {
+            throw new ClassMapNotFoundException($classMapFile . ' not found');
         }
 
-        include $classMap;
+        $classMap = include $classMapFile;
 
-        if (!isset($_classMap) || !is_array($_classMap)) {
-            throw new InvalidClassMapException('$_classMap in ' . $classMap . ' is not an array');
+        if (!is_array($classMap)) {
+            throw new InvalidClassMapException($classMapFile . ' does not return a classmap array');
         }
 
         self::$classPaths[] = $classPath;
-        self::$classMaps[] = $_classMap;
+        self::$classMaps[] = $classMap;
     }
 
     /**
@@ -167,21 +176,53 @@ final class Autoloader
     }
 }
 
+/**
+ * Autoloader exception base class.
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved. 
+ */
 class Exception extends \Exception
 {
 }
 
+/**
+ * AlreadyInitializedException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved. 
+ */
+class AlreadyInitializedException extends Exception
+{
+}
+
+/**
+ * CannotInstantiateLoaderException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved. 
+ */
 class CannotInstantiateLoaderException extends Exception
 {
 }
 
+/**
+ * ClassMapNotFoundException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved. 
+ */
 class ClassMapNotFoundException extends Exception
 {
 }
 
+/**
+ * InvalidClassMapException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved. 
+ */
 class InvalidClassMapException extends Exception
 {
-}
-
 }
 ?>

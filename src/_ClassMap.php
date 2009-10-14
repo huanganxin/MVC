@@ -35,14 +35,7 @@
  * @license    BSD License
  */
 
-namespace spriebsch\MVC;
-
-// @codeCoverageIgnoreStart
-
-/**
- * @var array
- */
-$_classMap = array(
+return array(
     'spriebsch\MVC\FrontController'         => 'FrontController.php',
     'spriebsch\MVC\Router'                  => 'Router.php',
     'spriebsch\MVC\Request'                 => 'Request.php',
@@ -65,5 +58,4 @@ $_classMap = array(
     'spriebsch\MVC\ViewHelper\FormErrors'   => 'ViewHelper/FormErrors.php',
     'spriebsch\MVC\Acl'                     => 'Acl.php',
 );
-// @codeCoverageIgnoreEnd
 ?>
