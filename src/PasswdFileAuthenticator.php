@@ -47,9 +47,22 @@ namespace spriebsch\MVC;
  */
 class PasswdFileAuthenticator extends Authenticator
 {
+    /**
+     * @var string
+     */
     protected $salt = 'sadfoisfroq42hrewfawiuep423rweaifdsjawüeoiare';
+
+    /**
+     * @var array
+     */
     protected $passwords = array();
 
+    /**
+     * Constructs the object.
+     *
+     * @param string $passwordFile
+     * @return null
+     */
     public function __construct($passwordFile)
     {
         if (!file_exists($passwordFile)) {
@@ -63,11 +76,22 @@ class PasswdFileAuthenticator extends Authenticator
         }
     }
 
+    /**
+     * Hash a password.
+     *
+     * @param string $password
+     * @return string
+     */
     protected function hashPassword($password)
     {
         return sha1($this->salt . $password);
     }
-    
+
+    /**
+     * Performs the authentication
+     *
+     * @return bool
+     */
     protected function doAuthenticate()
     {
         if (!isset($this->passwords[$this->username])) {

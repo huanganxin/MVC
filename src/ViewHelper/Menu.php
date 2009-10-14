@@ -39,10 +39,19 @@ namespace spriebsch\MVC\ViewHelper;
 
 /**
  * View Helper that renders a menu as un unordered list
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  * @todo only show menu items that are allowed.
  */
 class Menu extends \spriebsch\MVC\ViewHelper
 {
+    /**
+     * Returns a menu of the given items.
+     *
+     * @param array $parameters The parameters
+     * @return string
+     */
     protected function doExecute(array $parameters)
     {
         $menu = $this->response->getData($parameters[0]);

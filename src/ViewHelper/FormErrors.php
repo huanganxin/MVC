@@ -39,9 +39,18 @@ namespace spriebsch\MVC\ViewHelper;
 
 /**
  * View Helper that renders form errors of given form as div.
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
 class FormErrors extends \spriebsch\MVC\ViewHelper
 {
+    /**
+     * Returns the form errors.
+     *
+     * @param array $parameters The parameters
+     * @return string
+     */
     protected function doExecute(array $parameters)
     {
         if (!$this->response->hasFormErrors($parameters[0])) {

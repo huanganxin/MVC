@@ -37,16 +37,37 @@
 
 namespace spriebsch\MVC\Message;
 
+/**
+ * Form Error
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
 class FormError extends \spriebsch\MVC\Message
 {
+    /**
+     * @var string
+     */
     protected $formName;
 
+    /**
+     * Constructs the object.
+     *
+     * @param string $message The Message
+     * @param string $formName The form name
+     * @return null
+     */
     public function __construct($message, $formName)
     {
         $this->formName = $formName;
         parent::__construct($message);
     }
 
+    /**
+     * Returns the form name.
+     *
+     * @return string
+     */
     public function getFormName()
     {
         return $this->formName;

@@ -39,9 +39,18 @@ namespace spriebsch\MVC\ViewHelper;
 
 /**
  * View Helper that renders an unordered list from an array.
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
 class Ul extends \spriebsch\MVC\ViewHelper
 {
+    /**
+     * Returns an unordered list of the given items.
+     *
+     * @param array $parameters The parameters
+     * @return string
+     */
     protected function doExecute(array $parameters)
     {
         $data = $parameters[0];

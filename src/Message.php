@@ -37,15 +37,35 @@
 
 namespace spriebsch\MVC;
 
+/**
+ * Message.
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
 class Message
 {
+    /**
+     * @var string
+     */
     protected $message;
 
+    /**
+     * Constructs the object.
+     *
+     * @param string $message
+     * @return null
+     */
     public function __construct($message)
     {
         $this->message = $message;
     }
 
+    /**
+     * Returns the message.
+     *
+     * @return string
+     */
     public function getMessage()
     {
         return $this->message;

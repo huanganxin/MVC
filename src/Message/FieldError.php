@@ -37,16 +37,38 @@
 
 namespace spriebsch\MVC\Message;
 
+/**
+ * FieldError
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
 class FieldError extends \spriebsch\MVC\Message\FormError
 {
+    /**
+     * @var string
+     */
     protected $fieldName;
 
+    /**
+     * Constructs the object.
+     *
+     * @param string $message The Message
+     * @param string $formName The form name
+     * @param string $fieldName The field name
+     * @return null
+     */
     public function __construct($message, $formName, $fieldName)
     {
         $this->fieldName = $fieldName;
         parent::__construct($message, $formName);
     }
 
+    /**
+     * Returns the field name.
+     *
+     * @return string
+     */
     public function getFieldName()
     {
         return $this->fieldName;

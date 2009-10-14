@@ -37,6 +37,12 @@
 
 namespace spriebsch\MVC;
 
+/**
+ * Base class for view helpers.
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
 abstract class ViewHelper
 {
     /**
@@ -59,6 +65,13 @@ abstract class ViewHelper
      */
     protected $numberOfRequiredParameters = 1;
 
+    /**
+     * Constructs the object.
+     *
+     * @param Request $request The request
+     * @param Response $response The response
+     * @return null
+     */
     public function __construct(Request $request, Response $response)
     {
         $this->request = $request;

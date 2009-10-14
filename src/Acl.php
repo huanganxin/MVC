@@ -49,24 +49,60 @@ class Acl
     const ALLOW = true;
     const DENY = false;
 
+    /**
+     * @var bool
+     */
     protected $policy = Acl::ALLOW;
+
+    /**
+     * @var array
+     */
     protected $rules = array();
 
+    /**
+     * Add a rule
+     *
+     * @param boolean $flag Flag
+     * @param string $role The role
+     * @param string $controller The controller name
+     * @return null
+     */
     protected function addRule($flag, $role, $controller)
     {
         $this->rules[$role][$controller] = $flag;
     }
 
+    /**
+     * Checks whether a rule exists for given role and controller.
+     *
+     * @param string $role The role
+     * @param string $controller The controller name
+     * @return null
+     */
     protected function hasRule($role, $controller)
     {
         return isset($this->rules[$role][$controller]);
     }
 
+    /**
+     * Returns the rule for a given role and controller.
+     *
+     * @param string $role The role
+     * @param string $controller The controller name
+     * @return bool
+     */
     protected function getRule($role, $controller)
     {
         return $this->rules[$role][$controller];
     }
 
+    /**
+     * Checks whether a controller is allowed
+     *
+     * @param string $role The role
+     * @param string $controller The controller name
+     * @return bool
+     */
     protected function isControllerAllowed($role, $controller)
     {
         if ($this->hasRule($role, $controller, '*')) {
@@ -76,6 +112,12 @@ class Acl
         return $this->isRoleAllowed($role);
     }
 
+    /**
+     * Checks whether a role is allowed
+     *
+     * @param string $role The role
+     * @return bool
+     */
     protected function isRoleAllowed($role)
     {
         if ($this->hasRule($role, '*', '*')) {
@@ -85,26 +127,58 @@ class Acl
         return $this->policy;
     }
 
+    /**
+     * Set the default policy to ALLOW or DENY.
+     *
+     * @param bool $flag ALLOW or DENY
+     * @return null
+     */
     public function setPolicy($flag)
     {
         $this->policy = $flag;
     }
 
+    /**
+     * Returns the default policy.
+     *
+     * @return bool
+     */
     public function getPolicy()
     {
         return $this->policy;
     }
 
+    /**
+     * Add a allow rule.
+     *
+     * @param string $role The role
+     * @param string $controller The controller
+     * @return null
+     */
     public function allow($role, $controller = '*')
     {
         $this->addRule(Acl::ALLOW, $role, $controller);
     }
 
+    /**
+     * Add a deny rule.
+     *
+     * @param string $role The role
+     * @param string $controller The controller
+     * @return null
+     */
     public function deny($role, $controller = '*')
     {
         $this->addRule(Acl::DENY, $role, $controller);
     }
 
+    /**
+     * Checks whether a controller is allowed.
+     *
+     * @param string $role The role
+     * @param string $controller The controller
+     * @return bool
+     */
     public function isAllowed($role, $controller = null)
     {
         if (!is_null($controller)) {

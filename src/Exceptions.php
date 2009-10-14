@@ -37,23 +37,113 @@
 
 namespace spriebsch\MVC;
 
-class Exception extends \RuntimeException {}
+/**
+ * Exception
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class Exception extends \RuntimeException
+{
+}
 
-class LoaderException extends Exception {}
+/**
+ * LoaderException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class LoaderException extends Exception
+{
+}
 
-class CannotInstantiateLoaderException extends Exception {}
-class ClassMapNotFoundException extends Exception {}
-class InvalidClassMapException extends Exception {}
+/**
+ * CannotInstantiateLoaderException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class CannotInstantiateLoaderException extends Exception
+{
+}
 
-class UnknownVariableException extends Exception {}
+/**
+ * ClassMapNotFoundException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class ClassMapNotFoundException extends Exception
+{
+}
 
-class RouterException extends Exception {}
+/**
+ * InvalidClassMapException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class InvalidClassMapException extends Exception
+{
+}
 
-class ControllerException extends Exception {}
+/**
+ * UnknownVariableException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class UnknownVariableException extends Exception
+{
+}
 
-class FrontControllerException extends Exception {}
+/**
+ * RouterException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class RouterException extends Exception
+{
+}
 
-class SessionException extends Exception {}
+/**
+ * ControllerException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class ControllerException extends Exception
+{
+}
 
-class ViewException extends Exception {}
+/**
+ * FrontControllerException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class FrontControllerException extends Exception
+{
+}
+
+/**
+ * SessionException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class SessionException extends Exception
+{
+}
+
+/**
+ * ViewException
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class ViewException extends Exception
+{
+}
 ?>

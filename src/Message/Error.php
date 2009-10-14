@@ -37,6 +37,12 @@
 
 namespace spriebsch\MVC\Message;
 
+/**
+ * Error
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
 class Error extends \spriebsch\MVC\Message
 {
 }

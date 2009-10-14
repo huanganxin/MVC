@@ -39,11 +39,23 @@ namespace spriebsch\MVC\ViewHelper;
 
 /**
  * View Helper that renders the URL of a given controller.
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
 class Url extends \spriebsch\MVC\ViewHelper
 {
+    /**
+     * @var string
+     */
     protected $baseUrl = 'index.php';
 
+    /**
+     * Returns the URL of a controller.
+     *
+     * @param array $parameter The parameters
+     * @return string
+     */
     protected function doExecute(array $parameters)
     {
         return $this->baseUrl . '?mvc_controller=' . $parameters[0];

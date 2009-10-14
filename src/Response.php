@@ -223,16 +223,32 @@ class Response
         return $this->data[$key];
     }
 
+    /**
+     * Redirect to another controller
+     *
+     * @param string $controller The controller name
+     * @return null
+     */
     public function setRedirect($controller)
     {
         $this->redirectController = $controller;
     }
 
+    /**
+     * Returns whether a redirect is pending
+     *
+     * @return bool
+     */
     public function isRedirect()
     {
         return $this->redirectController !== null;
     }
 
+    /**
+     * Returns the controller name to redirect to.
+     *
+     * @returns string
+     */
     public function getRedirectController()
     {
         return $this->redirectController;
@@ -240,32 +256,63 @@ class Response
 
     /**
      * Add an error message.
+     *
+     * @param spriebsch\MVC\Message\Error $error The error message
+     * @return null
      */
     public function addError(\spriebsch\MVC\Message\Error $error)
     {
         $this->errors[] = $error;
     }
 
+    /**
+     * Checks whether there were errors.
+     *
+     * @return int
+     */
     public function hasErrors()
     {
         return sizeof($this->errors) > 0;
     }
 
+    /**
+     * Returns the errors.
+     *
+     * @return array
+     */
     public function getErrors()
     {
         return $this->errors;
     }
 
+    /**
+     * Add a form error.
+     *
+     * @param spriebsch\MVC\Message\FormError $error The error message
+     * @return null
+     */
     public function addFormError(\spriebsch\MVC\Message\FormError $error)
     {
         $this->formErrors[$error->getFormName()][] = $error;
     }
 
+    /**
+     * Checks whether there were errors for a given form.
+     *
+     * @param string $formName Form name
+     * @return bool
+     */
     public function hasFormErrors($formName)
     {
         return isset($this->formErrors[$formName]) && (sizeof($this->formErrors[$formName]) > 0);
     }
 
+    /**
+     * Returns the errors for a given form.
+     *
+     * @param string $formName Form name
+     * @return array
+     */
     public function getFormErrors($formName)
     {
         if (!isset($this->formErrors[$formName])) {
@@ -275,16 +322,36 @@ class Response
         return $this->formErrors[$formName];
     }
 
+    /**
+     * Add a form field error
+     *
+     * @param spriebsch\MVC\Message\FieldError $error The error object
+     * @return null
+     */
     public function addFieldError(\spriebsch\MVC\Message\FieldError $error)
     {
         $this->fieldErrors[$error->getFormName()][$error->getFieldName()][] = $error;
     }
 
+    /**
+     * Checks whether a given form field has errors
+     *
+     * @param string $formName The form name
+     * @param string $fieldName The field name
+     * @return bool
+     */
     public function hasFieldErrors($formName, $fieldName)
     {
         return isset($this->fieldErrors[$formName]) && isset($this->fieldErrors[$formName][$fieldName]) && (sizeof($this->fieldErrors[$formName][$fieldName]) > 0);
     }
 
+    /**
+     * Checks whether given form field has errors.
+     *
+     * @param string $formName The form name
+     * @param string $fieldName The field name
+     * @return array
+     */
     public function getFieldErrors($formName, $fieldName)
     {
         if (!isset($this->fieldErrors[$formName]) || !isset($this->fieldErrors[$formName][$fieldName])) {
@@ -294,15 +361,40 @@ class Response
         return $this->fieldErrors[$formName][$fieldName];
     }
 
-    public function setFormValue($formName, $fieldName, $value) {
+    /**
+     * Set a value for a given form field.
+     *
+     * @param string $formName The form name
+     * @param string $fieldName The field name
+     * @param mixed $value The field value
+     * @return null
+     */
+    public function setFormValue($formName, $fieldName, $value)
+    {
         $this->formValues[$formName][$fieldName] = $value;
     }
 
-    public function hasFormValue($formName, $fieldName) {
+    /**
+     * Checks whether given form field has a value.
+     *
+     * @param string $formName The form name
+     * @param string $fieldName The field name
+     * @return bool
+     */
+    public function hasFormValue($formName, $fieldName)
+    {
         return isset($this->formValues[$formName]) && isset($this->formValues[$formName][$fieldName]);
     }
 
-    public function getFormValue($formName, $fieldName) {
+    /**
+     * Return form value for a given field.
+     *
+     * @param string $formName The form name
+     * @param string $fieldName The field name
+     * @return mixed
+     */
+    public function getFormValue($formName, $fieldName)
+    {
         if (!isset($this->formValues[$formName]) || !isset($this->formValues[$formName][$fieldName])) {
             return '';
         }
@@ -310,16 +402,39 @@ class Response
         return $this->formValues[$formName][$fieldName];
     }
 
+    /**
+     * Adds a cookie
+     *
+     * @param sting $name Cookie name
+     * @param string $value Cookie value
+     * @param int $expire Expiration
+     * @param string $path The cookie path
+     * @param string $domain The cookie domain
+     * @param bool $secure Whether the cookie is secure
+     * @param bool $httpOnly Whether the cookie is HTTPOnly
+     * @return null
+     * @todo rename to addCookie
+     */
     public function setCookie($name, $value = '', $expire = 0, $path = '/', $domain = '', $secure = false, $httpOnly = false)
     {
         $this->cookies[] = array($name, $value, $expire, $path, $domain, $secure, $httpOnly);
     }
 
+    /**
+     * Checks whether there are cookies.
+     *
+     * @return bool
+     */
     public function hasCookies()
     {
         return sizeof($this->cookies) > 0;
     }
 
+    /**
+     * Returns an array with all cookies.
+     *
+     * @return array
+     */
     public function getCookies()
     {
         return $this->cookies;
