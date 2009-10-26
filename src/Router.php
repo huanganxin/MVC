@@ -65,11 +65,6 @@ class Router
     protected $authenticationController = 'authentication.login';
 
     /**
-     * @var string
-     */
-    protected $controller;
-
-    /**
      * Controller/action map.
      *
      * Is an associative array of the format 
@@ -205,19 +200,19 @@ class Router
     public function route($request)
     {
     	// Fallback: route to default controller and action.
-        $this->controller = $this->getDefaultController();
+        $controller = $this->getDefaultController();
 
         // GET parameter overrides the default controller.
         if ($request->hasGet('mvc_controller')) {
-            $this->controller = $request->get('mvc_controller');
+            $controller = $request->get('mvc_controller');
         }
 
         // POST parameter overrides GET parameter.
         if ($request->hasPost('mvc_controller')) {
-            $this->controller = $request->post('mvc_controller');
+            $controller = $request->post('mvc_controller');
         }
 
-        return $this->controller;
+        return $controller;
     }
 }
 ?>
