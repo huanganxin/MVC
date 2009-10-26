@@ -37,8 +37,6 @@
 
 namespace spriebsch\MVC;
 
-require_once 'PHPUnit/Framework.php';
-
 /**
  * Unit Tests for View class.
  *

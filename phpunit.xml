@@ -17,6 +17,8 @@
         </whitelist>
         <blacklist>
             <file>src/Autoloader.php</file>
+            <file>src/MVC.php</file>
+            <file>tests/bootstrap.php</file>
         </blacklist>
     </filter>
 
