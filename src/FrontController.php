@@ -115,7 +115,6 @@ class FrontController
 
     /**
      * Initializes the application.
-     * Registers paths to load classes from with the autoloader.
      *
      * @return null
      */
@@ -133,13 +132,9 @@ class FrontController
     }
 
     /**
-     * Check whether selected controller and action is allowed,
-     * or if anonymous access is allowed at all.
+     * Check whether selected controller and action is allowed for the current
+     * user role.
      *
-     * You might just allow the login controller here
-     *
-     * @param string $controller
-     * @param string $action
      * @return bool
      */
     protected function isAllowed()
@@ -163,6 +158,7 @@ class FrontController
 
         $this->controller = $this->router->route($this->request);
 
+        // If selected controller is not allowed, redirect to authentication controller. 
         if (!$this->isAllowed()) {
 
 // @todo remember selected controller & action to back-direct later
