@@ -141,7 +141,6 @@ class FrontController
      * @param string $controller
      * @param string $action
      * @return bool
-     * @todo fix ACL to not include separate action
      */
     protected function isAllowed()
     {
@@ -162,8 +161,7 @@ class FrontController
     {
         $this->initApplication();
 
-        $this->router->route($this->request);
-        $this->controller = $this->router->getController();
+        $this->controller = $this->router->route($this->request);
 
         if (!$this->isAllowed()) {
 

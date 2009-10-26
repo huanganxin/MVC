@@ -45,36 +45,31 @@ namespace spriebsch\MVC;
  */
 class RouterTest extends \PHPUnit_Framework_TestCase
 {
+	protected function setUp()
+	{
+		$this->router = new Router();
+	}
+	
+	protected function tearDown()
+	{
+		unset($this->router);
+	}
+	
     /**
      * @covers spriebsch\MVC\Router::doGet
      * @expectedException spriebsch\MVC\RouterException
      */
     public function testThrowsExceptionWhenControllerNotRegistered()
     {
-        $router = new Router();
-        $router->getClassName('notRegistered');
-    }
-
-    /**
-     * @covers spriebsch\MVC\Router::getController
-     * @expectedException spriebsch\MVC\RouterException
-     */
-    public function testThrowsExceptionWhenGettingControllerBeforeRouting()
-    {
-        $router = new Router();
-        $router->getController();
+        $this->router->getClassName('notRegistered');
     }
 
     /**
      * @covers spriebsch\MVC\Router::route
-     * @covers spriebsch\MVC\Router::getController
      */
     public function testRoutesToDefaultController()
     {
-        $router = new Router();
-        $router->route(new Request());
-
-        $this->assertEquals('main.index', $router->getController());
+        $this->assertEquals('main.index', $this->router->route(new Request()));
     }
 
     /**
@@ -84,11 +79,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testTranslatesControllerToClassAndMethodName()
     {
-        $router = new Router();
-        $router->registerController('main.index', 'controller', 'method');
+        $this->router->registerController('main.index', 'controller', 'method');
 
-        $this->assertEquals('controller', $router->getClassName('main.index'));
-        $this->assertEquals('method', $router->getMethodName('main.index'));
+        $this->assertEquals('controller', $this->router->getClassName('main.index'));
+        $this->assertEquals('method', $this->router->getMethodName('main.index'));
     }
 
     /**
@@ -97,10 +91,9 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testDefaultControllerAccessors()
     {
-        $router = new Router();
-        $router->setDefaultController('default');
+        $this->router->setDefaultController('default');
 
-        $this->assertEquals('default', $router->getDefaultController());
+        $this->assertEquals('default', $this->router->getDefaultController());
     }
 
     /**
@@ -109,52 +102,39 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testAuthenticationControllerAccessors()
     {
-        $router = new Router();
-        $router->setAuthenticationController('auth');
+        $this->router->setAuthenticationController('auth');
 
-        $this->assertEquals('auth', $router->getAuthenticationController());
+        $this->assertEquals('auth', $this->router->getAuthenticationController());
     }
 
     /**
      * @covers spriebsch\MVC\Router::route
-     * @covers spriebsch\MVC\Router::getController
      */
     public function testSelectsControllerFromGetVariables()
     {
-        $router  = new Router();
         $request = new Request(array('mvc_controller' => 'controller'));
 
-        $router->route($request);
-
-        $this->assertEquals('controller', $router->getController());
+        $this->assertEquals('controller', $this->router->route($request));
     }
 
     /**
      * @covers spriebsch\MVC\Router::route
-     * @covers spriebsch\MVC\Router::getController
      */
     public function testSelectsControllerFromPostVariables()
     {
-        $router  = new Router();
         $request = new Request(array(), array('mvc_controller' => 'controller'));
 
-        $router->route($request);
-
-        $this->assertEquals('controller', $router->getController());
+        $this->assertEquals('controller', $this->router->route($request));
     }
 
     /**
      * @covers spriebsch\MVC\Router::route
-     * @covers spriebsch\MVC\Router::getController
      */
     public function testPostOverridesGet()
     {
-        $router  = new Router();
         $request = new Request(array('mvc_controller' => 'nonsense'), array('mvc_controller' => 'controller'));
 
-        $router->route($request);
-
-        $this->assertEquals('controller', $router->getController());
+        $this->assertEquals('controller', $this->router->route($request));
     }
 }
 ?>

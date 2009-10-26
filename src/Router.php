@@ -39,8 +39,15 @@ namespace spriebsch\MVC;
 
 /**
  * The Router decides which controller and action to invoke.
- * It uses the request variables mvc_controller and mvc_action, with fallback
- * values default for both.
+ * 
+ * Controller names (those displayed in the URL) are mapped to a controller
+ * class and action method to be called.
+ * This Router reads the controller from the request variable mvc_controller.
+ * If mvc_controller is not given, it routes to $defaultController.
+ * The mapping from controller names that are communicated via URL
+ * makes routing very flexible, since the same URLs can still be used
+ * when other controller classes are used to handle a request.
+ * This also makes disabling controllers very easy. 
  *
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
@@ -63,6 +70,11 @@ class Router
     protected $controller;
 
     /**
+     * Controller/action map.
+     *
+     * Is an associative array of the format 
+     * controller name => array(controller class, action method)
+     *
      * @var array
      */
     protected $map = array();
@@ -71,6 +83,7 @@ class Router
      * Construct the Router.
      *
      * @param array $map Controller/Action map
+     * @return null
      */
     public function __construct(array $map = array())
     {
@@ -79,7 +92,8 @@ class Router
 
     /**
      * Helper method for getClass() and getMethod() that
-     * either returns the class or the method name.
+     * either returns the class or the method name of selected controller name
+     * (the one from the URL) by looking it up in the $map.
      *
      * @param string $controller
      * @param bool $classFlag
@@ -145,7 +159,8 @@ class Router
     }
 
     /**
-     * Add a mapping of a controller name to the class/method to call.
+     * Add a mapping of a controller name (the one from the URL)
+     * to the controller class/action method to call.
      *
      * @param string $controller Controller name
      * @param string $class      Controller class
@@ -158,20 +173,7 @@ class Router
     }
 
     /**
-     * @return string
-     */
-    public function getController()
-    {
-        if (is_null($this->controller)) {
-            throw new RouterException('Route has not been calculated yet. Call route() first.');
-        }
-
-        return $this->controller;
-    }
-
-    /**
-     * Returns the class name for given controller name.
-     * Must not be called before route() has been called.
+     * Returns the class name for given controller name (the one from the URL).
      *
      * @param string $controller Controller name
      * @return string
@@ -182,8 +184,7 @@ class Router
     }
 
     /**
-     * Returns the class name for given controller name.
-     * Must not be called before route() has been called.
+     * Returns the method name for given controller name (the one from the URL).
      *
      * @param string $controller Controller name
      * @return string
@@ -199,19 +200,24 @@ class Router
      * falls back to default controller.
      *
      * @param Request $request
-     * @return void
+     * @return null
      */
     public function route($request)
     {
+    	// Fallback: route to default controller and action.
         $this->controller = $this->getDefaultController();
 
+        // GET parameter overrides the default controller.
         if ($request->hasGet('mvc_controller')) {
             $this->controller = $request->get('mvc_controller');
         }
 
+        // POST parameter overrides GET parameter.
         if ($request->hasPost('mvc_controller')) {
             $this->controller = $request->post('mvc_controller');
         }
+
+        return $this->controller;
     }
 }
 ?>
