@@ -181,7 +181,7 @@ class View
     protected function postProcess($body)
     {
         preg_match_all('/__(.*)__/U', $body, $matches);
-
+        
         foreach ($matches[1] as $match) {
             $parts = explode('.', $match);
 
