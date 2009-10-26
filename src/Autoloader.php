@@ -92,7 +92,7 @@ final class Autoloader
     static public function init()
     {
         $autoloadStack = spl_autoload_functions();
-        
+
         if ($autoloadStack !== false && in_array(array('spriebsch\\Loader\\Autoloader', 'autoload'), $autoloadStack)) {
             throw new AlreadyInitializedException('The Autoloader has already been initialized');
         }
