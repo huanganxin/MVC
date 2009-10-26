@@ -66,10 +66,10 @@ abstract class Controller
     protected $authenticator;
 
     /**
-     * Convenience delegate method.
+     * Convenience method.
      *
      * @param string $name
-     * @return void
+     * @return null
      */
     protected function setViewName($name)
     {
@@ -77,9 +77,10 @@ abstract class Controller
     }
 
     /**
-     * Convenience delegating method.
+     * Convenience method.
      *
      * @param string $controller
+     * @return null
      */
     protected function redirect($controller)
     {
@@ -89,7 +90,7 @@ abstract class Controller
     /**
      * Initializes the controller
      *
-     * @return void
+     * @return null
      */
     protected function init()
     {
@@ -99,9 +100,9 @@ abstract class Controller
      * Checks whether the action method is allowed.
      * ACL are already being checked in front controller.
      * Always returns true, subclass can override this method
-     * and implement authentication checks.
+     * and implement additional authentication checks.
      *
-     * @param string $action Action name (not action method name)
+     * @param string $method action method
      * @return bool
      */
     protected function isAllowed($method)
@@ -116,7 +117,7 @@ abstract class Controller
      * @param Response $response Response object
      * @param Session  $session  Session object
      * @param string   $action   Name of the action to perform
-     * @return mixed
+     * @return bool
      * @throws spriebsch\MVC\ControllerException when requested action does not exist
      */
     public function execute(Request $request, Response $response, Session $session, Authenticator $authenticator, $method)
