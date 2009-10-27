@@ -57,5 +57,6 @@ return array(
     'spriebsch\MVC\ViewHelper\Url'          => 'ViewHelper/Url.php',
     'spriebsch\MVC\ViewHelper\FormErrors'   => 'ViewHelper/FormErrors.php',
     'spriebsch\MVC\Acl'                     => 'Acl.php',
+    'spriebsch\MVC\ApplicationController'   => 'ApplicationController.php',
 );
 ?>

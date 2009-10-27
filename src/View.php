@@ -49,6 +49,8 @@ class View
      * @var string
      */
     protected $viewName;
+    
+    protected $redirectController;
 
     /**
      * @var string
@@ -64,11 +66,6 @@ class View
      * @var string
      */
     protected $foot = 'foot.php';
-
-    /**
-     * @var array
-     */
-    protected $viewHelpers = array('ViewHelper');
 
     /**
      * Constructs the View object.
@@ -229,22 +226,24 @@ class View
     {
         $className = $this->getViewHelperName($method);
 
-// @todo make sure view helper is registered
+        if (!class_exists($className)) {
+        	throw new Exception('View helper ' . $method . '(' . $className . ') does not exist');
+        }
 
         $viewHelper = new $className($this->request, $this->response);
         return $viewHelper->execute($parameters);
     }
-
-    /**
-     * Register a view helper.
-     *
-     * @param string $className
-     */
-    public function registerViewHelper($className)
+    
+    public function setViewName($viewName)
     {
-        $this->viewHelpers[] = $className;
+    	$this->viewName = $viewName;
     }
-
+    
+    public function setRedirect($controllerName)
+    {
+    	$this->redirectController = $controllerName;
+    }
+    
     /**
      * Render the view by including the view script.
      *
@@ -253,18 +252,19 @@ class View
      * @param Response $response
      * @return string
      */
-    public function render($viewName, Request $request, Response $response)
+    public function render(Request $request, Response $response)
     {
-        $this->viewName = $viewName;
-
         $this->request  = $request;
         $this->response = $response;
 
-        if ($this->response->isRedirect()) {
-// @todo: use view helper to generate url
-            header('Location: index.php?mvc_controller=' . $this->response->getRedirectController());
-            return;
+        if ($this->redirectController !== null) {
+        	header('Location: ' . $this->url($this->redirectController));
+            return '';
 // @todo when no controller, but only action set, what happens?
+        }
+
+        if ($this->viewName === null) {
+            throw new Exception('View name is not set');
         }
 
         $head = $this->getHeadFilename();

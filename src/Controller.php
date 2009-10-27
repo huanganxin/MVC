@@ -66,28 +66,6 @@ abstract class Controller
     protected $authenticator;
 
     /**
-     * Convenience method.
-     *
-     * @param string $name
-     * @return null
-     */
-    protected function setViewName($name)
-    {
-        $this->response->setViewName($name);
-    }
-
-    /**
-     * Convenience method.
-     *
-     * @param string $controller
-     * @return null
-     */
-    protected function redirect($controller)
-    {
-        $this->response->setRedirect($controller);
-    }
-
-    /**
      * Initializes the controller
      *
      * @return null

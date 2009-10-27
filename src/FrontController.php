@@ -46,26 +46,6 @@ namespace spriebsch\MVC;
 class FrontController
 {
     /**
-     * @var string
-     */
-    protected $controller;
-
-    /**
-     * @var string
-     */
-    protected $controllerClass;
-
-    /**
-     * @var string
-     */
-    protected $controllerMethod;
-
-    /**
-     * @var Router
-     */
-    protected $router;
-
-    /**
      * @var Session
      */
     protected $session;
@@ -81,10 +61,10 @@ class FrontController
     protected $acl;
 
     /**
-     * @var View
+     * @var ApplicationController
      */
-    protected $view;
-
+    protected $applicationController;
+    
     /**
      * @var string
      */
@@ -93,24 +73,24 @@ class FrontController
     /**
      * Construct the FrontController.
      *
-     * @param Request       $request       Request object
-     * @param Response      $response      Response object
-     * @param Session       $session       Session object
-     * @param View          $view          View
-     * @param Router        $router        Router object
-     * @param Authenticator $authenticator Authenticator object
-     * @param Acl           $acl           Access Control List
+     * @param Request               $request       Request object
+     * @param Response              $response      Response object
+     * @param Session               $session       Session object
+     * @param View                  $view          View
+     * @param Router                $router        Router object
+     * @param Authenticator         $authenticator Authenticator object
+     * @param Acl                   $acl           Access Control List
+     * @param ApplicationController $appController Application Controller
      * @return void
     */
-    public function __construct(Request $request, Response $response, Session $session, View $view, Router $router, Authenticator $authenticator, Acl $acl)
+    public function __construct(Request $request, Response $response, Session $session, Authenticator $authenticator, Acl $acl, ApplicationController $appController)
     {
-        $this->request       = $request;
-        $this->response      = $response;
-        $this->session       = $session;
-        $this->view          = $view;
-        $this->router        = $router;
-        $this->authenticator = $authenticator;
-        $this->acl           = $acl;
+        $this->request               = $request;
+        $this->response              = $response;
+        $this->session               = $session;
+        $this->authenticator         = $authenticator;
+        $this->acl                   = $acl;
+        $this->applicationController = $appController;
     }
 
     /**
@@ -132,17 +112,6 @@ class FrontController
     }
 
     /**
-     * Check whether selected controller and action is allowed for the current
-     * user role.
-     *
-     * @return bool
-     */
-    protected function isAllowed()
-    {
-        return $this->acl->isAllowed($this->userRole, $this->controller);
-    }
-
-    /**
      * Main method. Initializes the application,
      * dispatches the request (selects controller and action),
      * runs the controller, and renders the view.
@@ -156,29 +125,37 @@ class FrontController
     {
         $this->initApplication();
 
-        $this->controller = $this->router->route($this->request);
+        $controllerName = $this->applicationController->route($this->request);
 
-        // If selected controller is not allowed, redirect to authentication controller. 
-        if (!$this->isAllowed()) {
+        $controllerClass  = $this->applicationController->getClassName($controllerName);
+        $controllerMethod = $this->applicationController->getMethodName($controllerName);
 
-// @todo remember selected controller & action to back-direct later
-// @todo either redirect to auth controller (for anonymous) OR FAIL?
-            $this->controller = $this->router->getAuthenticationController();
+        if (!class_exists($controllerClass)) {
+            throw new FrontControllerException('Controller class ' . $controllerClass . ' does not exist');
+        }
+        
+/* @todo do not inject view, but fetch from factry (to allow using special view class based on routing)
+ * @todo fetch controller instance from factory
+ */
+
+        $controllerObject = new $controllerClass();
+        
+        $result = $controllerObject->execute($this->request, $this->response, $this->session, $this->authenticator, $controllerMethod);
+        
+        if ('' == $result) {
+        	throw new FrontControllerException('Controller ' . $controllerClass . ' returned empty result');
         }
 
-        $this->controllerClass  = $this->router->getClassName($this->controller);
-        $this->controllerMethod = $this->router->getMethodName($this->controller);
+// forward here 
 
-        if (!class_exists($this->controllerClass)) {
-            throw new FrontControllerException('Controller class ' . $this->controllerClass . ' does not exist');
+        if ($this->applicationController->isForward($controllerName, $result)) {
+        	$controller = $this->applicationController->getForward($controllerName, $result); 
+// @todo allow multiple forwards, but avoid endless loops        	
         }
 
-        $class = $this->controllerClass;
-        $controller = new $class();
-
-        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, $this->controllerMethod);
-
-        return $this->view->render($this->response->getViewName(), $this->request, $this->response);
+        $view = $this->applicationController->getView($controllerName, $result);
+        
+        return $view->render($this->request, $this->response);
     }
 }
 ?>

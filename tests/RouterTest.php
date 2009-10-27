@@ -69,7 +69,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testRoutesToDefaultController()
     {
-        $this->assertEquals('main.index', $this->router->route(new Request()));
+        $this->assertEquals('main', $this->router->route(new Request()));
     }
 
     /**
@@ -79,10 +79,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testTranslatesControllerToClassAndMethodName()
     {
-        $this->router->registerController('main.index', 'controller', 'method');
+        $this->router->registerController('main', 'controller', 'method');
 
-        $this->assertEquals('controller', $this->router->getClassName('main.index'));
-        $this->assertEquals('method', $this->router->getMethodName('main.index'));
+        $this->assertEquals('controller', $this->router->getClassName('main'));
+        $this->assertEquals('method', $this->router->getMethodName('main'));
     }
 
     /**

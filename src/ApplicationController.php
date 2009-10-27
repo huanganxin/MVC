@@ -38,22 +38,29 @@
 namespace spriebsch\MVC;
 
 /**
- * The Router decides which controller and action to invoke.
- * 
- * Controller names (those displayed in the URL) are mapped to a controller
- * class and action method to be called.
- * This Router reads the controller from the request variable mvc_controller.
- * If mvc_controller is not given, it routes to $defaultController.
- * The mapping from controller names that are communicated via URL
- * makes routing very flexible, since the same URLs can still be used
- * when other controller classes are used to handle a request.
- * This also makes disabling controllers very easy. 
+ * The Application Controller is selects views based on the results of the 
+ * input (MVC) controllers and forwards to other controllers.
  *
  * @author     Stefan Priebsch <stefan@priebsch.de>
  * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-class Router
+class ApplicationController
 {
+	/**
+	 * @var Session
+	 */
+	protected $session;
+
+    /**
+     * @var Acl
+     */
+    protected $acl;
+
+    /**
+     * @var string
+     */
+    protected $defaultView = 'main';
+	
     /**
      * @var string
      */
@@ -65,6 +72,11 @@ class Router
     protected $authenticationController = 'authentication.login';
 
     /**
+     * @var string
+     */
+    protected $errorView = 'error';
+
+    /**
      * Controller/action map.
      *
      * Is an associative array of the format 
@@ -74,15 +86,23 @@ class Router
      */
     protected $map = array();
 
+    protected $views = array();
+
+    protected $forwards = array();
+
+    protected $redirect = array();
+    
     /**
-     * Construct the Router.
+     * Construct the Application Controller.
      *
      * @param array $map Controller/Action map
      * @return null
      */
-    public function __construct(array $map = array())
+    public function __construct(Session $session, Acl $acl, array $map = array())
     {
-        $this->map = $map;
+    	$this->session = $session;
+        $this->acl = $acl;
+    	$this->map = $map;
     }
 
     /**
@@ -107,6 +127,48 @@ class Router
         } else {
             return $method;
         }
+    }
+    
+    /**
+     * Sets the default view (the "main page" of the application).
+     *
+     * @param string $view
+     * @return void
+     */
+    public function setDefaultView($defaultView)
+    {
+        $this->defaultView = $defaultView;
+    }
+
+    /**
+     * Returns the default view.
+     *
+     * @return string
+     */
+    public function getDefaultView()
+    {
+        return $this->defaultView;
+    }
+
+    /**
+     * Sets the global error view (the "500" page).
+     *
+     * @param string $view
+     * @return void
+     */
+    public function setErrorView($errorView)
+    {
+        $this->errorView = $errorView;
+    }
+
+    /**
+     * Returns the error view.
+     *
+     * @return string
+     */
+    public function getErrorView()
+    {
+        return $this->errorView;
     }
 
     /**
@@ -199,7 +261,7 @@ class Router
      */
     public function route($request)
     {
-    	// Fallback: route to default controller and action.
+        // Fallback: route to default controller and action.
         $controller = $this->getDefaultController();
 
         // GET parameter overrides the default controller.
@@ -211,8 +273,90 @@ class Router
         if ($request->hasPost('mvc_controller')) {
             $controller = $request->post('mvc_controller');
         }
+        
+// @todo use user role here. where to get from?        
+        if (!$this->session->has('_MVC_USER_ROLE') || !$this->acl->isAllowed($this->session->get('_MVC_USER_ROLE'), $controller)) {
+            $controller = $this->authenticationController;	
+        }
 
+// @todo remember selected controller & action to back-direct later
+// @todo either redirect to auth controller (for anonymous) OR FAIL?
+        
         return $controller;
+    }
+    
+    /**
+     * Set the view object.
+     *
+     * @param $view
+     * @return unknown_type
+     * @todo allow different view objects based on app state
+     */
+    public function setViewObject(View $view)
+    {
+    	$this->view = $view;
+    }
+
+    /**
+     * Returns the view to display.
+     * 
+     * @return string
+     */
+    public function getView($controllerName, $result)
+    {
+    	if ($this->view === null) {
+    		throw new Exception('No view object is set');
+    	}
+    	
+    	if (isset($this->redirects[$controllerName][$result])) {
+    		$this->view->setRedirect($this->redirects[$controllerName][$result]);
+    		return $this->view;
+    	}
+
+    	if (!isset($this->views[$controllerName][$result])) {
+    		throw new Exception('No view for controller ' . $controllerName . ' result ' . $result);
+    	}
+    	
+        $name = $this->views[$controllerName][$result];
+        
+        $this->view->setViewName($name);
+
+    	return $this->view;
+    }
+    
+    public function addView($controllerName, $result, $viewName)
+    {
+    	$this->views[$controllerName][$result] = $viewName;
+    }
+   
+    public function addForward($controllerName, $result, $forwardController)
+    {
+        $this->forwards[$controllerName][$result] = $forwardController;
+    }
+
+    public function getForward($controllerName, $result)
+    {
+        return $this->forwards[$controllerName][$result];
+    }
+    
+    public function isForward($controllerName, $result)
+    {
+        return isset($this->forwards[$controllerName][$result]);
+    }
+    
+    public function addRedirect($controllerName, $result, $redirectController)
+    {
+        $this->redirects[$controllerName][$result] = $redirectController;
+    }
+
+    public function getRedirect($controllerName, $result)
+    {
+        return $this->redirects[$controllerName][$result];
+    }
+
+    public function isRedirect($controllerName, $result)
+    {
+        return isset($this->redirects[$controllerName][$result]);
     }
 }
 ?>
