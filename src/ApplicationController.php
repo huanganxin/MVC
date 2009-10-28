@@ -55,26 +55,21 @@ class ApplicationController
      * @var Acl
      */
     protected $acl;
-
-    /**
-     * @var string
-     */
-    protected $defaultView = 'main';
 	
     /**
      * @var string
      */
-    protected $defaultController = 'main';
+    protected $defaultControllerName = 'main';
 
     /**
      * @var string
      */
-    protected $authenticationController = 'authentication.login';
+    protected $authenticationControllerName = 'authentication.login';
 
     /**
-     * @var string
+     * @var View
      */
-    protected $errorView = 'error';
+    protected $defaultView;
 
     /**
      * Controller/action map.
@@ -84,25 +79,34 @@ class ApplicationController
      *
      * @var array
      */
-    protected $map = array();
+    protected $controllers = array();
 
-    protected $views = array();
+    /**
+     * @var array
+     */
+    protected $viewScripts = array();
 
+    /**
+     * @var array
+     */
     protected $forwards = array();
 
-    protected $redirect = array();
+    /**
+     * @var array
+     */
+    protected $redirects = array();
     
     /**
      * Construct the Application Controller.
      *
-     * @param array $map Controller/Action map
+     * @param Session $session 
+     * @param Acl     $acl
      * @return null
      */
-    public function __construct(Session $session, Acl $acl, array $map = array())
+    public function __construct(Session $session, Acl $acl)
     {
     	$this->session = $session;
         $this->acl = $acl;
-    	$this->map = $map;
     }
 
     /**
@@ -116,11 +120,11 @@ class ApplicationController
      */
     protected function doGet($controller, $classFlag)
     {
-        if (!isset($this->map[$controller])) {
+        if (!isset($this->controllers[$controller])) {
             throw new RouterException('Controller ' . $controller . ' is not registered');
         }
 
-        list($class, $method) = $this->map[$controller];
+        list($class, $method) = $this->controllers[$controller];
 
         if ($classFlag) {
             return $class;
@@ -130,67 +134,26 @@ class ApplicationController
     }
     
     /**
-     * Sets the default view (the "main page" of the application).
+     * Sets the default view object.
      *
-     * @param string $view
+     * @param View $view
      * @return void
      */
-    public function setDefaultView($defaultView)
+    public function setDefaultView(View $view)
     {
-        $this->defaultView = $defaultView;
-    }
-
-    /**
-     * Returns the default view.
-     *
-     * @return string
-     */
-    public function getDefaultView()
-    {
-        return $this->defaultView;
-    }
-
-    /**
-     * Sets the global error view (the "500" page).
-     *
-     * @param string $view
-     * @return void
-     */
-    public function setErrorView($errorView)
-    {
-        $this->errorView = $errorView;
-    }
-
-    /**
-     * Returns the error view.
-     *
-     * @return string
-     */
-    public function getErrorView()
-    {
-        return $this->errorView;
+        $this->defaultView = $view;
     }
 
     /**
      * Sets the default controller.
      * The default controller is called when no controller is selected.
      *
-     * @param string $controller
+     * @param string $controllerName
      * @return void
      */
-    public function setDefaultController($controller)
+    public function setDefaultControllerName($controllerName)
     {
-        $this->defaultController = $controller;
-    }
-
-    /**
-     * Returns the default controller.
-     *
-     * @return string Default controller name
-     */
-    public function getDefaultController()
-    {
-        return $this->defaultController;
+        $this->defaultControllerName = $controllerName;
     }
 
     /**
@@ -200,19 +163,9 @@ class ApplicationController
      * @param string $controller
      * @return void
      */
-    public function setAuthenticationController($controller)
+    public function setAuthenticationControllerName($controllerName)
     {
-        $this->authenticationController = $controller;
-    }
-
-    /**
-     * Returns the authentication controller.
-     *
-     * @return string Authentication controller name
-     */
-    public function getAuthenticationController()
-    {
-        return $this->authenticationController;
+        $this->authenticationControllerName = $controllerName;
     }
 
     /**
@@ -226,7 +179,7 @@ class ApplicationController
      */
     public function registerController($controller, $class, $method)
     {
-        $this->map[$controller] = array($class, $method);
+        $this->controllers[$controller] = array($class, $method);
     }
 
     /**
@@ -235,7 +188,7 @@ class ApplicationController
      * @param string $controller Controller name
      * @return string
      */
-    public function getClassName($controller)
+    public function getClass($controller)
     {
         return $this->doGet($controller, true);
     }
@@ -246,7 +199,7 @@ class ApplicationController
      * @param string $controller Controller name
      * @return string
      */
-    public function getMethodName($controller)
+    public function getMethod($controller)
     {
         return $this->doGet($controller, false);
     }
@@ -259,104 +212,154 @@ class ApplicationController
      * @param Request $request
      * @return null
      */
-    public function route($request)
+    public function getControllerName(Request $request)
     {
         // Fallback: route to default controller and action.
-        $controller = $this->getDefaultController();
+        $controllerName = $this->defaultControllerName;
 
         // GET parameter overrides the default controller.
         if ($request->hasGet('mvc_controller')) {
-            $controller = $request->get('mvc_controller');
+            $controllerName = $request->get('mvc_controller');
         }
 
         // POST parameter overrides GET parameter.
         if ($request->hasPost('mvc_controller')) {
-            $controller = $request->post('mvc_controller');
+            $controllerName = $request->post('mvc_controller');
         }
         
-// @todo use user role here. where to get from?        
-        if (!$this->session->has('_MVC_USER_ROLE') || !$this->acl->isAllowed($this->session->get('_MVC_USER_ROLE'), $controller)) {
-            $controller = $this->authenticationController;	
+        $role = 'anonymous';
+        if ($this->session->has('_MVC_USER_ROLE')) {
+        	$role = $this->session->get('_MVC_USER_ROLE');
+        } 
+
+        // If that controller is not allowed, select authentication controller.
+        if (!$this->acl->isAllowed($role, $controllerName)) {
+            $controllerName = $this->authenticationControllerName;	
         }
 
 // @todo remember selected controller & action to back-direct later
 // @todo either redirect to auth controller (for anonymous) OR FAIL?
         
-        return $controller;
-    }
-    
-    /**
-     * Set the view object.
-     *
-     * @param $view
-     * @return unknown_type
-     * @todo allow different view objects based on app state
-     */
-    public function setViewObject(View $view)
-    {
-    	$this->view = $view;
+        return $controllerName;
     }
 
     /**
      * Returns the view to display.
      * 
      * @return string
+     * @todo select view instance based on controller name
      */
     public function getView($controllerName, $result)
-    {
-    	if ($this->view === null) {
+    {   	
+    	if ($this->defaultView === null) {
     		throw new Exception('No view object is set');
     	}
     	
+    	$view = $this->defaultView;
+
+    	// If we need to redirect, tell the view to do so and quit.
     	if (isset($this->redirects[$controllerName][$result])) {
-    		$this->view->setRedirect($this->redirects[$controllerName][$result]);
-    		return $this->view;
+    		$view->setRedirect($this->redirects[$controllerName][$result]);
+    		return $view;
     	}
 
+    	// If we don't know what to do ... 
     	if (!isset($this->views[$controllerName][$result])) {
     		throw new Exception('No view for controller ' . $controllerName . ' result ' . $result);
     	}
     	
-        $name = $this->views[$controllerName][$result];
-        
-        $this->view->setViewName($name);
+    	// Configure the view with the view script to run.
+        $view->setViewScript($this->views[$controllerName][$result]);
 
-    	return $this->view;
-    }
-    
-    public function addView($controllerName, $result, $viewName)
-    {
-    	$this->views[$controllerName][$result] = $viewName;
-    }
-   
-    public function addForward($controllerName, $result, $forwardController)
-    {
-        $this->forwards[$controllerName][$result] = $forwardController;
+    	return $view;
     }
 
-    public function getForward($controllerName, $result)
+    /**
+     * Add a view for given controller result.
+     *
+     * @param string $controllerName
+     * @param string $controllerResult
+     * @param string $viewName
+     * @return null
+     */
+    public function registerView($controllerName, $controllerResult, $viewName)
     {
-        return $this->forwards[$controllerName][$result];
-    }
-    
-    public function isForward($controllerName, $result)
-    {
-        return isset($this->forwards[$controllerName][$result]);
-    }
-    
-    public function addRedirect($controllerName, $result, $redirectController)
-    {
-        $this->redirects[$controllerName][$result] = $redirectController;
+    	$this->views[$controllerName][$controllerResult] = $viewName;
     }
 
-    public function getRedirect($controllerName, $result)
+    /**
+     * Add forwarding to another controller for given controller result.
+     *  
+     * @param string $controllerName
+     * @param string $controllerResult
+     * @param string $forwardController
+     * @return null
+     */
+    public function registerForward($controllerName, $controllerResult, $forwardController)
     {
-        return $this->redirects[$controllerName][$result];
+        $this->forwards[$controllerName][$controllerResult] = $forwardController;
     }
 
-    public function isRedirect($controllerName, $result)
+    /**
+     * Get controller name to forward to for given controller result.
+     * 
+     * @param $controllerName
+     * @param $controllerResult
+     * @return string
+     */
+    public function getForward($controllerName, $controllerResult)
     {
-        return isset($this->redirects[$controllerName][$result]);
+        return $this->forwards[$controllerName][$controllerResult];
+    }
+
+    /**
+     * Checks whether given controller result requires a forward.
+     * 
+     * @param string $controllerName
+     * @param string $controllerResult
+     * @return bool
+     */
+    public function isForward($controllerName, $controllerResult)
+    {
+        return isset($this->forwards[$controllerName][$controllerResult]);
+    }
+
+    /**
+     * Add a (browser) redirect to another controller for given controller result.
+     * 
+     * @param string $controllerName
+     * @param string $controllerResult
+     * @param string $redirectController
+     * @return null
+     */
+    public function registerRedirect($controllerName, $controllerResult, $redirectController)
+    {
+        $this->redirects[$controllerName][$controllerResult] = $redirectController;
+    }
+
+    /**
+     * Returns the redirect controller name for given controller result.
+     *
+     * @param string $controllerName
+     * @param string $controllerResult
+     * @return string
+     */
+    public function getRedirect($controllerName, $controllerResult)
+    {
+        return $this->redirects[$controllerName][$controllerResult];
+    }
+
+    /**
+     * Checks whether given controller result requires a (browser) redirect
+     * to another controller.
+     * 
+     * @param string $controllerName
+     * @param string $controllerResult
+     * @return bool
+     */
+    public function isRedirect($controllerName, $controllerResult)
+    {
+        return isset($this->redirects[$controllerName][$controllerResult]);
     }
 }
 ?>

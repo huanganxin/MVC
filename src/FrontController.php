@@ -64,7 +64,7 @@ class FrontController
      * @var ApplicationController
      */
     protected $applicationController;
-    
+
     /**
      * @var string
      */
@@ -110,6 +110,11 @@ class FrontController
 // @todo check session expiration.
 
     }
+    
+    protected function getControllerInstance($controllerClass)
+    {
+    	return new $controllerClass();
+    }
 
     /**
      * Main method. Initializes the application,
@@ -125,10 +130,10 @@ class FrontController
     {
         $this->initApplication();
 
-        $controllerName = $this->applicationController->route($this->request);
+        $controllerName = $this->applicationController->getControllerName($this->request);
 
-        $controllerClass  = $this->applicationController->getClassName($controllerName);
-        $controllerMethod = $this->applicationController->getMethodName($controllerName);
+        $controllerClass  = $this->applicationController->getClass($controllerName);
+        $controllerMethod = $this->applicationController->getMethod($controllerName);
 
         if (!class_exists($controllerClass)) {
             throw new FrontControllerException('Controller class ' . $controllerClass . ' does not exist');
@@ -138,7 +143,7 @@ class FrontController
  * @todo fetch controller instance from factory
  */
 
-        $controllerObject = new $controllerClass();
+        $controllerObject = $this->getControllerInstance($controllerClass);
         
         $result = $controllerObject->execute($this->request, $this->response, $this->session, $this->authenticator, $controllerMethod);
         

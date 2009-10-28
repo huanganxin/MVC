@@ -57,7 +57,8 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $response = $this->getMock('\\spriebsch\\MVC\\Response');
 
         $view = new View(__DIR__ . '/_testdata/View/no_head');
-        $view->render('body', $request, $response);
+        $view->setViewScript('body');
+        $view->render($request, $response);
     }
 
     /**
@@ -70,7 +71,8 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $response = $this->getMock('\\spriebsch\\MVC\\Response');
 
         $view = new View(__DIR__ . '/_testdata/View/no_foot');
-        $view->render('body', $request, $response);
+        $view->setViewScript('body');
+        $view->render($request, $response);
     }
 
     /**
@@ -83,7 +85,8 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $response = $this->getMock('\\spriebsch\\MVC\\Response');
 
         $view = new View(__DIR__ . '/_testdata/View/no_body');
-        $view->render('body', $request, $response);
+        $view->setViewScript('body');
+        $view->render($request, $response);
     }
 
     /**
@@ -95,7 +98,8 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $response = $this->getMock('\\spriebsch\\MVC\\Response');
 
         $view = new View(__DIR__ . '/_testdata/View/all');
-        $this->assertEquals('headbodyfoot', $view->render('body', $request, $response));
+        $view->setViewScript('body');
+        $this->assertEquals('headbodyfoot', $view->render($request, $response));
     }
 }
 ?>

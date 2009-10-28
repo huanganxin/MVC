@@ -48,7 +48,7 @@ class View
     /**
      * @var string
      */
-    protected $viewName;
+    protected $viewScript;
     
     protected $redirectController;
 
@@ -145,7 +145,7 @@ class View
      */
     protected function getFilename()
     {
-        return $this->directory . '/' . $this->viewName . '.php';
+        return $this->directory . '/' . $this->viewScript . '.php';
     }
 
     /**
@@ -234,20 +234,29 @@ class View
         return $viewHelper->execute($parameters);
     }
     
-    public function setViewName($viewName)
+    public function setViewScript($viewScript)
     {
-    	$this->viewName = $viewName;
+    	$this->viewScript = $viewScript;
+    }
+
+    public function getViewScript()
+    {
+        return $this->viewScript;
     }
     
     public function setRedirect($controllerName)
     {
     	$this->redirectController = $controllerName;
     }
+
+    public function getRedirect()
+    {
+        return $this->redirectController;
+    }
     
     /**
      * Render the view by including the view script.
      *
-     * @param string $viewName
      * @param Request $request
      * @param Response $response
      * @return string
@@ -263,8 +272,8 @@ class View
 // @todo when no controller, but only action set, what happens?
         }
 
-        if ($this->viewName === null) {
-            throw new Exception('View name is not set');
+        if ($this->viewScript === null) {
+            throw new Exception('View script not set');
         }
 
         $head = $this->getHeadFilename();
@@ -276,7 +285,7 @@ class View
         }
 
         if (!file_exists($body)) {
-            throw new Exception('View ' . $this->viewName . ' in file ' . $body . ' not found');
+            throw new Exception('View ' . $this->viewScript . ' in file ' . $body . ' not found');
         }
 
         if (!file_exists($foot)) {

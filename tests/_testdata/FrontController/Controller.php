@@ -6,6 +6,7 @@ class Controller extends \spriebsch\MVC\Controller
 {
     protected function method()
     {
+    	return 'success';
     }
 }
 ?>

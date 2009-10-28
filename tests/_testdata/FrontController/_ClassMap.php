@@ -36,6 +36,7 @@
  */
 
 return array(
+    'spriebsch\MVC\Test\FrontController\TestFC'           => 'TestFC.php',
     'spriebsch\MVC\Test\FrontController\Action'           => 'Action.php',
     'spriebsch\MVC\Test\FrontController\Controller'       => 'Controller.php',
     'spriebsch\MVC\Test\FrontController\Authentication'   => 'Authentication.php',
