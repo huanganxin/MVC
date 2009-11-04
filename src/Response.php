@@ -401,7 +401,17 @@ class Response
 
         return $this->formValues[$formName][$fieldName];
     }
+    
+    public function getForms()
+    {
+    	return array_keys($this->formValues);
+    }
 
+    public function getFormValues($formName)
+    {
+        return $this->formValues[$formName];
+    }
+    
     /**
      * Adds a cookie
      *

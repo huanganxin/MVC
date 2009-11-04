@@ -175,7 +175,7 @@ class View
      * @param string $body
      * @return string
      */
-    protected function postProcess($body)
+    protected function applyViewHelpers($body)
     {
         preg_match_all('/__(.*)__/U', $body, $matches);
         
@@ -191,6 +191,56 @@ class View
         }
 
         return $body;
+    }
+    
+    /**
+     * Populate values in HTML forms. 
+     *
+     * @param string $body
+     * @return string
+     * @todo fix for radio buttons and dropdown boxes!
+     */
+    protected function populateForms($body)
+    {
+    	$forms = $this->response->getForms();
+    	
+    	// If response object holds no form data, we are done.
+    	if (sizeof($forms) == 0) {
+    		return $body;
+    	}
+    	
+	    $dom = new \DOMDocument();
+	    $dom->loadHtml($body);
+
+        $query = new \DOMXPath($dom);
+
+	    foreach ($forms as $form) {
+	    	foreach ($this->response->getFormValues($form) as $field => $value) {
+	    		$nodes = $query->evaluate("//form[@name='" . $form . "']//*[@name='" . $field . "']");
+	    		
+	    		if ($nodes->length == 0) {
+	    			throw new Exception('No field ' . $field . ' in form ' . $form);
+        		}
+        		
+        		$node = $nodes->item(0);
+        		
+                switch ($node->nodeName) {
+                	case 'input':
+                        $node->setAttribute('value', $value);
+               		break;
+               		
+                	case 'textarea':
+                        $node->firstChild->nodeValue = $value;
+                    break;
+                    
+                	default:
+                		throw new Exception('Unknown tag ' . $nodes->item(0)->nodeName . ' in form ' . $form);
+// @todo DEV only.                		
+                }
+	    	}
+	    }
+
+        return $dom->saveHtml();
     }
 
     /**
@@ -269,7 +319,6 @@ class View
         if ($this->redirectController !== null) {
         	header('Location: ' . $this->url($this->redirectController));
             return '';
-// @todo when no controller, but only action set, what happens?
         }
 
         if ($this->viewScript === null) {
@@ -301,7 +350,10 @@ class View
         require $foot;
         $body = ob_get_clean();
 
-        return $this->postProcess($body);
+// @todo make this a filter that can be registered (per view script) 
+        $body = $this->populateForms($body);
+        
+        return $this->applyViewHelpers($body);
     }
 }
 ?>
