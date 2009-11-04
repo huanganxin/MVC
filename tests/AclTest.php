@@ -50,46 +50,134 @@ class AclTest extends \PHPUnit_Framework_TestCase
         $this->acl = new Acl();
     }
 
+    /**
+     * The default policy must be "allow". 
+     */
     public function testDefaultPolicyIsAllow()
     {
         $this->assertEquals(Acl::ALLOW, $this->acl->getPolicy());
     }
 
-    public function testGetAndSetPolicy()
+    /**
+     * Tests getPolicy() and setPolicy().
+     */
+    public function testPolicyAccessors()
     {
         $this->acl->setPolicy(Acl::DENY);
         $this->assertEquals(Acl::DENY, $this->acl->getPolicy());
     }
 
-    public function testDenyRole()
+    /**
+     * setPolicy() must throw an exception on illegal value.
+     *
+     * @expectedException spriebsch\MVC\Exception
+     */
+    public function testSetPolicyThrowsExceptionOnIllegalValue()
+    {
+        $this->acl->setPolicy('nonsense');
+    }
+
+    /**
+     * Access must be denied when the role has been denied.
+     */
+    public function testDenyRoleDeniesAccessToThatRole()
     {
         $this->acl->deny('role');
 
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role'), 'role is allowed');
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'controller'), 'controller is allowed');
+        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role'));
     }
 
-    public function testAllowEverything()
-    {
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role'), 'role is not allowed');
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'controller'), 'controller is not allowed');
-    }
-
-    public function testDenyController()
-    {
-        $this->acl->deny('role', 'controller');
-
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role'), 'role is not allowed');
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'controller'), 'controller is allowed');
-    }
-
-    public function testDenyRoleAllowController()
+    /**
+     * Access to any resource must be denied when the role has been denied.
+     */
+    public function testDenyRoleDeniesAnythingToThatRole()
     {
         $this->acl->deny('role');
-        $this->acl->allow('role', 'controller');
 
-        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role'), 'role is allowed');
-        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'controller'), 'controller is not allowed');
+        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'resource'));
+        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'anything'));
+    }
+
+    /**
+     * Other roles must still be allowed when one role is denied.   
+     */
+    public function testDenyRoleAllowsOtherRoles()
+    {
+        $this->acl->deny('role');
+
+        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('another role'));
+    }
+    
+    /**
+     * When no rules are specified, all roles must be allowed.
+     */
+    public function testAllowsAllRolesByDefault()
+    {
+        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role'));
+        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('another role')); 
+    }
+
+    /**
+     * When no rules are specified, all resources must be allowed. 
+     */
+    public function testAllowsAllResourcesByDefault()
+    {
+        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'resource'));
+        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'another resource'));
+    }
+
+    /**
+     * When a resource is denied for a role, the role must still be allowed.  
+     */
+    public function testDenyResourceStillAllowsTheRole()
+    {
+        $this->acl->deny('role', 'resource');
+
+        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role'));
+    }
+    
+    /**
+     * When a resource is denied, access must be denied for this resource.   
+     */
+    public function testDenyResourceDeniesThatResource()
+    {
+        $this->acl->deny('role', 'resource');
+
+        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role', 'resource'));
+    }
+
+    /**
+     * When a resource is denied, access must be allowed for other resources.   
+     */
+    public function testDenyResourceAllowsOtherResources()
+    {
+        $this->acl->deny('role', 'resource');
+
+        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'another resource'));
+    }
+
+    /**
+     * When a role is denied, but the resource allowed, access to the role
+     * must be denied.
+     */
+    public function testDenyRoleAndAllowResourceDeniesRole()
+    {
+        $this->acl->deny('role');
+        $this->acl->allow('role', 'resource');
+
+        $this->assertEquals(Acl::DENY, $this->acl->isAllowed('role'));
+    }
+
+    /**
+     * When a role is denied, but the resource allowed, access to the resource 
+     * must be granted. 
+     */
+    public function testDenyRoleAndAllowResourceAllowsResource()
+    {
+        $this->acl->deny('role');
+        $this->acl->allow('role', 'resource');
+
+        $this->assertEquals(Acl::ALLOW, $this->acl->isAllowed('role', 'resource'));
     }
 }
 ?>
