@@ -62,51 +62,51 @@ class Acl
     /**
      * Add a rule
      *
-     * @param boolean $flag Flag
+     * @param boolean $flag Flag (Acl::ALLOW or Acl::DENY)
      * @param string $role The role
-     * @param string $controller The controller name
+     * @param string $resource The resource
      * @return null
      */
-    protected function addRule($flag, $role, $controller)
+    protected function addRule($flag, $role, $resource)
     {
-        $this->rules[$role][$controller] = $flag;
+        $this->rules[$role][$resource] = $flag;
     }
 
     /**
-     * Checks whether a rule exists for given role and controller.
+     * Checks whether a rule exists for given role and resource.
      *
      * @param string $role The role
-     * @param string $controller The controller name
+     * @param string $resource The resource
      * @return null
      */
-    protected function hasRule($role, $controller)
+    protected function hasRule($role, $resource)
     {
-        return isset($this->rules[$role][$controller]);
+        return isset($this->rules[$role][$resource]);
     }
 
     /**
-     * Returns the rule for a given role and controller.
+     * Returns the rule for a given role and resource.
      *
      * @param string $role The role
-     * @param string $controller The controller name
+     * @param string $resource The resource
      * @return bool
      */
-    protected function getRule($role, $controller)
+    protected function getRule($role, $resource)
     {
-        return $this->rules[$role][$controller];
+        return $this->rules[$role][$resource];
     }
 
     /**
-     * Checks whether a controller is allowed
+     * Checks whether a resource is allowed
      *
      * @param string $role The role
-     * @param string $controller The controller name
+     * @param string $resource The resource
      * @return bool
      */
-    protected function isControllerAllowed($role, $controller)
+    protected function isResourceAllowed($role, $resource)
     {
-        if ($this->hasRule($role, $controller, '*')) {
-            return $this->getRule($role, $controller, '*');
+        if ($this->hasRule($role, $resource)) {
+            return $this->getRule($role, $resource);
         }
 
         return $this->isRoleAllowed($role);
@@ -120,8 +120,8 @@ class Acl
      */
     protected function isRoleAllowed($role)
     {
-        if ($this->hasRule($role, '*', '*')) {
-            return $this->getRule($role, '*', '*');
+        if ($this->hasRule($role, '*')) {
+            return $this->getRule($role, '*');
         }
 
         return $this->policy;
@@ -135,6 +135,10 @@ class Acl
      */
     public function setPolicy($flag)
     {
+    	if (!is_bool($flag)) {
+    		throw new Exception('Policy must be \spriebsch\MVC\Acl::ALLOW or \spriebsch\MVC\Acl::DENY');
+    	}
+    	
         $this->policy = $flag;
     }
 
@@ -152,37 +156,37 @@ class Acl
      * Add a allow rule.
      *
      * @param string $role The role
-     * @param string $controller The controller
+     * @param string $resource The resource
      * @return null
      */
-    public function allow($role, $controller = '*')
+    public function allow($role, $resource = '*')
     {
-        $this->addRule(Acl::ALLOW, $role, $controller);
+        $this->addRule(Acl::ALLOW, $role, $resource);
     }
 
     /**
      * Add a deny rule.
      *
      * @param string $role The role
-     * @param string $controller The controller
+     * @param string $controller The resource
      * @return null
      */
-    public function deny($role, $controller = '*')
+    public function deny($role, $resource = '*')
     {
-        $this->addRule(Acl::DENY, $role, $controller);
+        $this->addRule(Acl::DENY, $role, $resource);
     }
 
     /**
-     * Checks whether a controller is allowed.
+     * Checks whether a resource is allowed.
      *
      * @param string $role The role
      * @param string $controller The controller
      * @return bool
      */
-    public function isAllowed($role, $controller = null)
+    public function isAllowed($role, $resource = null)
     {
-        if (!is_null($controller)) {
-            return $this->isControllerAllowed($role, $controller);
+        if (!is_null($resource)) {
+            return $this->isResourceAllowed($role, $resource);
         }
 
         return $this->isRoleAllowed($role);
