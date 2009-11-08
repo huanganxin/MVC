@@ -46,190 +46,62 @@ namespace spriebsch\MVC;
 class FrontControllerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Test through a subclass of FrontController that allows injecting
-     * the controller instance. This allows for mocking of the controller.
-     */
-    public function testControllerMocking()
-    {
-        $this->markTestIncomplete();
-
-    	$this->request       = new Request(array('mvc_controller' => 'main'));
-
-        $this->acl           = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
-
-        $this->acl->expects($this->any())
-                  ->method('isAllowed')
-                  ->will($this->returnValue(true));
-
-        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
-        $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
-        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
-        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
-
-        $this->controller    = $this->getMock('spriebsch\MVC\Controller',    array(), array(), '', false, false);
-
-        $this->controller->expects($this->any())
-                         ->method('execute')
-                         ->will($this->returnValue('success'));
-        
-        $this->appController = new ApplicationController($this->session, $this->acl);
-        $this->appController->setDefaultView($this->view);
-        $this->appController->registerController('main', 'spriebsch\\MVC\\Test\\FrontController\\Action', 'method');
-        $this->appController->registerController('authentication.login', 'spriebsch\\MVC\\Test\\FrontController\\Authentication', 'method');
-
-        $fc = new \spriebsch\MVC\Test\FrontController\TestFC($this->request, $this->response, $this->session, $this->authenticator, $this->acl, $this->appController);
-        $fc->setControllerInstance($this->controller);
-        $fc->execute();
-    }
-	
-    /**
      * Configure ACL to deny everything, thus the request must be dispatched
      * to the authentication controller.
-     *
-     * @expectedException spriebsch\MVC\Test\FrontController\AuthenticationExecutedException
+     * 
+     * @covers spriebsch\MVC\FrontController
      */
-    public function testSelectsAuthenticationControllerWhenNotAllowed()
+    public function testExecute()
     {
-        $this->markTestIncomplete();
+        $this->request           = $this->getMock('spriebsch\MVC\Request',               array(), array(), '', false, false);
+        $this->response          = $this->getMock('spriebsch\MVC\Response',              array(), array(), '', false, false);
+        $this->session           = $this->getMock('spriebsch\MVC\Session',               array(), array(), '', false, false);
+        $this->authenticator     = $this->getMock('spriebsch\MVC\Authenticator',         array(), array(), '', false, false);
+        $this->controllerFactory = $this->getMock('spriebsch\MVC\ControllerFactory',     array(), array(), '', false, false);
+        $this->viewFactory       = $this->getMock('spriebsch\MVC\ViewFactory',           array(), array(), '', false, false);
+        $this->acl               = $this->getMock('spriebsch\MVC\Acl',                   array(), array(), '', false, false);
+        $this->appController     = $this->getMock('spriebsch\MVC\ApplicationController', array(), array(), '', false, false);
+        $this->view              = $this->getMock('spriebsch\MVC\View',                  array(), array(), '', false, false);
+        $this->controller        = $this->getMock('spriebsch\MVC\Controller',            array(), array(), '', false, false);
 
-        $this->request       = new Request(array('mvc_controller' => 'main'));
 
-        $this->acl           = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
+        // Controller's execute method must be called once and return 'success'.
+        $this->controller->expects($this->once())
+                          ->method('execute')
+                          ->will($this->returnValue('success'));
 
-        $this->acl->expects($this->any())
-                  ->method('isAllowed')
-                  ->will($this->returnValue(false));
 
-        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
-        $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
-        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
-        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
+        // View's render method must be called once. 
+        $this->view->expects($this->once())
+                    ->method('render');
+                    // ->with($this->equalTo());
+// @todo request and response as parameters
 
-        $this->appController = new ApplicationController($this->session, $this->acl);
-        $this->appController->setDefaultView($this->view);
-        $this->appController->registerController('main', 'spriebsch\\MVC\\Test\\FrontController\\Action', 'method');
-        $this->appController->registerController('authentication.login', 'spriebsch\\MVC\\Test\\FrontController\\Authentication', 'method');
+        // The controller factory returns the controller object.
+        $this->controllerFactory->expects($this->once())
+                                ->method('getController')
+                                ->will($this->returnValue($this->controller));
+
+        // The application controller returns a controller name, class, and
+        // method that we ignore anyway.
+        $this->appController->expects($this->once())
+                            ->method('getControllerName')
+                            ->will($this->returnValue('controller'));
+
+        $this->appController->expects($this->once())
+                            ->method('getClass')
+                            ->will($this->returnValue('class'));
+
+        $this->appController->expects($this->once())
+                            ->method('getMethod')
+                            ->will($this->returnValue('method'));
+
+        $this->appController->expects($this->once())
+                            ->method('getView')
+                            ->will($this->returnValue($this->view));
+
         
-        $fc = new FrontController($this->request, $this->response, $this->session, $this->authenticator, $this->acl, $this->appController);
-        $fc->execute();
-    }
-
-    /**
-     * Instead of mocking the controller and setting up an expectation that
-     * its execute() method gets called, we use a controller that throws an
-     * exception in execute(). This is to work around a problem in PHPUnit 3.4
-     * that prevents us from mocking the controller and assigning a namespaced
-     * name to it (which we need, since we cannot inject the mocked controller
-     * otherwise because of the new $class statement in execute()).
-     *
-     * @expectedException spriebsch\MVC\Test\FrontController\ActionExecutedException
-     */
-    public function testCallsControllerExecuteMethod()
-    {
-        $this->markTestIncomplete();
-    	
-        $this->router = $this->getMock('spriebsch\MVC\Router', array(), array(), '', false, false);
-
-        $this->router->expects($this->any())
-                     ->method('getClassName')
-                     ->will($this->returnValue('spriebsch\\MVC\\Test\\FrontController\\Action'));
-
-        $this->router->expects($this->any())
-                     ->method('getMethodName')
-                     ->will($this->returnValue('action'));
-
-        $this->request       = $this->getMock('spriebsch\MVC\Request',       array(), array(), '', false, false);
-        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
-        $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
-        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
-        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
-        $this->acl           = $this->getMock('spriebsch\MVC\Acl',           array(), array(), '', false, false);
-
-        $this->appController = new ApplicationController($this->session, $this->acl);
-        $this->appController->setDefaultView($this->view);
-
-        $fc = new FrontController($this->request, $this->response, $this->session, $this->authenticator, $this->acl, $this->appController);
-        $fc->execute();
-    }
-
-    /**
-     * Make sure that execute() throws an exception when the request was
-     * routed to a non-existing controller.
-     *
-     * @expectedException spriebsch\MVC\FrontControllerException
-     */
-    public function testCallsExecuteThrowsExceptionWhenControllerDoesNotExist()
-    {
-        $this->markTestIncomplete();
-
-        $this->router = $this->getMock('spriebsch\MVC\Router', array(), array(), '', false, false);
-
-        $this->router->expects($this->any())
-                     ->method('getController')
-                     ->will($this->returnValue('spriebsch\\MVC\\Test\\DoesNotExist'));
-
-        $this->request       = $this->getMock('spriebsch\MVC\Request',       array(), array(), '', false, false);
-        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
-        $this->session       = $this->getMock('spriebsch\MVC\Session',       array(), array(), '', false, false);
-        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
-        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
-        $this->acl           = $this->getMock('spriebsch\MVC\Acl',           array(), array(), '', false, false);
-
-        $this->appController = new ApplicationController($this->session, $this->acl);
-                
-        $fc = new FrontController($this->request, $this->response, $this->session, $this->view, $this->router, $this->authenticator, $this->acl, $this->appController);
-        $fc->execute();
-    }
-
-    /**
-     * @covers spriebsch\MVC\FrontController::initApplication
-     */
-    public function testInitApplicationSetsTimeStampInSession()
-    {
-        $this->markTestIncomplete();
-
-        $this->request = new Request();
-        $this->acl = new Acl();
-
-        $this->session = new MockSession();
-        $this->session->set('_MVC_USER_ID', 'user');
-
-        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
-        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
-        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
-
-        $this->appController = new ApplicationController($this->session, $this->acl);
-        $this->appController->registerController('main', 'spriebsch\\MVC\\Test\\FrontController\\Controller', 'method');
-        $this->appController->registerController('authentication.login', 'spriebsch\\MVC\\Test\\FrontController\\Controller', 'method');
-        $this->appController->setDefaultView($this->view);
-
-        $fc = new FrontController($this->request, $this->response, $this->session, $this->authenticator, $this->acl, $this->appController);
-        $fc->execute();
-    }
-
-    /**
-     * @covers spriebsch\MVC\FrontController::initApplication
-     */
-    public function testInitApplicationSetsUserRole()
-    {
-        $this->markTestIncomplete();
-
-        $this->request = new Request();
-        $this->acl = new Acl();
-
-        $this->session = new MockSession();
-        $this->session->set('_MVC_USER_ID', 'user');
-
-        $this->response      = $this->getMock('spriebsch\MVC\Response',      array(), array(), '', false, false);
-        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
-        $this->view          = $this->getMock('spriebsch\MVC\View',          array(), array(), '', false, false);
-
-        $this->appController = new ApplicationController($this->session, $this->acl);
-        $this->appController->registerController('main', 'spriebsch\\MVC\\Test\\FrontController\\Controller', 'method');
-        $this->appController->registerController('authentication.login', 'spriebsch\\MVC\\Test\\FrontController\\Controller', 'method');
-        $this->appController->setDefaultView($this->view);
-        
-        $fc = new FrontController($this->request, $this->response, $this->session, $this->authenticator, $this->acl, $this->appController);
+        $fc = new FrontController($this->request, $this->response, $this->session, $this->authenticator, $this->acl, $this->appController, $this->controllerFactory);
         $fc->execute();
     }
 }
