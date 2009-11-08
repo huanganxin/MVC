@@ -73,17 +73,18 @@ class FrontController
     /**
      * Construct the FrontController.
      *
-     * @param Request               $request       Request object
-     * @param Response              $response      Response object
-     * @param Session               $session       Session object
-     * @param View                  $view          View
-     * @param Router                $router        Router object
-     * @param Authenticator         $authenticator Authenticator object
-     * @param Acl                   $acl           Access Control List
-     * @param ApplicationController $appController Application Controller
+     * @param Request               $request            Request object
+     * @param Response              $response           Response object
+     * @param Session               $session            Session object
+     * @param View                  $view               View
+     * @param Router                $router             Router object
+     * @param Authenticator         $authenticator      Authenticator object
+     * @param Acl                   $acl                Access Control List
+     * @param ApplicationController $appController      Application Controller
+     * @param ControllerFactory     $controllerFactory  Controller Factory
      * @return void
     */
-    public function __construct(Request $request, Response $response, Session $session, Authenticator $authenticator, Acl $acl, ApplicationController $appController)
+    public function __construct(Request $request, Response $response, Session $session, Authenticator $authenticator, Acl $acl, ApplicationController $appController, ControllerFactory $controllerFactory)
     {
         $this->request               = $request;
         $this->response              = $response;
@@ -91,6 +92,7 @@ class FrontController
         $this->authenticator         = $authenticator;
         $this->acl                   = $acl;
         $this->applicationController = $appController;
+        $this->controllerFactory     = $controllerFactory;
     }
 
     /**
@@ -109,11 +111,6 @@ class FrontController
 
 // @todo check session expiration.
 
-    }
-    
-    protected function getControllerInstance($controllerClass)
-    {
-    	return new $controllerClass();
     }
 
     /**
@@ -140,10 +137,9 @@ class FrontController
         }
         
 /* @todo do not inject view, but fetch from factry (to allow using special view class based on routing)
- * @todo fetch controller instance from factory
  */
 
-        $controllerObject = $this->getControllerInstance($controllerClass);
+        $controllerObject = $this->controllerFactory->getController($controllerClass);
         
         $result = $controllerObject->execute($this->request, $this->response, $this->session, $this->authenticator, $controllerMethod);
         
