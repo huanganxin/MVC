@@ -53,7 +53,7 @@ class Ul extends \spriebsch\MVC\ViewHelper
      */
     protected function doExecute(array $parameters)
     {
-        $data = $this->response->getData($parameters[0]);
+        $data = $parameters[0];
 
         if (!is_array($data)) {
             $data = array($data);

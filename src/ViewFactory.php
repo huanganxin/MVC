@@ -49,6 +49,7 @@ class ViewFactory
 	
     protected $views = array();
     protected $viewHelpers = array();
+    protected $additionalViewHelpers = array();
 
     protected $defaultViewHelpers = array(
         'fielderrors' => '\\spriebsch\\MVC\\ViewHelper\\FieldErrors',
@@ -78,16 +79,21 @@ class ViewFactory
      * 
      * @param string $class Class name of the view instance
      * @param View $view View instance
+     * @param string $script The view script name
      * @return null
      */
-    protected function registerViewHelpers($class, View $view)
+    protected function registerViewHelpers($class, View $view, $script)
     {
     	if (isset($this->viewHelpers[$class])) {
             $helpers = $this->viewHelpers[$class];
     	} else {
     		$helpers = $this->defaultViewHelpers;
-    	}
 
+    		if (isset($this->additionalViewHelpers[$script])) {
+    		    $helpers = array_merge($helpers, $this->additionalViewHelpers[$script]);
+    		}
+    	}
+    	
     	foreach ($helpers as $helper => $class) {
     		$view->registerViewHelper($helper, $class);
     	}
@@ -119,7 +125,7 @@ class ViewFactory
     	}
     	
     	// Register the view helpers for this view instance.
-        $this->registerViewHelpers($class, $view);
+        $this->registerViewHelpers($class, $view, $script);
         
         return $view;
     }

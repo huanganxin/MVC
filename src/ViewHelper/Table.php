@@ -53,7 +53,7 @@ class Table extends \spriebsch\MVC\ViewHelper
      */
     protected function doExecute(array $parameters)
     {
-        $data = $this->response->getData($parameters[0]);
+        $data = $parameters[0];
 
         $result = '<table>';
 

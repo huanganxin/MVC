@@ -216,7 +216,7 @@ class Response
     */
     public function getData($key)
     {
-        if (!isset($this->data[$key])) {
+    	if ($key == '' || is_array($key) || !isset($this->data[$key])) {
             return '';
         }
 
