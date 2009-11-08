@@ -54,7 +54,7 @@ class FormErrorsTest extends \PHPUnit_Framework_TestCase
         $response = $this->getMock('\\spriebsch\\MVC\\Response');
 
         $error = new \spriebsch\MVC\Message\FormError('message', 'form');
-        $response->addFormError($error);
+        $response->addMessage($error);
 
         $formErrors = new \spriebsch\MVC\ViewHelper\FormErrors($request, $response);
 
@@ -70,7 +70,7 @@ class FormErrorsTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
         
         $error = new \spriebsch\MVC\Message\FormError('message', 'form');
-        $response->addFormError($error);
+        $response->addMessage($error);
 
         $formErrors = new \spriebsch\MVC\ViewHelper\FormErrors($request, $response);
 
@@ -86,10 +86,10 @@ class FormErrorsTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
 
         $error = new \spriebsch\MVC\Message\FormError('message', 'form');
-        $response->addFormError($error);
+        $response->addMessage($error);
 
         $error = new \spriebsch\MVC\Message\FormError('another', 'form');
-        $response->addFormError($error);
+        $response->addMessage($error);
 
         $formErrors = new \spriebsch\MVC\ViewHelper\FormErrors($request, $response);
 

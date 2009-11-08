@@ -60,7 +60,7 @@ class Menu extends \spriebsch\MVC\ViewHelper
 
         foreach ($menu as $item) {
             list($controller, $text) = $item;
-            $result .= '<li><a href="__url.' . $controller . '__">' . htmlentities($text) . '</a></li>';
+            $result .= '<li><a href="__url|' . $controller . '__">' . htmlentities($text) . '</a></li>';
         }
 
         $result .= '</ul>';

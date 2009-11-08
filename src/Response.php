@@ -255,23 +255,66 @@ class Response
     }
 
     /**
-     * Add an error message.
+     * Add a message.
+     * Message can be generic message (e.g. success message),
+     * global error message, form error, or field error. 
      *
      * @param spriebsch\MVC\Message\Error $error The error message
      * @return null
      */
-    public function addError(\spriebsch\MVC\Message\Error $error)
+    public function addMessage(\spriebsch\MVC\Message $message)
     {
-        $this->errors[] = $error;
+    	// Check for leaf classes first, since FieldError extends FormError.
+    	
+        if ($message instanceOf \spriebsch\MVC\Message\FieldError) {
+            $this->fieldErrors[$message->getFormName()][$message->getFieldName()][] = $message;
+            return;
+        }
+
+        if ($message instanceOf \spriebsch\MVC\Message\FormError) {
+            $this->formErrors[$message->getFormName()][] = $message;
+            return;
+        }
+
+        if ($message instanceOf \spriebsch\MVC\Message\Error) {
+            $this->errors[] = $message;
+            return;
+        }
+        
+    	$this->messages[] = $message;
     }
 
     /**
+     * Checks whether there are any messages.
+     *
+     * @return bool
+     */
+    public function hasMessages()
+    {
+        return sizeof($this->messages) > 0;
+    }
+    
+    /**
      * Checks whether there were errors.
      *
-     * @return int
+     * @return bool
      */
-    public function hasErrors()
+    public function hasErrors($form = null, $field = null)
     {
+    	if ($form === null && $field !== null) {
+    		throw new Exception('Form must be specified when field is specified');
+    	}
+   	
+    	if ($field !== null) {
+            return $this->hasFieldErrors($form, $field);
+    	}
+
+// @todo: when any field has error, form has error.     
+
+        if ($form !== null) {
+        	return $this->hasFormErrors($form);
+        }
+        
         return sizeof($this->errors) > 0;
     }
 
@@ -283,17 +326,6 @@ class Response
     public function getErrors()
     {
         return $this->errors;
-    }
-
-    /**
-     * Add a form error.
-     *
-     * @param spriebsch\MVC\Message\FormError $error The error message
-     * @return null
-     */
-    public function addFormError(\spriebsch\MVC\Message\FormError $error)
-    {
-        $this->formErrors[$error->getFormName()][] = $error;
     }
 
     /**
@@ -323,25 +355,18 @@ class Response
     }
 
     /**
-     * Add a form field error
-     *
-     * @param spriebsch\MVC\Message\FieldError $error The error object
-     * @return null
-     */
-    public function addFieldError(\spriebsch\MVC\Message\FieldError $error)
-    {
-        $this->fieldErrors[$error->getFormName()][$error->getFieldName()][] = $error;
-    }
-
-    /**
      * Checks whether a given form field has errors
      *
      * @param string $formName The form name
      * @param string $fieldName The field name
      * @return bool
      */
-    public function hasFieldErrors($formName, $fieldName)
+    public function hasFieldErrors($formName, $fieldName = null)
     {
+    	if ($fieldName === null) {
+    		return isset($this->fieldErrors[$formName]);
+    	}
+    	
         return isset($this->fieldErrors[$formName]) && isset($this->fieldErrors[$formName][$fieldName]) && (sizeof($this->fieldErrors[$formName][$fieldName]) > 0);
     }
 
@@ -352,8 +377,12 @@ class Response
      * @param string $fieldName The field name
      * @return array
      */
-    public function getFieldErrors($formName, $fieldName)
+    public function getFieldErrors($formName, $fieldName = null)
     {
+    	if ($fieldName === null) {
+    		return $this->fieldErrors[$formName];
+    	}
+    	
         if (!isset($this->fieldErrors[$formName]) || !isset($this->fieldErrors[$formName][$fieldName])) {
             return array();
         }

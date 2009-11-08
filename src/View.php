@@ -76,7 +76,7 @@ class View
     {
         $this->directory = $directory;
     }
-
+    
     /**
      * Returns the fully qualified class name for a view helper.
      *
@@ -174,19 +174,25 @@ class View
      *
      * @param string $body
      * @return string
+     * @todo make this work for parameter values that contain a dot
      */
     protected function applyViewHelpers($body)
     {
         preg_match_all('/__(.*)__/U', $body, $matches);
         
         foreach ($matches[1] as $match) {
-            $parts = explode('.', $match);
-
-            $helper = $parts[0];
-            $parameters = substr($match, strlen($helper) + 1);
-
-            $replacement = call_user_func_array(array($this, $helper), array($parameters));
-
+        	
+            if (strstr($match, '|') === false) {
+        	    $helper = $match;
+        	    $parameters = array();
+        	} else {
+                $parts = explode('|', $match);
+                $helper = $parts[0];
+	            $parameters = array_slice($parts, 1);
+        	}
+        	
+            $replacement = call_user_func_array(array($this, $helper), $parameters);
+    
             $body = str_replace('__' . $match . '__', $replacement, $body);
         }
 
@@ -238,7 +244,26 @@ class View
 // @todo DEV only.                		
                 }
 	    	}
-	    }
+        }
+
+/*	    	
+	        // Patch in field error messages.
+	        foreach ($this->response->getFieldErrors($form) as $field => $errorMessages) {
+	        	foreach ($errorMessages as $errorMessage) {
+	                $nodes = $query->evaluate("//form[@name='" . $form . "']//*[@name='" . $field . "']");
+	
+	                if ($nodes->length == 0) {
+	                    throw new Exception('No field ' . $field . ' in form ' . $form);
+	                }
+	
+	                $node = $nodes->item(0);
+
+	                $message = new \DOMElement('div', $errorMessage->getMessage());
+                    //$node->parentNode->appendChild($message);                
+                    $node->nextSibling->insertBefore($message);                
+	        	}
+	        }
+*/	        
 
         return $dom->saveHtml();
     }
@@ -274,7 +299,7 @@ class View
      */
     public function __call($method, $parameters)
     {
-        $className = $this->getViewHelperName($method);
+    	$className = $this->getViewHelperName($method);
 
         if (!class_exists($className)) {
         	throw new Exception('View helper ' . $method . '(' . $className . ') does not exist');
@@ -350,10 +375,12 @@ class View
         require $foot;
         $body = ob_get_clean();
 
+        $body = $this->applyViewHelpers($body);
+        
 // @todo make this a filter that can be registered (per view script) 
         $body = $this->populateForms($body);
         
-        return $this->applyViewHelpers($body);
+        return $body;
     }
 }
 ?>

@@ -217,38 +217,38 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers spriebsch\MVC\Response::addError
+     * @covers spriebsch\MVC\Response::addMessage
      * @covers spriebsch\MVC\Response::getErrors
      */
     public function testErrorsAccessors()
     {
         $error = new \spriebsch\MVC\Message\Error('message');
+        $this->response->addMessage($error);
 
-        $this->response->addError($error);
         $this->assertEquals(array($error), $this->response->getErrors());
     }
 
     /**
-     * @covers spriebsch\MVC\Response::addFormError
+     * @covers spriebsch\MVC\Response::addMessage
      * @covers spriebsch\MVC\Response::getFormErrors
      */
     public function testFormErrorsAccessors()
     {
         $error = new \spriebsch\MVC\Message\FormError('message', 'form');
+        $this->response->addMessage($error);
 
-        $this->response->addFormError($error);
         $this->assertEquals(array($error), $this->response->getFormErrors('form'));
     }
 
     /**
-     * @covers spriebsch\MVC\Response::addFieldError
+     * @covers spriebsch\MVC\Response::addMessage
      * @covers spriebsch\MVC\Response::getFieldErrors
      */
     public function testFieldErrorsAccessors()
     {
         $error = new \spriebsch\MVC\Message\FieldError('message', 'form', 'field');
+        $this->response->addMessage($error);
 
-        $this->response->addFieldError($error);
         $this->assertEquals(array($error), $this->response->getFieldErrors('form', 'field'));
     }
 

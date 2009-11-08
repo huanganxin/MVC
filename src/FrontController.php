@@ -137,6 +137,8 @@ class FrontController
         }
         
 /* @todo do not inject view, but fetch from factry (to allow using special view class based on routing)
+ * @todo view factory allows configuring view with arbitary view helpers, or uses default
+ * @todo a mapping is used to map view helper names to handler classes
  */
 
         $controllerObject = $this->controllerFactory->getController($controllerClass);

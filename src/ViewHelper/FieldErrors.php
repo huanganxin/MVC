@@ -35,31 +35,40 @@
  * @license    BSD License
  */
 
-return array(
-    'spriebsch\MVC\FrontController'         => 'FrontController.php',
-    'spriebsch\MVC\Router'                  => 'Router.php',
-    'spriebsch\MVC\Request'                 => 'Request.php',
-    'spriebsch\MVC\Response'                => 'Response.php',
-    'spriebsch\MVC\Session'                 => 'Session.php',
-    'spriebsch\MVC\MockSession'             => 'MockSession.php',
-    'spriebsch\MVC\Controller'              => 'Controller.php',
-    'spriebsch\MVC\ControllerFactory'       => 'ControllerFactory.php',
-    'spriebsch\MVC\Authenticator'           => 'Authenticator.php',
-    'spriebsch\MVC\PasswdFileAuthenticator' => 'PasswdFileAuthenticator.php',
-    'spriebsch\MVC\Renderer'                => 'Renderer.php',
-    'spriebsch\MVC\Message'                 => 'Message.php',
-    'spriebsch\MVC\Message\Error'           => 'Message/Error.php',
-    'spriebsch\MVC\Message\FormError'       => 'Message/FormError.php',
-    'spriebsch\MVC\Message\FieldError'      => 'Message/FieldError.php',
-    'spriebsch\MVC\View'                    => 'View.php',
-    'spriebsch\MVC\ViewHelper'              => 'ViewHelper.php',
-    'spriebsch\MVC\ViewHelper\Ul'           => 'ViewHelper/Ul.php',
-    'spriebsch\MVC\ViewHelper\Menu'         => 'ViewHelper/Menu.php',
-    'spriebsch\MVC\ViewHelper\Url'          => 'ViewHelper/Url.php',
-    'spriebsch\MVC\ViewHelper\FormErrors'   => 'ViewHelper/FormErrors.php',
-    'spriebsch\MVC\ViewHelper\FieldErrors'  => 'ViewHelper/FieldErrors.php',
-    'spriebsch\MVC\Acl'                     => 'Acl.php',
-    'spriebsch\MVC\ApplicationController'   => 'ApplicationController.php',
-    'spriebsch\MVC\TableDataGateway'        => 'TableDataGateway.php',
-);
+namespace spriebsch\MVC\ViewHelper;
+
+/**
+ * View Helper that renders form field errors of given form and field as div.
+ *
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ */
+class FieldErrors extends \spriebsch\MVC\ViewHelper
+{
+    protected $numberOfRequiredParameters = 2;
+
+    /**
+     * Returns one form field error.
+     *
+     * @param array $parameters The parameters
+     * @return string
+     */
+    protected function doExecute(array $parameters)
+    {
+    	$form = $parameters[0];
+    	$field = $parameters[1];
+    	
+        if (!$this->response->hasFieldErrors($form, $field)) {
+            return '';
+        }
+
+        $result = array();
+        
+        foreach ($this->response->getFieldErrors($form, $field) as $error) {
+            $result[] = $error->getMessage();
+        }
+
+        return '<div class="formfielderrors">' . implode('<br>', $result) . '</div>';
+    }
+}
 ?>
