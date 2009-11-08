@@ -135,16 +135,11 @@ class FrontController
         if (!class_exists($controllerClass)) {
             throw new FrontControllerException('Controller class ' . $controllerClass . ' does not exist');
         }
-        
-/* @todo do not inject view, but fetch from factry (to allow using special view class based on routing)
- * @todo view factory allows configuring view with arbitary view helpers, or uses default
- * @todo a mapping is used to map view helper names to handler classes
- */
 
         $controllerObject = $this->controllerFactory->getController($controllerClass);
-        
+
         $result = $controllerObject->execute($this->request, $this->response, $this->session, $this->authenticator, $controllerMethod);
-        
+
         if ('' == $result) {
         	throw new FrontControllerException('Controller ' . $controllerClass . ' returned empty result');
         }
@@ -157,7 +152,7 @@ class FrontController
         }
 
         $view = $this->applicationController->getView($controllerName, $result);
-        
+
         return $view->render($this->request, $this->response);
     }
 }

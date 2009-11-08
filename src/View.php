@@ -45,6 +45,11 @@ namespace spriebsch\MVC;
  */
 class View
 {
+	/**
+	 * @var array
+	 */
+	protected $viewHelpers = array();
+	
     /**
      * @var string
      */
@@ -76,16 +81,10 @@ class View
     {
         $this->directory = $directory;
     }
-    
-    /**
-     * Returns the fully qualified class name for a view helper.
-     *
-     * @param string $viewHelper
-     * @return null
-     */
-    protected function getViewHelperName($viewHelper)
+
+    public function registerViewHelper($name, $class)
     {
-        return '\\spriebsch\\MVC\\ViewHelper\\' . ucfirst($viewHelper);
+    	$this->viewHelpers[$name] = $class;
     }
 
     /**
@@ -291,7 +290,6 @@ class View
 
     /**
      * Delegates method calls to view helpers.
-     * The view helper class name is the method name with uppercased first letter.
      *
      * @param string $method
      * @param string $parameters
@@ -299,10 +297,16 @@ class View
      */
     public function __call($method, $parameters)
     {
-    	$className = $this->getViewHelperName($method);
+    	$method = strtolower($method);
+    	
+    	if (!isset($this->viewHelpers[$method])) {
+    		throw new Exception('View helper "' . $method . '" is not registered');
+    	}
+    	
+    	$className = $this->viewHelpers[$method];
 
         if (!class_exists($className)) {
-        	throw new Exception('View helper ' . $method . '(' . $className . ') does not exist');
+        	throw new Exception('View helper class "' . $className . '" does not exist');
         }
 
         $viewHelper = new $className($this->request, $this->response);

@@ -55,7 +55,12 @@ class ApplicationController
      * @var Acl
      */
     protected $acl;
-	
+
+    /**
+     * @var ViewFactory
+     */
+    protected $viewFactory;
+    
     /**
      * @var string
      */
@@ -99,14 +104,16 @@ class ApplicationController
     /**
      * Construct the Application Controller.
      *
-     * @param Session $session 
-     * @param Acl     $acl
+     * @param Session     $session 
+     * @param Acl         $acl
+     * @param ViewFactory $viewFactory
      * @return null
      */
-    public function __construct(Session $session, Acl $acl)
+    public function __construct(Session $session, Acl $acl, ViewFactory $viewFactory)
     {
     	$this->session = $session;
         $this->acl = $acl;
+        $this->viewFactory = $viewFactory;
     }
 
     /**
@@ -131,17 +138,6 @@ class ApplicationController
         } else {
             return $method;
         }
-    }
-    
-    /**
-     * Sets the default view object.
-     *
-     * @param View $view
-     * @return void
-     */
-    public function setDefaultView(View $view)
-    {
-        $this->defaultView = $view;
     }
 
     /**
@@ -250,26 +246,21 @@ class ApplicationController
      * @todo select view instance based on controller name
      */
     public function getView($controllerName, $result)
-    {   	
-    	if ($this->defaultView === null) {
-    		throw new Exception('No view object is set');
-    	}
-    	
-    	$view = $this->defaultView;
-
-    	// If we need to redirect, tell the view to do so and quit.
+    {
+    	// On redirect, load default view object and tell it to redirect.  
     	if (isset($this->redirects[$controllerName][$result])) {
+            $view = $this->viewFactory->getView();
     		$view->setRedirect($this->redirects[$controllerName][$result]);
     		return $view;
     	}
-
-    	// If we don't know what to do ... 
+   	
+    	// If no view script is configured, we don't know what to do. 
     	if (!isset($this->views[$controllerName][$result])) {
-    		throw new Exception('No view for controller ' . $controllerName . ' result ' . $result);
+    		throw new Exception('Controller "' . $controllerName . '" result "' . $result . '" has no view script');
     	}
-    	
-    	// Configure the view with the view script to run.
-        $view->setViewScript($this->views[$controllerName][$result]);
+
+        // Get the "real" view object (depending on the view script).
+        $view = $this->viewFactory->getView($this->views[$controllerName][$result]);
 
     	return $view;
     }
