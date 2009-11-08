@@ -56,6 +56,7 @@ class ViewFactory
         'menu'        => '\\spriebsch\\MVC\\ViewHelper\\Menu',
         'ul'          => '\\spriebsch\\MVC\\ViewHelper\\Ul',
         'url'         => '\\spriebsch\\MVC\\ViewHelper\\Url',
+        'table'       => '\\spriebsch\\MVC\\ViewHelper\\Table',
     );
     
     /**

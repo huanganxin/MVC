@@ -43,7 +43,7 @@ namespace spriebsch\MVC\ViewHelper;
  * @author Stefan Priebsch <stefan@priebsch.de>
  * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-class Ul extends \spriebsch\MVC\ViewHelper
+class Table extends \spriebsch\MVC\ViewHelper
 {
     /**
      * Returns an unordered list of the given items.
@@ -55,17 +55,20 @@ class Ul extends \spriebsch\MVC\ViewHelper
     {
         $data = $this->response->getData($parameters[0]);
 
-        if (!is_array($data)) {
-            $data = array($data);
+        $result = '<table>';
+
+        foreach ($data as $row) {
+
+        	$result .= '<tr>';
+
+            foreach ($row as $item) {
+                $result .= '<td>' . $item . '</td>';
+            }
+
+            $result .= '</tr>';
         }
 
-        $result = '<ul>';
-
-        foreach ($data as $item) {
-            $result .= '<li>' . $item . '</li>';
-        }
-
-        $result .= '</ul>';
+        $result .= '</table>';
 
         return $result;
     }

@@ -55,6 +55,7 @@ return array(
     'spriebsch\MVC\ViewFactory'             => 'ViewFactory.php',
     'spriebsch\MVC\ViewHelper'              => 'ViewHelper.php',
     'spriebsch\MVC\ViewHelper\Ul'           => 'ViewHelper/Ul.php',
+    'spriebsch\MVC\ViewHelper\Table'        => 'ViewHelper/Table.php',
     'spriebsch\MVC\ViewHelper\Menu'         => 'ViewHelper/Menu.php',
     'spriebsch\MVC\ViewHelper\Url'          => 'ViewHelper/Url.php',
     'spriebsch\MVC\ViewHelper\FormErrors'   => 'ViewHelper/FormErrors.php',
