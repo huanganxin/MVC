@@ -351,7 +351,7 @@ class View
         }
 
         if ($this->viewScript === null) {
-            throw new Exception('View script not set');
+            throw new Exception('No view script set');
         }
 
         $head = $this->getHeadFilename();
@@ -359,15 +359,15 @@ class View
         $foot = $this->getFootFilename();
 
         if (!file_exists($head)) {
-            throw new Exception('View head in file ' . $head . ' not found');
+            throw new Exception('View head in file "' . $head . '" not found');
         }
 
         if (!file_exists($body)) {
-            throw new Exception('View ' . $this->viewScript . ' in file ' . $body . ' not found');
+            throw new Exception('View "' . $this->viewScript . '" not found in file "' . $body . '"');
         }
 
         if (!file_exists($foot)) {
-            throw new Exception('View foot in file ' . $foot . ' not found');
+            throw new Exception('View foot in file "' . $foot . '" not found');
         }
 
         $this->sendCookies();

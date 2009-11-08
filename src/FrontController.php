@@ -128,20 +128,14 @@ class FrontController
         $this->initApplication();
 
         $controllerName = $this->applicationController->getControllerName($this->request);
+        $class = $this->applicationController->getClass($controllerName);
+        $method = $this->applicationController->getMethod($controllerName);
+        $controller = $this->controllerFactory->getController($class);
 
-        $controllerClass  = $this->applicationController->getClass($controllerName);
-        $controllerMethod = $this->applicationController->getMethod($controllerName);
-
-        if (!class_exists($controllerClass)) {
-            throw new FrontControllerException('Controller class ' . $controllerClass . ' does not exist');
-        }
-
-        $controllerObject = $this->controllerFactory->getController($controllerClass);
-
-        $result = $controllerObject->execute($this->request, $this->response, $this->session, $this->authenticator, $controllerMethod);
+        $result = $controller->execute($this->request, $this->response, $this->session, $this->authenticator, $method);
 
         if ('' == $result) {
-        	throw new FrontControllerException('Controller ' . $controllerClass . ' returned empty result');
+        	throw new FrontControllerException('Controller "' . $class . '" method "' . $method . '" returned empty result');
         }
 
 // forward here 
