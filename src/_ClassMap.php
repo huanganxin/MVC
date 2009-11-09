@@ -52,6 +52,7 @@ return array(
     'spriebsch\MVC\Message\FormError'       => 'Message/FormError.php',
     'spriebsch\MVC\Message\FieldError'      => 'Message/FieldError.php',
     'spriebsch\MVC\View'                    => 'View.php',
+    'spriebsch\MVC\JsonView'                => 'JsonView.php',
     'spriebsch\MVC\ViewFactory'             => 'ViewFactory.php',
     'spriebsch\MVC\ViewHelper'              => 'ViewHelper.php',
     'spriebsch\MVC\ViewHelper\Ul'           => 'ViewHelper/Ul.php',
