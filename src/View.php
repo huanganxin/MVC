@@ -231,7 +231,13 @@ class View
         		
                 switch ($node->nodeName) {
                 	case 'input':
-                        $node->setAttribute('value', $value);
+                		if ($node->getAttribute('type') == 'checkbox') {
+                			if ($value != 0) {
+                                $node->setAttribute('checked', true);
+                			}
+                		} else {
+                            $node->setAttribute('value', $value);
+                		}
                		break;
                		
                 	case 'textarea':
