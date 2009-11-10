@@ -72,6 +72,7 @@ class TableDataGateway
 	 */
 	protected function typeCast($data)
 	{
+		/*
 		foreach ($data as $key => &$value) {
 			if (!isset($this->phpTypes[$key])) {
 				continue;
@@ -84,7 +85,8 @@ class TableDataGateway
                     $value = (float) $value;
 			}
 		}
-
+        */
+		
 		return $data;
 	}
 
@@ -107,6 +109,11 @@ class TableDataGateway
         }        
 
         $result = array_map(array($this, 'typeCast'), $this->selectOneStatement->fetchAll(\PDO::FETCH_ASSOC));
+        
+        if (sizeof($result) < 1) {
+        	throw new DatabaseException('Record ID ' . $id . ' not found');
+        }
+        
         return $result[0];
 	}
 
@@ -125,6 +132,39 @@ class TableDataGateway
 
         return array_map(array($this, 'typeCast'), $this->selectAllStatement->fetchAll(\PDO::FETCH_ASSOC));        
     }
+    
+    /**
+     * This is a dynamically built select statement, so it is not cached.
+     *   
+     * @param array $criteria
+     * @return array
+     */
+    public function select(array $criteria)
+    {
+    	$sql = 'SELECT * FROM ' . $this->table . ' WHERE ';
+        $fields = array();
+
+        foreach (array_keys($criteria) as $key) {
+            $fields[] = $key . '=:' . $key;           
+        }
+
+        $sql .= implode(' AND ', $fields);
+    	
+        $selectStatement = $this->db->prepare($sql);        
+
+        foreach ($criteria as $key => $value) {
+            $selectStatement->bindValue(':' . $key, $value, $this->dbTypes[$key]);
+        }
+        
+        $selectStatement->execute();
+        
+        if ($selectStatement->errorCode() != 0) {
+            $message = $selectStatement->errorInfo();
+            throw new DatabaseException('Select all failed on table ' . $this->table . ': ' . $message[2]);
+        }        
+
+        return $selectStatement->fetchAll(\PDO::FETCH_ASSOC);        
+    }
 
     /**
      * Update row in table.
@@ -136,12 +176,16 @@ class TableDataGateway
 	public function update(array $record)
 	{
         // Make sure that $record contains all columns.
-        if (sizeof($record) != sizeof($this->dbTypes)) {
-            throw new DatabaseException('Record does not contain all columns of ' . $this->table . ' table');
-        }
+//        if (sizeof($record) != sizeof($this->dbTypes)) {
+//            throw new DatabaseException('Record does not contain all columns of ' . $this->table . ' table');
+//        }
         
         if (!isset($record['id'])) {
             throw new DatabaseException('Record has no ID');
+        }
+
+        if (!is_int($record['id'])) {
+            throw new DatabaseException('ID is not an integer');
         }
 
         if ($this->updateStatement === null) {
@@ -185,10 +229,14 @@ class TableDataGateway
 	public function insert(array $record)
 	{
 		// Make sure that $record contains all columns but the id one.
-		if (sizeof($record) != sizeof($this->dbTypes) - 1) {
-            throw new DatabaseException('Record does not contain all columns of ' . $this->table . ' table');
-		}
-		
+//		if (sizeof($record) != sizeof($this->dbTypes) - 1) {
+//            throw new DatabaseException('Record does not contain all columns of ' . $this->table . ' table');
+//		}
+
+        if (isset($record['id'])) {
+            throw new DatabaseException('Record has an ID');
+        }
+
         if ($this->insertStatement === null) {
 
         	$sql = 'INSERT INTO ' . $this->table . ' (' . implode(',', array_keys($record)) . ') VALUES (';
