@@ -54,13 +54,21 @@ class Menu extends \spriebsch\MVC\ViewHelper
      */
     protected function doExecute(array $parameters)
     {
-        $menu = $this->response->getData($parameters[0]);
+        $data = $this->response->getData($parameters[0]);
+        
+        if (!is_array($data) || sizeof($data) == 0) {
+            return '';
+        }
 
         $result = '<ul class="menu">';
 
-        foreach ($menu as $item) {
-            list($controller, $text) = $item;
-            $result .= '<li><a href="__url|' . $controller . '__">' . htmlentities($text) . '</a></li>';
+        foreach ($data as $item) {
+            list($controller, $text, $confirm) = $item;
+            if ($confirm) {
+                $result .= '<li><a href="__url|' . $controller . '__" onClick="return confirm(\'Are you sure?\');">' . htmlentities($text) . '</a></li>';
+            } else {
+                $result .= '<li><a href="__url|' . $controller . '__">' . htmlentities($text) . '</a></li>';
+            }
         }
 
         $result .= '</ul>';
