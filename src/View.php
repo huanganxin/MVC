@@ -243,7 +243,15 @@ class View
                 	case 'textarea':
                         $node->firstChild->nodeValue = $value;
                     break;
-                    
+
+                    case 'select':
+                        foreach ($node->childNodes as $child) {
+                            if ($child->nodeValue == $value) {
+                                $child->setAttribute('selected', 'selected');
+                            }
+                        }
+                    break;
+
                 	default:
                 		throw new Exception('Unknown tag ' . $nodes->item(0)->nodeName . ' in form ' . $form);
 // @todo DEV only.                		
