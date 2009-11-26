@@ -21,7 +21,7 @@
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER ORCONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
  * OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
@@ -66,11 +66,6 @@ class FrontController
     protected $applicationController;
 
     /**
-     * @var string
-     */
-    protected $userRole = 'anonymous';
-
-    /**
      * Construct the FrontController.
      *
      * @param Request               $request            Request object
@@ -102,15 +97,6 @@ class FrontController
      */
     protected function initApplication()
     {
-        $this->session->start();
- 
-        if ($this->session->has('_MVC_USER_ID') && $this->session->has('_MVC_USER_ROLE')) {
-            $this->session->set('_MVC_TIMESTAMP', $this->request->server('REQUEST_TIME'));
-            $this->userRole = $this->session->get('_MVC_USER_ROLE');
-        }
-
-// @todo check session expiration.
-
     }
 
     /**
@@ -131,7 +117,7 @@ class FrontController
         $class = $this->applicationController->getClass($controllerName);
         $method = $this->applicationController->getMethod($controllerName);
         $controller = $this->controllerFactory->getController($class);
-
+        
         $result = $controller->execute($this->request, $this->response, $this->session, $this->authenticator, $method);
 
         if ('' == $result) {
