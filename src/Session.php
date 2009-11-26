@@ -73,8 +73,11 @@ class Session
      *
      * @return null
      */
-    public function __construct()
+    public function __construct($name = null)
     {
+        if ($name !== null) {
+            $this->name = $name;
+        }
     }
 
     /**
@@ -99,7 +102,7 @@ class Session
     public function get($key)
     {
         if (!isset($_SESSION[$key])) {
-            throw new SessionException('Unknown session variable ' . $key);
+            throw new SessionException('Unknown session variable "' . $key . '"');
         }
 
         return $_SESSION[$key];
