@@ -207,6 +207,7 @@ class ApplicationController
      *
      * @param Request $request
      * @return null
+     * @todo currently only cares about first role. Make work for array of roles.
      */
     public function getControllerName(Request $request)
     {
@@ -223,7 +224,8 @@ class ApplicationController
             $controllerName = $request->post('mvc_controller');
         }
         
-        $role = $this->authenticationHandler->getRole();
+        $roles = $this->authenticationHandler->getRoles();
+        $role = $roles[0];
 
         // If that controller is not allowed, select authentication controller.
         if (!$this->acl->isAllowed($role, $controllerName)) {
