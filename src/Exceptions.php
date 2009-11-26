@@ -153,7 +153,7 @@ class ViewException extends Exception
  * @author Stefan Priebsch <stefan@priebsch.de>
  * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-class DatabaseException extends Exception
+class DatabaseException extends \PDOException
 {
 }
 ?>

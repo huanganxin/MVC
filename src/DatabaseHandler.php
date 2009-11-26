@@ -38,45 +38,51 @@
 namespace spriebsch\MVC;
 
 /**
- * Unit Tests for Table Data Gateway class.
+ * Database handler class.
+ * Wraps PDO to work around connecting to the database in PDO constructor.
+ * Will lazy initialize DB connection on first request.  
  *
- * @author     Stefan Priebsch <stefan@priebsch.de>
- * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ * @author Stefan Priebsch <stefan@priebsch.de>
+ * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-class TableDataGatewayTest extends \PHPUnit_Framework_TestCase
+class DatabaseHandler
 {
-    public function testDummy()
-    {
-    }
-    
-	/**
-	 * @covers spriebsch\MVC\TableDataGateway::__construct
-     * @covers spriebsch\MVC\TableDataGateway::insert
-	 * @expectedException spriebsch\MVC\DatabaseException 
-	 */
-    /*
-	public function testInsertThrowsExceptionWhenRecordMissesColumns()
-	{
-        $this->db = new \PDO('sqlite::memory:');
-		
-		$this->gateway = new TableDataGateway($this->db, 'a_table', array('id' => 0, 'col' => 1));
-        $this->gateway->insert(array());		
-    }
-    */
+	protected $pdo;
 
-    /**
-     * @covers spriebsch\MVC\TableDataGateway::__construct
-     * @covers spriebsch\MVC\TableDataGateway::update
-     * @expectedException spriebsch\MVC\DatabaseException 
-     */
-    /*
-    public function testUpdateThrowsExceptionWhenRecordMissesColumns()
-    {
-        $this->db = new \PDO('sqlite::memory:');
-        
-        $this->gateway = new TableDataGateway($this->db, 'a_table', array('id' => 0, 'col' => 1));
-        $this->gateway->update(array());        
-    }
-    */
+	protected $dsn;
+	protected $username;
+	protected $password;
+	protected $options = array();
+
+    public function __construct($dsn, $username = '', $password = '', $options = array())
+	{
+        $this->dsn      = $dsn;
+        $this->username = $username;
+        $this->password = $password;
+        $this->options  = $options;
+	}
+
+	/**
+	 * PDO constructor throws exeption when DB connect fails. We deliberately do not 
+	 * catch this execption here, so that the caller can still catch it as \PDOException. 
+	 * 
+	 * @param string $method
+	 * @param array $parameters
+	 * @return mixed
+	 */
+	public function __call($method, $parameters)
+	{
+	    if ($this->pdo === null) {
+	        try {
+                $this->pdo = new \PDO($this->dsn, $this->username, $this->password, $this->options);
+	        }
+	        
+	        catch (\PDOException $e) {
+	            throw new DatabaseException('Cannot create PDO object', 0, $e);
+	        }
+	    }
+
+	    return call_user_func_array(array($this->pdo, $method), $parameters);
+	}
 }
 ?>

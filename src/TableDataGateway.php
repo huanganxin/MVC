@@ -42,13 +42,13 @@ namespace spriebsch\MVC;
  *
  * @author Stefan Priebsch <stefan@priebsch.de>
  * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ * @todo introduce PDO wrapper object with lazy init to prevent db connect in constructors
  */
 class TableDataGateway
 {
 	protected $db;
 	protected $table;
 	protected $dbTypes = array();
-    protected $phpTypes = array();
 	
 	protected $insertStatement;
     protected $updateStatement;
@@ -56,44 +56,17 @@ class TableDataGateway
     protected $selectOneStatement;
     protected $selectAllStatement;
     
-    public function __construct(\PDO $db, $table, $dbTypes, $phpTypes)
+    public function __construct(DatabaseHandler $db, $table, $dbTypes)
 	{
-        $this->db       = $db;
-        $this->table    = $table;
-        $this->dbTypes  = $dbTypes;
-        $this->phpTypes = $phpTypes;
-	}
-	
-	/**
-	 * Cast column values of result set to appropriate PHP types.
-	 * 
-	 * @param unknown_type $data
-	 * @return unknown_type
-	 */
-	protected function typeCast($data)
-	{
-		/*
-		foreach ($data as $key => &$value) {
-			if (!isset($this->phpTypes[$key])) {
-				continue;
-			}
-
-			switch ($this->phpTypes[$key]) {
-				case 'bool':
-					$value = (bool) $value;
-                case 'float':
-                    $value = (float) $value;
-			}
-		}
-        */
-		
-		return $data;
+        $this->db      = $db;
+        $this->table   = $table;
+        $this->dbTypes = $dbTypes;
 	}
 
 	public function find($id)
 	{
         if (!is_int($id)) {
-            throw new DatabaseException('ID is not an integer');
+            throw new DatabaseException('ID "' . $id . '" is not an integer');
         }
 		
         if ($this->selectOneStatement === null) {
@@ -105,13 +78,13 @@ class TableDataGateway
         
         if ($this->selectOneStatement->errorCode() != 0) {
             $message = $this->selectOneStatement->errorInfo();
-            throw new DatabaseException('Select ID ' . $id . ' failed on table ' . $this->table . ': ' . $message[2]);
+            throw new DatabaseException('Select ID "' . $id . '" failed on table "' . $this->table . '": ' . $message[2]);
         }        
 
-        $result = array_map(array($this, 'typeCast'), $this->selectOneStatement->fetchAll(\PDO::FETCH_ASSOC));
+        $result = $this->selectOneStatement->fetchAll(\PDO::FETCH_ASSOC);
         
         if (sizeof($result) < 1) {
-        	throw new DatabaseException('Record ID ' . $id . ' not found');
+        	throw new DatabaseException('Record ID "' . $id . '" not found');
         }
         
         return $result[0];
@@ -127,10 +100,10 @@ class TableDataGateway
         
         if ($this->selectAllStatement->errorCode() != 0) {
             $message = $this->selectAllStatement->errorInfo();
-            throw new DatabaseException('Select all failed on table ' . $this->table . ': ' . $message[2]);
+            throw new DatabaseException('Find all failed on table "' . $this->table . '": ' . $message[2]);
         }        
 
-        return array_map(array($this, 'typeCast'), $this->selectAllStatement->fetchAll(\PDO::FETCH_ASSOC));        
+        return $this->selectAllStatement->fetchAll(\PDO::FETCH_ASSOC);        
     }
 
     /**
@@ -141,7 +114,7 @@ class TableDataGateway
      */
     public function selectOne(array $criteria)
     {
-        $result = $this->select($criteria);
+        $result = $this->select($criteria, true);
 
         if (sizeof($result) == 0) {
             return array(); 
@@ -154,9 +127,10 @@ class TableDataGateway
      * This is a dynamically built select statement, so it is not cached.
      *   
      * @param array $criteria
+     * @param bool $justOne Only return first result record when set  
      * @return array
      */
-    public function select(array $criteria)
+    public function select(array $criteria, $justOne = false)
     {
     	$sql = 'SELECT * FROM ' . $this->table . ' WHERE ';
         $fields = array();
@@ -168,7 +142,7 @@ class TableDataGateway
         $sql .= implode(' AND ', $fields);
     	
         $selectStatement = $this->db->prepare($sql);        
-
+        
         foreach ($criteria as $key => $value) {
             $selectStatement->bindValue(':' . $key, $value, $this->dbTypes[$key]);
         }
@@ -177,8 +151,12 @@ class TableDataGateway
         
         if ($selectStatement->errorCode() != 0) {
             $message = $selectStatement->errorInfo();
-            throw new DatabaseException('Select all failed on table ' . $this->table . ': ' . $message[2]);
-        }        
+            throw new DatabaseException('Select failed on table "' . $this->table . '": ' . $message[2]);
+        }
+        
+        if ($justOne) {
+            return $selectStatement->fetch(\PDO::FETCH_ASSOC);
+        }
 
         return $selectStatement->fetchAll(\PDO::FETCH_ASSOC);        
     }
@@ -192,17 +170,12 @@ class TableDataGateway
      */
 	public function update(array $record)
 	{
-        // Make sure that $record contains all columns.
-//        if (sizeof($record) != sizeof($this->dbTypes)) {
-//            throw new DatabaseException('Record does not contain all columns of ' . $this->table . ' table');
-//        }
-        
         if (!isset($record['id'])) {
-            throw new DatabaseException('Record has no ID');
+            throw new DatabaseException('Record to update has no ID');
         }
 
         if (!is_int($record['id'])) {
-            throw new DatabaseException('ID is not an integer');
+            throw new DatabaseException('ID "' . $id . '" is not an integer');
         }
 
         if ($this->updateStatement === null) {
@@ -230,7 +203,7 @@ class TableDataGateway
 
         if ($this->updateStatement->errorCode() != 0) {
             $message = $this->updateStatement->errorInfo();
-            throw new DatabaseException('Update ID ' . $data['id'] . ' failed on table ' . $this->table . ': ' . $message[2]);
+            throw new DatabaseException('Update ID "' . $data['id'] . '" failed on table "' . $this->table . '": ' . $message[2]);
         }        
 
         return $this->updateStatement->rowCount();        
@@ -245,13 +218,8 @@ class TableDataGateway
 	 */
 	public function insert(array $record)
 	{
-		// Make sure that $record contains all columns but the id one.
-//		if (sizeof($record) != sizeof($this->dbTypes) - 1) {
-//            throw new DatabaseException('Record does not contain all columns of ' . $this->table . ' table');
-//		}
-
         if (isset($record['id'])) {
-            throw new DatabaseException('Record has an ID');
+            throw new DatabaseException('Record to insert already has an ID');
         }
 
         if ($this->insertStatement === null) {
@@ -276,7 +244,7 @@ class TableDataGateway
         
         if ($this->insertStatement->errorCode() != 0) {
         	$message = $this->insertStatement->errorInfo();
-        	throw new DatabaseException('Insert failed on table ' . $this->table . ': ' . $message[2]);
+        	throw new DatabaseException('Insert failed on table "' . $this->table . '": ' . $message[2]);
         }        
 
         return $this->insertStatement->rowCount();        
@@ -292,7 +260,7 @@ class TableDataGateway
 	public function delete($id)
 	{
 		if (!is_int($id)) {
-			throw new DatabaseException('ID is not an integer');
+			throw new DatabaseException('ID "' . $id . '" is not an integer');
 		}
 
         if ($this->deleteStatement === null) {
@@ -304,7 +272,7 @@ class TableDataGateway
         
         if ($this->deleteStatement->errorCode() != 0) {
             $message = $this->deleteStatement->errorInfo();
-            throw new DatabaseException('Delete ID ' . $id . ' failed on table ' . $this->table . ': ' . $message[2]);
+            throw new DatabaseException('Delete ID "' . $id . '" failed on table "' . $this->table . '": ' . $message[2]);
         }        
 
         return $this->deleteStatement->rowCount();        

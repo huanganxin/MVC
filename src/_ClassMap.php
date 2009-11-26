@@ -41,6 +41,7 @@ return array(
     'spriebsch\MVC\Request'                 => 'Request.php',
     'spriebsch\MVC\Response'                => 'Response.php',
     'spriebsch\MVC\Session'                 => 'Session.php',
+    'spriebsch\MVC\SessionAuthenticationHandler' => 'SessionAuthenticationHandler.php',
     'spriebsch\MVC\MockSession'             => 'MockSession.php',
     'spriebsch\MVC\Controller'              => 'Controller.php',
     'spriebsch\MVC\ControllerFactory'       => 'ControllerFactory.php',
@@ -65,5 +66,6 @@ return array(
     'spriebsch\MVC\Acl'                     => 'Acl.php',
     'spriebsch\MVC\ApplicationController'   => 'ApplicationController.php',
     'spriebsch\MVC\TableDataGateway'        => 'TableDataGateway.php',
+    'spriebsch\MVC\DatabaseHandler'         => 'DatabaseHandler.php',
 );
 ?>
