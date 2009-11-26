@@ -57,6 +57,7 @@ class ViewFactory
         'fielderrors' => '\\spriebsch\\MVC\\ViewHelper\\FieldErrors',
         'menu'        => '\\spriebsch\\MVC\\ViewHelper\\Menu',
         'ul'          => '\\spriebsch\\MVC\\ViewHelper\\Ul',
+        'options'     => '\\spriebsch\\MVC\\ViewHelper\\Options',
         'url'         => '\\spriebsch\\MVC\\ViewHelper\\Url',
         'table'       => '\\spriebsch\\MVC\\ViewHelper\\Table',
     );
