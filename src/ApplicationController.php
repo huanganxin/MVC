@@ -226,7 +226,7 @@ class ApplicationController
         
         $roles = $this->authenticationHandler->getRoles();
         $role = $roles[0];
-
+                
         // If that controller is not allowed, select authentication controller.
         if (!$this->acl->isAllowed($role, $controllerName)) {
             $controllerName = $this->authenticationControllerName;	
