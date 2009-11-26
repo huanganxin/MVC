@@ -114,13 +114,7 @@ class TableDataGateway
      */
     public function selectOne(array $criteria)
     {
-        $result = $this->select($criteria, true);
-
-        if (sizeof($result) == 0) {
-            return array(); 
-        }
-        
-        return $result[0];
+        return $this->select($criteria, true);
     }
     
     /**
@@ -175,7 +169,7 @@ class TableDataGateway
         }
 
         if (!is_int($record['id'])) {
-            throw new DatabaseException('ID "' . $id . '" is not an integer');
+            throw new DatabaseException('ID "' . $record['id'] . '" is not an integer');
         }
 
         if ($this->updateStatement === null) {
