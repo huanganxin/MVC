@@ -51,9 +51,9 @@ class FrontController
     protected $session;
 
     /**
-     * @var Authenticator
+     * @var AuthenticationHandler
      */
-    protected $authenticator;
+    protected $authenticationHandler;
 
     /**
      * @var Acl
@@ -68,23 +68,23 @@ class FrontController
     /**
      * Construct the FrontController.
      *
-     * @param Request               $request            Request object
-     * @param Response              $response           Response object
-     * @param Session               $session            Session object
-     * @param View                  $view               View
-     * @param Router                $router             Router object
-     * @param Authenticator         $authenticator      Authenticator object
-     * @param Acl                   $acl                Access Control List
-     * @param ApplicationController $appController      Application Controller
-     * @param ControllerFactory     $controllerFactory  Controller Factory
-     * @return void
+     * @param Request               $request               Request object
+     * @param Response              $response              Response object
+     * @param Session               $session               Session object
+     * @param View                  $view                  View
+     * @param Router                $router                Router object
+     * @param AuthenticationHandler $authenticationHandler Authentication handler
+     * @param Acl                   $acl                   Access Control List
+     * @param ApplicationController $appController         Application Controller
+     * @param ControllerFactory     $controllerFactory     Controller Factory
+     * @return null
     */
-    public function __construct(Request $request, Response $response, Session $session, Authenticator $authenticator, Acl $acl, ApplicationController $appController, ControllerFactory $controllerFactory)
+    public function __construct(Request $request, Response $response, Session $session, AuthenticationHandler $authenticationHandler, Acl $acl, ApplicationController $appController, ControllerFactory $controllerFactory)
     {
         $this->request               = $request;
         $this->response              = $response;
         $this->session               = $session;
-        $this->authenticator         = $authenticator;
+        $this->authenticationHandler = $authenticationHandler;
         $this->acl                   = $acl;
         $this->applicationController = $appController;
         $this->controllerFactory     = $controllerFactory;
@@ -118,7 +118,7 @@ class FrontController
         $method = $this->applicationController->getMethod($controllerName);
         $controller = $this->controllerFactory->getController($class);
         
-        $result = $controller->execute($this->request, $this->response, $this->session, $this->authenticator, $method);
+        $result = $controller->execute($this->request, $this->response, $this->session, $this->authenticationHandler, $method);
 
         if ('' == $result) {
         	throw new FrontControllerException('Controller "' . $class . '" method "' . $method . '" returned empty result');

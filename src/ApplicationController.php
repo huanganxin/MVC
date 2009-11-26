@@ -47,9 +47,9 @@ namespace spriebsch\MVC;
 class ApplicationController
 {
 	/**
-	 * @var Session
+	 * @var authenticationHandler
 	 */
-	protected $session;
+	protected $authenticationHandler;
 
     /**
      * @var Acl
@@ -109,9 +109,9 @@ class ApplicationController
      * @param ViewFactory $viewFactory
      * @return null
      */
-    public function __construct(Session $session, Acl $acl, ViewFactory $viewFactory)
+    public function __construct(AuthenticationHandler $authenticationHandler, Acl $acl, ViewFactory $viewFactory)
     {
-    	$this->session = $session;
+    	$this->authenticationHandler = $authenticationHandler;
         $this->acl = $acl;
         $this->viewFactory = $viewFactory;
     }
@@ -223,10 +223,7 @@ class ApplicationController
             $controllerName = $request->post('mvc_controller');
         }
         
-        $role = 'anonymous';
-        if ($this->session->has('_MVC_USER_ROLE')) {
-        	$role = $this->session->get('_MVC_USER_ROLE');
-        } 
+        $role = $this->authenticationHandler->getRole();
 
         // If that controller is not allowed, select authentication controller.
         if (!$this->acl->isAllowed($role, $controllerName)) {

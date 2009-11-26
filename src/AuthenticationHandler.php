@@ -38,82 +38,47 @@
 namespace spriebsch\MVC;
 
 /**
- * Controller class.
+ * Generic authentication handler
  *
- * @author Stefan Priebsch <stefan@priebsch.de>
- * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ * @author     Stefan Priebsch <stefan@priebsch.de>
+ * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-abstract class Controller
+abstract class AuthenticationHandler
 {
-    /**
-     * @var Request
-     */
-    protected $request;
+	/**
+	 * @var Session
+	 */
+	protected $session;
 
     /**
-     * @var Response
-     */
-    protected $response;
-
-    /**
-     * @var Session
-     */
-    protected $session;
-
-    /**
-     * @var AuthenticatonHandler
-     */
-    protected $authenticationHandler;
-
-    /**
-     * Initializes the controller
+     * Construct the object.
      *
+     * @param Session     $session 
      * @return null
      */
-    protected function init()
+    public function __construct(Session $session)
+    {
+    	$this->session = $session;
+    }
+
+    public function isAuthenticated()
     {
     }
 
-    /**
-     * Checks whether the action method is allowed.
-     * ACL are already being checked in front controller.
-     * Always returns true, subclass can override this method
-     * and implement additional authentication checks.
-     *
-     * @param string $method action method
-     * @return bool
-     */
-    protected function isAllowed($method)
+    public function authenticate($username, $role)
     {
-        return true;
     }
-
-    /**
-     * Executes the requested action method.
-     *
-     * @param Request  $request  Request object
-     * @param Response $response Response object
-     * @param Session  $session  Session object
-     * @param string   $action   Name of the action to perform
-     * @return bool
-     * @throws spriebsch\MVC\ControllerException when requested action does not exist
-     */
-    public function execute(Request $request, Response $response, Session $session, AuthenticationHandler $authenticationHandler, $method)
+    
+    public function unauthenticate() 
     {
-        $this->request       = $request;
-        $this->response      = $response;
-        $this->session       = $session;
-        $this->authenticationHandler = $authenticationHandler;
-
-        $this->init();
-
-        if (!method_exists($this, $method)) {
-            throw new ControllerException(get_class($this) . ': Method ' . $method . ' does not exist');
-        }
-
-        if ($this->isAllowed($method)) {
-            return $this->$method();
-        }
+    }
+    
+    public function getUsername()
+    {
+    }
+    
+    public function getRole()
+    {
     }
 }
 ?>
