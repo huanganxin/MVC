@@ -65,7 +65,7 @@ abstract class AuthenticationHandler
     {
     }
 
-    public function authenticate($username, $role)
+    public function authenticate($username)
     {
     }
     
@@ -74,10 +74,6 @@ abstract class AuthenticationHandler
     }
     
     public function getUsername()
-    {
-    }
-    
-    public function getRole()
     {
     }
 }
