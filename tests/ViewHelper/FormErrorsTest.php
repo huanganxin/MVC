@@ -74,7 +74,7 @@ class FormErrorsTest extends \PHPUnit_Framework_TestCase
 
         $formErrors = new \spriebsch\MVC\ViewHelper\FormErrors($request, $response);
 
-        $this->assertEquals('<div class="formerrors">message</div>', $formErrors->execute(array('form')));
+        $this->assertEquals('<div class="error">message</div>', $formErrors->execute(array('form')));
     }
 
     /**
@@ -93,7 +93,7 @@ class FormErrorsTest extends \PHPUnit_Framework_TestCase
 
         $formErrors = new \spriebsch\MVC\ViewHelper\FormErrors($request, $response);
 
-        $this->assertEquals('<div class="formerrors">message<br>another</div>', $formErrors->execute(array('form')));
+        $this->assertEquals('<div class="error">message<br>another</div>', $formErrors->execute(array('form')));
     }
 }
 ?>

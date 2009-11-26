@@ -65,7 +65,7 @@ class Errors extends \spriebsch\MVC\ViewHelper
             $result[] = $error->getMessage();
         }
 
-        return '<div class="formfielderrors">' . implode('<br>', $result) . '</div>';
+        return '<div class="error">' . implode('<br>', $result) . '</div>';
     }
 }
 ?>
