@@ -132,6 +132,23 @@ class TableDataGateway
 
         return array_map(array($this, 'typeCast'), $this->selectAllStatement->fetchAll(\PDO::FETCH_ASSOC));        
     }
+
+    /**
+     * This is a dynamically built select statement, so it is not cached.
+     *   
+     * @param array $criteria
+     * @return array
+     */
+    public function selectOne(array $criteria)
+    {
+        $result = $this->select($criteria);
+
+        if (sizeof($result) == 0) {
+            return array(); 
+        }
+        
+        return $result[0];
+    }
     
     /**
      * This is a dynamically built select statement, so it is not cached.
