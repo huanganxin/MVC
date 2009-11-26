@@ -54,6 +54,16 @@ class DatabaseHandler
 	protected $password;
 	protected $options = array();
 
+	/**
+	 * Constructs the object.
+	 * Parameters are the same as in the original PDO class.
+	 * 
+	 * @param unknown_type $dsn
+	 * @param unknown_type $username
+	 * @param unknown_type $password
+	 * @param unknown_type $options
+	 * @return unknown_type
+	 */
     public function __construct($dsn, $username = '', $password = '', $options = array())
 	{
         $this->dsn      = $dsn;
@@ -63,9 +73,8 @@ class DatabaseHandler
 	}
 
 	/**
-	 * PDO constructor throws exeption when DB connect fails. We deliberately do not 
-	 * catch this execption here, so that the caller can still catch it as \PDOException. 
-	 * 
+	 * Delegates all method calls to the PDO object, lazy initializing it on demand. 
+	 *
 	 * @param string $method
 	 * @param array $parameters
 	 * @return mixed
@@ -78,6 +87,8 @@ class DatabaseHandler
 	        }
 	        
 	        catch (\PDOException $e) {
+	            // PDO throws exception in constructor when DB connect fails.
+	            // Since DatabaseException extends PDOException, catch PDOException in client code will still work.
 	            throw new DatabaseException('Cannot create PDO object', 0, $e);
 	        }
 	    }
