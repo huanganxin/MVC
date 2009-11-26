@@ -41,7 +41,7 @@ return array(
     'spriebsch\MVC\Request'                 => 'Request.php',
     'spriebsch\MVC\Response'                => 'Response.php',
     'spriebsch\MVC\Session'                 => 'Session.php',
-    'spriebsch\MVC\SessionAuthenticationHandler' => 'SessionAuthenticationHandler.php',
+    'spriebsch\MVC\AuthenticationHandler'   => 'AuthenticationHandler.php',
     'spriebsch\MVC\MockSession'             => 'MockSession.php',
     'spriebsch\MVC\Controller'              => 'Controller.php',
     'spriebsch\MVC\ControllerFactory'       => 'ControllerFactory.php',
