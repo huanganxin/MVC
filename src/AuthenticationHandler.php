@@ -83,7 +83,7 @@ abstract class AuthenticationHandler
      * @param string $username
      * @return null
      */
-    abstract public function authenticate($username);
+    abstract public function authenticate($username, array $roles);
 
     /**
      * Unauthenticates a session. Should be called when user logs out.
@@ -98,5 +98,11 @@ abstract class AuthenticationHandler
      * @return string
      */
     abstract public function getUsername();
-}
-?>
+    
+    /**
+     * Returns array of roles of authenticated user.
+     *
+     * @return array
+     */
+    abstract public function getRoles();
+}?>
