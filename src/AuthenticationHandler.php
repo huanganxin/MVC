@@ -60,7 +60,7 @@ abstract class AuthenticationHandler
     {
     	$this->session = $session;
     }
-    
+
     /**
      * Checks if credentials (username, password) are valid.
      * 
@@ -75,7 +75,7 @@ abstract class AuthenticationHandler
      * 
      * @return bool
      */
-    abstract public function isAuthenticated()
+    abstract public function isAuthenticated();
 
     /**
      * Authenticates a session. Called when the user logs in.
@@ -83,20 +83,20 @@ abstract class AuthenticationHandler
      * @param string $username
      * @return null
      */
-    abstract public function authenticate($username)
+    abstract public function authenticate($username);
 
     /**
      * Unauthenticates a session. Should be called when user logs out.
      *
      * @return null
      */
-    abstract public function unauthenticate() 
+    abstract public function unauthenticate(); 
     
     /**
      * Returns the authenticated username, or null if session is not authenticated.
      * 
      * @return string
      */
-    abstract public function getUsername()
+    abstract public function getUsername();
 }
 ?>
