@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2009 Stefan Priebsch <stefan@priebsch.de>
+ * Copyright (c) 2009 Arne Blankerts <arne@blankerts.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -13,12 +13,12 @@
  *     this list of conditions and the following disclaimer in the documentation
  *     and/or other materials provided with the distribution.
  *
- *   * Neither the name of Stefan Priebsch nor the names of contributors
+ *   * Neither the name of Arne Blankerts nor the names of contributors
  *     may be used to endorse or promote products derived from this software
  *     without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT  * NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER ORCONTRIBUTORS
  * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
@@ -29,24 +29,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package    MVC
- * @author     Stefan Priebsch <stefan@priebsch.de>
- * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ * @package    Autoload
+ * @author     Arne Blankerts <arne@blankerts.de>
+ * @copyright  Arne Blankerts <arne@blankerts.de>, All rights reserved.
  * @license    BSD License
  */
 
-namespace spriebsch\MVC;
+namespace TheSeer\Tools {
 
-// @codeCoverageIgnoreStart
+   /**
+    * FilterIterator to accept only php source files based on content
+    *
+    * @author     Arne Blankerts <arne@blankerts.de>
+    * @copyright  Arne Blankerts <arne@blankerts.de>, All rights reserved.
+    */
+   class PHPFilterIterator extends \FilterIterator {
 
-/**
- * Bootstrap the MVC framework by registering the autoloader.
- */
+      /**
+       * FilterIterator Method to decide wether or not to include
+       * the current item into the list
+       *
+       * @return void
+       */
+      public function accept() {
+         $finfo = new \finfo(FILEINFO_MIME);
+         return strpos($finfo->file($this->current()->getPathname()), 'text/x-php') === 0;
+      }
 
-require_once __DIR__ . '/Autoloader.php';
-require_once __DIR__ . '/Exceptions.php';
+   }
 
-\spriebsch\Loader\Autoloader::init();
-\spriebsch\Loader\Autoloader::registerPath(__DIR__);
-// @codeCoverageIgnoreEnd
-?>
+}

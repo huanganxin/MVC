@@ -56,7 +56,7 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
         $this->request           = $this->getMock('spriebsch\MVC\Request',               array(), array(), '', false, false);
         $this->response          = $this->getMock('spriebsch\MVC\Response',              array(), array(), '', false, false);
         $this->session           = $this->getMock('spriebsch\MVC\Session',               array(), array(), '', false, false);
-        $this->authenticator     = $this->getMock('spriebsch\MVC\Authenticator',         array(), array(), '', false, false);
+        $this->authHandler       = $this->getMock('spriebsch\MVC\AuthenticationHandler', array(), array(), '', false, false);
         $this->controllerFactory = $this->getMock('spriebsch\MVC\ControllerFactory',     array(), array(), '', false, false);
         $this->viewFactory       = $this->getMock('spriebsch\MVC\ViewFactory',           array(), array(), '', false, false);
         $this->acl               = $this->getMock('spriebsch\MVC\Acl',                   array(), array(), '', false, false);
@@ -101,7 +101,7 @@ class FrontControllerTest extends \PHPUnit_Framework_TestCase
                             ->will($this->returnValue($this->view));
 
         
-        $fc = new FrontController($this->request, $this->response, $this->session, $this->authenticator, $this->acl, $this->appController, $this->controllerFactory);
+        $fc = new FrontController($this->request, $this->response, $this->session, $this->authHandler, $this->acl, $this->appController, $this->controllerFactory);
         $fc->execute();
     }
 }

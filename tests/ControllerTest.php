@@ -53,10 +53,10 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->request       = $this->getMock('spriebsch\MVC\Request');
-        $this->response      = $this->getMock('spriebsch\MVC\Response');
-        $this->session       = $this->getMock('spriebsch\MVC\Session');
-        $this->authenticator = $this->getMock('spriebsch\MVC\Authenticator', array(), array(), '', false, false);
+        $this->request     = $this->getMock('spriebsch\MVC\Request');
+        $this->response    = $this->getMock('spriebsch\MVC\Response');
+        $this->session     = $this->getMock('spriebsch\MVC\Session');
+        $this->authHandler = $this->getMock('spriebsch\MVC\AuthenticationHandler', array(), array(), '', false, false);
     }
 
     /**
@@ -65,7 +65,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testExecuteThrowsExceptionWhenActionMethodDoesNotExist()
     {
         $controller = new Test\DefaultActionController();
-        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'nonsense');
+        $controller->execute($this->request, $this->response, $this->session, $this->authHandler, 'nonsense');
     }
 
     /**
@@ -76,7 +76,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testExecuteCallsGivenAction()
     {
         $controller = new Test\TwoActionsController();
-        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'second');
+        $controller->execute($this->request, $this->response, $this->session, $this->authHandler, 'second');
     }
 
     /**
@@ -88,7 +88,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testNotAllowedController()
     {
         $controller = new Test\NotAllowedController();
-        $controller->execute($this->request, $this->response, $this->session, $this->authenticator, 'actionMethod');
+        $controller->execute($this->request, $this->response, $this->session, $this->authHandler, 'actionMethod');
     }
 }
 ?>

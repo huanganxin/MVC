@@ -48,46 +48,6 @@ class Exception extends \RuntimeException
 }
 
 /**
- * LoaderException
- *
- * @author Stefan Priebsch <stefan@priebsch.de>
- * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
- */
-class LoaderException extends Exception
-{
-}
-
-/**
- * CannotInstantiateLoaderException
- *
- * @author Stefan Priebsch <stefan@priebsch.de>
- * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
- */
-class CannotInstantiateLoaderException extends Exception
-{
-}
-
-/**
- * ClassMapNotFoundException
- *
- * @author Stefan Priebsch <stefan@priebsch.de>
- * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
- */
-class ClassMapNotFoundException extends Exception
-{
-}
-
-/**
- * InvalidClassMapException
- *
- * @author Stefan Priebsch <stefan@priebsch.de>
- * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
- */
-class InvalidClassMapException extends Exception
-{
-}
-
-/**
  * UnknownVariableException
  *
  * @author Stefan Priebsch <stefan@priebsch.de>

@@ -15,11 +15,6 @@
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
         </whitelist>
-        <blacklist>
-            <file>src/Autoloader.php</file>
-            <file>src/MVC.php</file>
-            <file>tests/bootstrap.php</file>
-        </blacklist>
     </filter>
 
     <logging>
