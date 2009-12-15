@@ -316,7 +316,7 @@ class View
     	if (!isset($this->viewHelpers[$method])) {
     		throw new Exception('View helper "' . $method . '" is not registered');
     	}
-    	
+
     	$className = $this->viewHelpers[$method];
 
         if (!class_exists($className)) {

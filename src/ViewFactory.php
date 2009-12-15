@@ -52,14 +52,14 @@ class ViewFactory
     protected $additionalViewHelpers = array();
 
     protected $defaultViewHelpers = array(
-        'errors'      => '\\spriebsch\\MVC\\ViewHelper\\Errors',
-        'formerrors'  => '\\spriebsch\\MVC\\ViewHelper\\FormErrors',
-        'fielderrors' => '\\spriebsch\\MVC\\ViewHelper\\FieldErrors',
-        'menu'        => '\\spriebsch\\MVC\\ViewHelper\\Menu',
-        'ul'          => '\\spriebsch\\MVC\\ViewHelper\\Ul',
-        'options'     => '\\spriebsch\\MVC\\ViewHelper\\Options',
-        'url'         => '\\spriebsch\\MVC\\ViewHelper\\Url',
-        'table'       => '\\spriebsch\\MVC\\ViewHelper\\Table',
+        'errors'      => 'spriebsch\\MVC\\ViewHelper\\Errors',
+        'formerrors'  => 'spriebsch\\MVC\\ViewHelper\\FormErrors',
+        'fielderrors' => 'spriebsch\\MVC\\ViewHelper\\FieldErrors',
+        'menu'        => 'spriebsch\\MVC\\ViewHelper\\Menu',
+        'ul'          => 'spriebsch\\MVC\\ViewHelper\\Ul',
+        'options'     => 'spriebsch\\MVC\\ViewHelper\\Options',
+        'url'         => 'spriebsch\\MVC\\ViewHelper\\Url',
+        'table'       => 'spriebsch\\MVC\\ViewHelper\\Table',
     );
     
     /**

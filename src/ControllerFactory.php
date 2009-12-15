@@ -54,8 +54,8 @@ class ControllerFactory
      * controllers without constructor parameters.
      * This is to be able to pass dependencies to the controllers.
      *
-     * @param unknown_type $class
-     * @return unknown_type
+     * @param string $class
+     * @return spriebsch\MVC\Controller
      */
     protected function getInstance($class)
     {
@@ -67,6 +67,10 @@ class ControllerFactory
     		}
     		
             return $this->$method();
+    	}
+    	
+    	if (!class_exists($class)) {
+    	   throw new Exception('Class "' . $class . '" does not exist');
     	}
     	
         return new $class();

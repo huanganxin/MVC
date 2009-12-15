@@ -148,7 +148,7 @@ namespace TheSeer\Tools {
          foreach($this->classes as $class => $file) {
             $fname = realpath($file);
             if (!empty($this->baseDir) && strpos($fname, $this->baseDir)===0) {
-               $fname=str_replace($this->baseDir,'', $fname);
+               $fname=str_replace($this->baseDir . '/' ,'', $fname);
             }
             $entries[] = "'$class' => '$fname'";
          }
@@ -164,7 +164,7 @@ namespace TheSeer\Tools {
          $body .= "{$i}{$i});{$ln}";
          $body .= "{$i}{$i}\$cn = strtolower(\$class);{$ln}";
          $body .= "{$i}{$i}if (isset(\$classes[\$cn])) {{$ln}";
-         $body .= "{$i}{$i}{$i}require ".($this->baseDir ? '__DIR__ . "/" .' : '') . " \$classes[\$cn];{$ln}{$i}{$i}}{$ln}";
+         $body .= "{$i}{$i}{$i}require ".($this->baseDir ? '__DIR__ . \'/\' . ' : '') . " \$classes[\$cn];{$ln}{$i}{$i}}{$ln}";
          $body .= "{$i}}{$ln}";
          $body .= ");{$ln}";
 
