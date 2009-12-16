@@ -6,7 +6,7 @@
          syntaxCheck="false">
 
     <testsuites>
-	    <testsuite name="PHPca">
+	    <testsuite name="MVC">
 	        <directory>tests</directory>
 	    </testsuite>
     </testsuites>
