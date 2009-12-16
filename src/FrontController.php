@@ -51,9 +51,9 @@ class FrontController
     protected $session;
 
     /**
-     * @var AuthenticationHandler
+     * @var AuthenticationAdapter
      */
-    protected $authenticationHandler;
+    protected $authenticationAdapter;
 
     /**
      * @var Acl
@@ -73,18 +73,18 @@ class FrontController
      * @param Session               $session               Session object
      * @param View                  $view                  View
      * @param Router                $router                Router object
-     * @param AuthenticationHandler $authenticationHandler Authentication handler
+     * @param AuthenticationAdapter $authenticationAdapter Authentication adapter
      * @param Acl                   $acl                   Access Control List
      * @param ApplicationController $appController         Application Controller
      * @param ControllerFactory     $controllerFactory     Controller Factory
      * @return null
     */
-    public function __construct(Request $request, Response $response, Session $session, AuthenticationHandler $authenticationHandler, Acl $acl, ApplicationController $appController, ControllerFactory $controllerFactory)
+    public function __construct(Request $request, Response $response, Session $session, AuthenticationAdapter $authenticationAdapter, Acl $acl, ApplicationController $appController, ControllerFactory $controllerFactory)
     {
         $this->request               = $request;
         $this->response              = $response;
         $this->session               = $session;
-        $this->authenticationHandler = $authenticationHandler;
+        $this->authenticationAdapter = $authenticationAdapter;
         $this->acl                   = $acl;
         $this->applicationController = $appController;
         $this->controllerFactory     = $controllerFactory;
@@ -118,7 +118,7 @@ class FrontController
         $method = $this->applicationController->getMethod($controllerName);
         $controller = $this->controllerFactory->getController($class);
         
-        $result = $controller->execute($this->request, $this->response, $this->session, $this->authenticationHandler, $method);
+        $result = $controller->execute($this->request, $this->response, $this->session, $this->authenticationAdapter, $method);
 
         if ('' == $result) {
         	throw new FrontControllerException('Controller "' . $class . '" method "' . $method . '" returned empty result');

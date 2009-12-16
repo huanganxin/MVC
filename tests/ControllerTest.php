@@ -56,7 +56,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $this->request     = $this->getMock('spriebsch\MVC\Request');
         $this->response    = $this->getMock('spriebsch\MVC\Response');
         $this->session     = $this->getMock('spriebsch\MVC\Session');
-        $this->authHandler = $this->getMock('spriebsch\MVC\AuthenticationHandler', array(), array(), '', false, false);
+        $this->authAdapter = $this->getMock('spriebsch\MVC\authenticationAdapter', array(), array(), '', false, false);
     }
 
     /**
@@ -65,7 +65,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testExecuteThrowsExceptionWhenActionMethodDoesNotExist()
     {
         $controller = new Test\DefaultActionController();
-        $controller->execute($this->request, $this->response, $this->session, $this->authHandler, 'nonsense');
+        $controller->execute($this->request, $this->response, $this->session, $this->authAdapter, 'nonsense');
     }
 
     /**
@@ -76,7 +76,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testExecuteCallsGivenAction()
     {
         $controller = new Test\TwoActionsController();
-        $controller->execute($this->request, $this->response, $this->session, $this->authHandler, 'second');
+        $controller->execute($this->request, $this->response, $this->session, $this->authAdapter, 'second');
     }
 
     /**
@@ -88,7 +88,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testNotAllowedController()
     {
         $controller = new Test\NotAllowedController();
-        $controller->execute($this->request, $this->response, $this->session, $this->authHandler, 'actionMethod');
+        $controller->execute($this->request, $this->response, $this->session, $this->authAdapter, 'actionMethod');
     }
 }
 ?>

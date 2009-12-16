@@ -38,51 +38,71 @@
 namespace spriebsch\MVC;
 
 /**
- * Controller factory class.
+ * Abstract authentication adapter.
  *
- * @author Stefan Priebsch <stefan@priebsch.de>
- * @copyright Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
+ * @author     Stefan Priebsch <stefan@priebsch.de>
+ * @copyright  Stefan Priebsch <stefan@priebsch.de>. All rights reserved.
  */
-class ControllerFactory
+abstract class AuthenticationAdapter
 {
-	protected $methods = array();
-    protected $controllers = array();
-    
+	/**
+	 * @var Session
+	 */
+	protected $session;
+
     /**
-     * Creates a controller instance.
-     * Delegates to specific method if present, otherwise creates
-     * controllers without constructor parameters.
-     * This is to be able to pass dependencies to the controllers.
+     * Construct the object.
      *
-     * @param string $class
-     * @return spriebsch\MVC\Controller
+     * @param Session     $session 
+     * @return null
      */
-    protected function getInstance($class)
+    public function __construct(Session $session)
     {
-    	if (isset($this->methods[$class])) {
-    		$method = $this->methods[$class];
-    		
-    		if (!method_exists($this, $method)) {
-    			throw new Exception('Method ' . $method . ' does not exist');
-    		}
-    		
-            return $this->$method($class);
-    	}
-    	
-    	if (!class_exists($class)) {
-    	   throw new Exception('Class "' . $class . '" does not exist');
-    	}
-    	
-        return new $class();
+    	$this->session = $session;
     }
 
-    public function getController($class)
-    {
-        if (!isset($this->controllers[$class])) {
-            $this->controllers[$class] = $this->getInstance($class); 
-        }
-        
-        return $this->controllers[$class];
-    }
-}
-?>
+    /**
+     * Checks if credentials (username, password) are valid.
+     * 
+     * @param string $username
+     * @param string $password
+     * @return bool
+     */
+    abstract public function isValid($username, $password);
+
+    /**
+     * Checks whether the session is authenticated. 
+     * 
+     * @return bool
+     */
+    abstract public function isAuthenticated();
+
+    /**
+     * Authenticates a session. Called when the user logs in.
+     * 
+     * @param string $username
+     * @return null
+     */
+    abstract public function authenticate($username, array $roles);
+
+    /**
+     * Unauthenticates a session. Should be called when user logs out.
+     *
+     * @return null
+     */
+    abstract public function unauthenticate(); 
+    
+    /**
+     * Returns the authenticated username, or null if session is not authenticated.
+     * 
+     * @return string
+     */
+    abstract public function getUsername();
+    
+    /**
+     * Returns array of roles of authenticated user.
+     *
+     * @return array
+     */
+    abstract public function getRoles();
+}?>

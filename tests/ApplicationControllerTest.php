@@ -47,12 +47,12 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        $this->authenticationHandler = $this->getMock('spriebsch\MVC\AuthenticationHandler', array(), array(), '', false, false);
+        $this->authenticationAdapter = $this->getMock('spriebsch\MVC\AuthenticationAdapter', array(), array(), '', false, false);
     }
     
     protected function tearDown()
     {
-        unset($this->authenticationHandler);
+        unset($this->authenticationAdapter);
     }
 
 	/**
@@ -75,7 +75,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->request = $this->getMock('spriebsch\MVC\Request', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
         
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
 
         $this->assertEquals('main', $this->appController->getControllerName($this->request));
     }
@@ -94,11 +94,11 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
                   ->method('isAllowed')
                   ->will($this->returnValue(false));
                   
-        $this->authenticationHandler = $this->getMock('spriebsch\MVC\AuthenticationHandler', array(), array(), '', false, false);
+        $this->authenticationAdapter = $this->getMock('spriebsch\MVC\authenticationAdapter', array(), array(), '', false, false);
         $this->request = $this->getMock('spriebsch\MVC\Request', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
         
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
 
         $this->assertEquals('authentication.login', $this->appController->getControllerName($this->request));
     }
@@ -118,7 +118,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->request = new Request(array('mvc_controller' => 'something'));
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
         
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
         $this->appController->registerController('something', 'class', 'method');
 
         $this->assertEquals('something', $this->appController->getControllerName($this->request));
@@ -139,7 +139,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->request = new Request(array(), array('mvc_controller' => 'something'));
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
 
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
         $this->appController->registerController('something', 'class', 'method');
 
         $this->assertEquals('something', $this->appController->getControllerName($this->request));
@@ -160,7 +160,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->request = new Request(array('mvc_controller' => 'nonsense'), array('mvc_controller' => 'something'));
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
         
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
         $this->appController->registerController('something', 'class', 'method');
 
         $this->assertEquals('something', $this->appController->getControllerName($this->request));
@@ -175,7 +175,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->acl = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
         
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
 
         $this->appController->getView('something', 'success');
     }
@@ -194,7 +194,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
                           ->method('getView')
                           ->will($this->returnValue($this->view));
         
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
         $this->appController->registerView('something', 'success', 'a_view');
 
         $this->assertEquals($this->view, $this->appController->getView('something', 'success'));
@@ -209,7 +209,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->acl = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
                 
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
 
         $this->appController->getView('something', 'success');
     }
@@ -226,7 +226,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
                           ->method('getView')
                           ->will($this->returnValue(new View(__DIR__)));
         
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
         $this->appController->registerRedirect('something', 'success', 'a_controller');
 
         $this->assertEquals('a_controller', $this->appController->getView('something', 'success')->getRedirect());
@@ -240,7 +240,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->acl = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
 
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
 
         $this->assertFalse($this->appController->isRedirect('something', 'success'));
     }
@@ -255,7 +255,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->acl = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
                       
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
         $this->appController->registerRedirect('something', 'success', 'a_controller');
 
         $this->assertTrue($this->appController->isRedirect('something', 'success'));
@@ -270,7 +270,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->acl = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
 
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
 
         $this->assertFalse($this->appController->isForward('something', 'success'));
     }
@@ -285,7 +285,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->acl = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
 
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
         $this->appController->registerForward('something', 'success', 'a_controller');
 
         $this->assertTrue($this->appController->isForward('something', 'success'));
@@ -303,7 +303,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->acl = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
 
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
         $this->appController->registerController('main', 'controller', 'method');
 
         $this->assertEquals('controller', $this->appController->getClass('main'));
@@ -321,7 +321,7 @@ class ApplicationControllerTest extends \PHPUnit_Framework_TestCase
         $this->acl = $this->getMock('spriebsch\MVC\Acl', array(), array(), '', false, false);
         $this->viewFactory = $this->getMock('spriebsch\MVC\ViewFactory', array(), array(), '', false, false);
 
-        $this->appController = new ApplicationController($this->authenticationHandler, $this->acl, $this->viewFactory);
+        $this->appController = new ApplicationController($this->authenticationAdapter, $this->acl, $this->viewFactory);
 
         $this->appController->getClass('main');
     }

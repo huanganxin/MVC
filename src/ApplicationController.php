@@ -47,9 +47,9 @@ namespace spriebsch\MVC;
 class ApplicationController
 {
 	/**
-	 * @var authenticationHandler
+	 * @var authenticationAdapter
 	 */
-	protected $authenticationHandler;
+	protected $authenticationAdapter;
 
     /**
      * @var Acl
@@ -109,9 +109,9 @@ class ApplicationController
      * @param ViewFactory $viewFactory
      * @return null
      */
-    public function __construct(AuthenticationHandler $authenticationHandler, Acl $acl, ViewFactory $viewFactory)
+    public function __construct(AuthenticationAdapter $authenticationAdapter, Acl $acl, ViewFactory $viewFactory)
     {
-    	$this->authenticationHandler = $authenticationHandler;
+    	$this->authenticationAdapter = $authenticationAdapter;
         $this->acl = $acl;
         $this->viewFactory = $viewFactory;
     }
@@ -224,7 +224,7 @@ class ApplicationController
             $controllerName = $request->post('mvc_controller');
         }
         
-        $roles = $this->authenticationHandler->getRoles();
+        $roles = $this->authenticationAdapter->getRoles();
         $role = $roles[0];
                 
         // If that controller is not allowed, select authentication controller.

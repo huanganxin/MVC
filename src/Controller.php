@@ -61,9 +61,9 @@ abstract class Controller
     protected $session;
 
     /**
-     * @var AuthenticatonHandler
+     * @var AuthenticatonAdapter
      */
-    protected $authenticationHandler;
+    protected $authenticationAdapter;
 
     /**
      * Initializes the controller
@@ -98,12 +98,12 @@ abstract class Controller
      * @return bool
      * @throws spriebsch\MVC\ControllerException when requested action does not exist
      */
-    public function execute(Request $request, Response $response, Session $session, AuthenticationHandler $authenticationHandler, $method)
+    public function execute(Request $request, Response $response, Session $session, AuthenticationAdapter $authenticationAdapter, $method)
     {
         $this->request       = $request;
         $this->response      = $response;
         $this->session       = $session;
-        $this->authenticationHandler = $authenticationHandler;
+        $this->authenticationAdapter = $authenticationAdapter;
 
         $this->init();
 
