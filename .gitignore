@@ -1,3 +1,5 @@
+src/Autoload.php
+tests/Autoload.php
 .buildpath
 .project
 .settings/
