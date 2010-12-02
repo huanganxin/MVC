@@ -7,26 +7,47 @@
     <property name="docs"     location="_docs"/>
     <property name="coverage" location="_coverage"/>
 
-    <target name="init">
+    <target name="init" description="Initializes the build environment">
         <mkdir dir="${build}"/>
         <mkdir dir="${docs}"/>
         <mkdir dir="${coverage}"/>
     </target>
 
-    <target name="autoload">
-        <exec executable="php" failonerror="true">
-            <arg value="scripts/autoload.php"/>
-            <arg value="${src}"/>
-            <arg value="${src}/Autoload.php"/>
+    <target name="sniff" description="Runs PHP_CodeSniffer">
+        <exec executable="phpcs" failonerror="true">
+            <arg value="-s"/>
+            <arg value="--standard=${basedir}/spriebsch.xml"/>
+            <arg value="src"/>
         </exec>
-        <exec executable="php" failonerror="true">
-            <arg value="scripts/autoload.php"/>
-            <arg value="${tests}"/>
-            <arg value="${tests}/Autoload.php"/>
+        <exec executable="phpcs" failonerror="true">
+            <arg value="-s"/>
+            <arg value="--standard=${basedir}/spriebsch.xml"/>
+            <arg value="tests"/>
         </exec>
     </target>
 
-    <target name="test" depends="init, autoload">
+    <target name="autoload" description="Builds the autoloaders">
+        <exec executable="phpab" failonerror="true">
+            <arg value="-o"/>
+            <arg value="${src}/Autoload.php"/>
+            <arg value="--indent"/>
+            <arg value='"            "'/>
+            <arg value="-t"/>
+            <arg value="templates/autoload.php.tpl"/>
+            <arg value="${src}"/>
+        </exec>
+        <exec executable="phpab" failonerror="true">
+            <arg value="-o"/>
+            <arg value="${tests}/Autoload.php"/>
+            <arg value="--indent"/>
+            <arg value='"            "'/>
+            <arg value="-t"/>
+            <arg value="templates/autoload.php.tpl"/>
+            <arg value="${tests}"/>
+        </exec>
+    </target>
+
+    <target name="test" depends="init, autoload" description="Runs unit tests">
         <exec executable="phpunit" failonerror="true"/>
     </target>
 
@@ -38,13 +59,24 @@
         </exec>
     </target>
 
-    <target name="doc" depends="init">
-        <exec executable="doxygen" outputproperty="doxygen.output"/>
+    <target name="doc" depends="init" description="Creates API documentation">
+        <exec executable="phpdoc" failonerror="true">
+            <arg value="-dn"/>
+            <arg value="MVC"/>
+            <arg value="-d"/>
+            <arg value="${src}"/>
+            <arg value="-t"/>
+            <arg value="${docs}"/>
+            <arg value="-o"/>
+            <arg value="HTML:frames:earthli"/>
+            <arg value="-i"/>
+            <arg value="Autoload.php"/>
+        </exec>
     </target>
 
     <target name="build" depends="clean, autoload, test, doc, phar">
     </target>
-
+    
     <target name="clean">
         <delete dir="${build}"/>
         <delete dir="${docs}"/>
